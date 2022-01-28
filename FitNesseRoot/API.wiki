@@ -1,0 +1,2 @@
+!path target/orrish-core-1.0-SNAPSHOT.jar
+!contents -R2 -g -p -f -h

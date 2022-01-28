@@ -1,0 +1,3 @@
+!define TEST_SYSTEM {slim}
+!define slim.pool.size {100}
+!define COMMAND_PATTERN {java -cp %p %m}

@@ -1,0 +1,6 @@
+'''Teams'''
+|[[API][.API]]              |''Test cases for team 1''|
+|[[Web][.Web]]              |''Test cases for team 2''|
+|[[Web and API][.WebAndAPI]]|''Test cases for team 3''|
+
+!note Release ${FITNESSE_VERSION}
