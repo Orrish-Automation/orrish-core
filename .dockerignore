@@ -3,3 +3,6 @@
 *.md
 target/
 .gitignore
+FitNesseRoot/files/*.png
+FitNesseRoot/files/testResuts/
+FitNesseRoot/files/*.html

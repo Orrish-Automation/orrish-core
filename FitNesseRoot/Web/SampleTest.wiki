@@ -1,3 +1,9 @@
+After you execute, click the link at the bottom of the page to see report.
+!style_green('''To refer to steps that can be used, refer to [[this page][http://files/steps.txt]]''')
+'''Test Objective''': Runs a web test using playwright. '''First time, the test will fail because of time out since playwright downloads chromium. Run it again to see the result.'''
+'''Status''': Automated.
+'''Test case id''': <some id>
+
 !|script                                                                                                 |
 |Set test name                 |Sample test                                                              |
 |Launch browser and navigate to|http://github.com                                                        |

@@ -1,3 +1,13 @@
+---
+Help: Status: Automated
+Suites: Sanity
+---
+A test can contain formatted documentation like this. There is a help text added to it and also a tag is added to this. After you execute, click the link at the bottom of the page to see report.
+!style_green('''To refer to steps that can be used, refer to [[this page][http://files/steps.txt]]''')
+'''Test Objective''': Call an API and do a basic validation.
+'''Status''': Automated.
+'''Test case id''': <some id>
+
 !|script                                                           |
 |Set test name        |Sample test                                 |
 |Call GET for endpoint|https://jsonplaceholder.typicode.com/users/1|

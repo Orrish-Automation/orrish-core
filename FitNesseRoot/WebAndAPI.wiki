@@ -1,2 +1,5 @@
-!path target/orrish-core-1.0-SNAPSHOT.jar
+!path target/orrish-core-1.0.0.jar
+
+This suite contains a sample test which run an API and does a basic validation. After you execute a test, you can check the report by clicking on the link at the bottom or each page.
+------
 !contents -R2 -g -p -f -h

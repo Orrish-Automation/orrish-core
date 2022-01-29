@@ -1,0 +1,132 @@
+Report Steps
+---------------
+Below step creates the node on the left in the extent report. Use it just once in a central location, ideally in SetUp.
+|Set suite name|Some name|
+This will set one child node in the extent report right panel which is ideal for data driven tests.
+|ensure|Set child node|some name|
+This creates a node in the test report or a sub-node if you defined a scenario/child node already. If you want both a suite and test in this single step, use suite_name::test_name
+|ensure|Set test name|${PAGE_NAME} |
+
+API Steps
+-----------
+|Set server endpoint|http://ip:port|
+|Set request headers |applicationReferenceId=$value,first_name=FirstName,last_name=LastName|
+|Set form values|key1:value1,key2:value2|
+|$request=|Replace data in json template with|key=value |
+|$request=|Replace string|name|with|$value|in|{}|
+|Call GET for endpoint |${BASE_SERVER}/name  |
+|Call GET with request |$request  |
+|Call POST with request|{}  |
+|Call POST|
+|Call PUT with request |$request  |
+|Call DELETE for endpoint  |${BASE_SERVER}/name/1 |
+|Call DELETE with request  |$request  |
+|$value=|Get response body|
+|Verify HTTP status code is|200 |
+|$value= |Get from response|country.name  |
+|$value=|Get|user.name|from json string|jsonString|
+|$value=|Get from response cookie|cookieName|
+|Does last response match schema|schema|
+|Is response json equal to|expectedResponseString|
+|Verify values|$valueFromResponse=$valueFromDB,$firstName=$nameFromDB|
+|Verify response for |user.name=test,user.status=active,id=not null,middleName=null,title=doNotVerify,school=exists,university=doesNotExist,address=empty object|
+|$value=|Does response have |user.name|
+|$responseHeader=|Get|sessionId|from response header|
+|ensure|Verify object node|jsonPath|count|2|
+
+Database Steps
+-------------
+|Does DB query|Select NAME from USER where ID=$value|return|someValue|
+|Does DB query|Select country from countries Where id=1|return one of|success,check later|
+|Verify DB query result of |Select * from country where id=1|should have|$expectedValue|
+|$value=|Run database query|Select * from country where id=1|
+|$value=|Run database command |UPDATE USER SET NAME=NULL WHERE ID = 1|
+|$value=|Run query|Select * from countries|and return list as string|
+|$value=|Run query|Select * from countries|and return list|
+|$value=|Wait till the Db query|Select NAME from users where name=surat|returns value up to|20|seconds|
+|$value=|Get first document from mongo DB for collection|collectionName|
+|$value=|Get first document from mongo DB for collection|collectionName|with criteria|{city:{$eq:\"Value\"}}|
+|$value=|Update mongo DB for collection|terminalCluster|set|country=US|for criteria|{city:\"Value\"}|
+|$value=|Delete in mongo DB for collection|collectionName|with criteria|{city:\"Value\"}|
+
+General Steps
+---------------
+|$value=|echo|some value|
+|Download from url|http://someurl/sample.png|and save as|sample.png|
+|$value=|Concatenate|string1|and|string2|
+|$value|Get sum of integer values in list|[34,23,67]|
+|$value=|Get sum of decimal values in list|[34.56,345.56,1.01]|
+|$value= |Get|6 |character random alpha numeric string|
+|$value=|Get|3|digit random numeric value|
+|$currentTime=|Get current time in the format|MMddyyyyHHmmss|
+|$time=|Get time in the format |MMddyyyyHHmmss| plus days from today |3|
+|$currentTime=|Get current GMT time in the format|MMddyyyy|
+|$pastDate=|Get GMT time in the format|MMddyyyyHHmmss|minus|2|days from today|
+|$pastDate=|Get GMT time in the format|MMddyyyyHHmmss|plus|2|days from today|
+|ensure|Wait  |60|seconds  |
+|$value=|Split|abce-adsfa|with delimiter|-|
+|$value=|Split|abce-adsfa|with delimiter|-|and return last string|
+|$value=|Get index|1|from array|[a,b]|
+|Does  |value1|contain|value2  |
+|Does|$value1| contain by ignoring case|$value2|
+|Does  |value1|start with|value2  |
+|Does  |value1|match pattern |value2  |
+|Is|$valueFromResponse  |Equal |$valueFromDB|
+|Is value|name|in|username|is|Present|
+|Is List |$listFromResponse  |equal |$listFromDB |
+|Is|$value|one of|[value1,value2] |
+|Execute shell|pwd|
+|Execute shell without reporting|pwd|
+|Execute shell without wait|pwd|
+|ensure|Write in report|Some content|
+|ensure|Update report|
+|ensure|Show image|http://someurl.png|with message|Some message|
+
+Browser Steps
+-------------
+|Launch browser and navigate to|http://someurl|
+|In browser navigate to|http://someurl|
+|Maximize the window|
+|Take web screenshot with text|
+|Click|#btn-sample|for|Next button|
+|Click|#btn-sample|with text|Continue|
+|Click whichever is displayed in|#success,,#error|
+|Click row containing text|text|
+|Select checkbox for text|some text|
+|Unselect checkbox for text|some text|
+|Wait until element|#button|text contains|some value|
+|Wait until element|#button|text does not contain|some value|
+|Wait until|#progressbar,,#error|is gone for|error pop up|
+|Wait until|#progressbar,,#someValue|is displayed for|success message|
+|Wait until one of the locators|#success,,#error|is displayed|
+|Wait until one of the locators|#success,,#error|is enabled|
+|Enter|some value|in text field|#locator|for|textFieldName|
+|Enter in text field number|2|
+|Is text|some text|present in webpage|
+|Dismiss alert if present|
+|Click |#button|and accept alert if present|
+|$value=|Click|#button|and get alert text|
+|Select|text|from dropdown|#locator|
+|$value=|Get text from locator|#locator|
+|Execute javascript|some script|
+
+
+Mobile Steps
+-------------
+|Launch app on device|
+|Take mobile screenshot with text|some text|
+|Close app on device|
+|Go back to previous page in mobile|
+|Press home key|
+|Press back key|
+|Swipe once vertically|
+|Tap|#button1|for|login button|
+|Tap with text|value|
+|Tap whichever is displayed in|#successbutton,,#errorbutton|
+|In mobile wait until element|#button1| text contains|some data|
+|In mobile wait until element|#button1| text does not contain|some data|
+|In mobile wait until |#button1|is gone for|login button|
+|In mobile wait until |#home|is displayed for|home button|
+|In mobile wait until one of the locators |#successButton,,#errorButton|is enabled|
+|In mobile enter|john.doe| in text field|#txt_un| for|username textfield|
+|$value=|In mobile get text from locator|#button|

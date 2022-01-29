@@ -1,3 +1,1 @@
 |script|Tear Down|
-
-!contents -R2 -g -p -f -h

@@ -89,7 +89,7 @@ public class DatabaseSteps {
         return null;
     }
 
-    public String waitTillTheDbReturnsValue(String queryToRun, int seconds) {
+    public String waitTillTheDbQueryReturnsValueUpToSeconds(String queryToRun, int seconds) {
         if (shouldDBStepBeExecuted()) {
             do {
                 //wait a second and try again

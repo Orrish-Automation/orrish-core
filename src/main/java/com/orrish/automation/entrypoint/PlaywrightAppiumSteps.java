@@ -2,11 +2,11 @@ package com.orrish.automation.entrypoint;
 
 import com.orrish.automation.playwright.PlaywrightActions;
 
-public class PlaywrightSteps {
+public class PlaywrightAppiumSteps extends AppiumSteps {
 
     PlaywrightActions playwrightActions;
 
-    public PlaywrightSteps() {
+    public PlaywrightAppiumSteps() {
         playwrightActions = new PlaywrightActions();
     }
 
@@ -91,7 +91,7 @@ public class PlaywrightSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("isTextPresentInWebpage", text);
     }
 
-    public String clickAndReturnAlertText(String locator) {
+    public String clickAndGetAlertText(String locator) {
         return playwrightActions.executeOnWebAndReturnString("clickAndReturnAlertText", locator);
     }
 
