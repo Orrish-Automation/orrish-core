@@ -40,7 +40,7 @@ SDET (Software development engineer in test) or automation engineers spend a lot
 ## Setting up the framework on a central server
 * The easiest way to set up is via docker with below command. Access the automation server on the port you specified in below command.
 
-  ```docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.1```
+  ```docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.0```
 * It is also possible to build components individually. If you plan to modify code and build on your own, follow below process
   - Download [FitNesse Jar](http://fitnesse.org)
   - Run command ```java -jar fitnesse-standalone.jar -p <desired_port>``` and access the server on the port you specified in this command. This will create a FitNesseRoot folder.

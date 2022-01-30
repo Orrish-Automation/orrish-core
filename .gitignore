@@ -89,3 +89,4 @@ FitNesseRoot/files/*.png
 FitNesseRoot/files/**/*.xml
 FitNesseRoot/files/*.html
 FitNesseRoot/RecentChanges.wiki
+FitNesseRoot/RerunLastFailures*.wiki
