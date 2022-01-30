@@ -3,9 +3,9 @@ package com.orrish.automation.model;
 import com.orrish.automation.utility.report.ReportUtility;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentExtentTest;
 import static com.orrish.automation.entrypoint.SetUp.playwrightPage;
-import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class TestStepReportModel {
 

@@ -22,8 +22,8 @@ public class AppiumSteps {
         return seleniumAppiumActions.closeAppOnDevice();
     }
 
-    public boolean goBackToPreviousPageInMobile() {
-        return seleniumAppiumActions.goBackToPreviousPageInMobile();
+    public boolean inMobileGoBackToPreviousPage() {
+        return seleniumAppiumActions.inMobileGoBackToPreviousPage();
     }
 
     public boolean pressHomeKey() {

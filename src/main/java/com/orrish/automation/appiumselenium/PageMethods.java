@@ -13,14 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 import static com.orrish.automation.entrypoint.SetUp.defaultWaitTime;
-import static com.orrish.automation.utility.GeneralUtility.waitSeconds;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textMatches;
 
 public class PageMethods {
 
-    protected final RemoteWebDriver webDriver;
-    protected final AppiumDriver appiumDriver;
+    protected RemoteWebDriver webDriver;
+    protected AppiumDriver appiumDriver;
     protected WebDriverWait webDriverWait;
     protected WebDriverWait appiumDriverWait;
 
@@ -39,7 +39,7 @@ public class PageMethods {
         return true;
     }
 
-    public boolean refreshPage() {
+    public boolean refreshWebPage() {
         webDriver.navigate().refresh();
         ReportUtility.reportInfo("Refreshed page.");
         return true;

@@ -5,7 +5,7 @@ import com.orrish.automation.entrypoint.ReportSteps;
 import com.orrish.automation.entrypoint.SetUp;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
+import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 
 public class ReportUtility {
 

@@ -6,11 +6,12 @@ import com.microsoft.playwright.options.SelectOption;
 import com.orrish.automation.entrypoint.ReportSteps;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.model.TestStepReportModel;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 
 import java.util.List;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
+import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 import static com.orrish.automation.entrypoint.SetUp.isScreenshotAtEachStepEnabled;
 
 public class PlaywrightActions {
@@ -140,7 +141,7 @@ public class PlaywrightActions {
             ElementHandle elementHandle = SetUp.playwrightPage.querySelector(locator);
             if (elementHandle == null)
                 return true;
-            GeneralUtility.waitSeconds(1);
+            waitSeconds(1);
         }
         return false;
     }
@@ -173,7 +174,7 @@ public class PlaywrightActions {
                 } catch (Exception ex) {
                 }
             }
-            GeneralUtility.waitSeconds(1);
+            waitSeconds(1);
         }
         return false;
     }
@@ -192,7 +193,7 @@ public class PlaywrightActions {
                 return true;
             if (!shouldContain && !SetUp.playwrightPage.textContent(locator).contains(text))
                 return true;
-            GeneralUtility.waitSeconds(1);
+            waitSeconds(1);
         }
         return false;
     }
@@ -208,7 +209,7 @@ public class PlaywrightActions {
 
     public String executeOnWebAndReturnString(Object... args) {
         if (!isPlaywrightStepPassed) {
-            ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return "";
         }
         String value = executeOnWebAndReturnObject(args).toString();
@@ -216,14 +217,14 @@ public class PlaywrightActions {
             TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, null);
             testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, null);
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " returned " + value);
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
         return value;
     }
 
     public boolean executeOnWebAndReturnBoolean(Object... args) {
         if (!(args.length > 0) || isPlaywrightStepPassed) {
         } else if (!isPlaywrightStepPassed) {
-            ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return false;
         }
         return Boolean.parseBoolean(executeOnWebAndReturnObject(args).toString());
@@ -313,7 +314,7 @@ public class PlaywrightActions {
             return false;
         }
         if (isPlaywrightStepPassed && !isScreenshotAtEachStepEnabled)
-            ReportUtility.reportPass(GeneralUtility.getMethodStyleStepName(args) + " performed successfully.");
+            ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {
             ReportUtility.REPORT_STATUS status = isPlaywrightStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
             TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, null);

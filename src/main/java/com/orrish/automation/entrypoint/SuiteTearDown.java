@@ -1,6 +1,5 @@
 package com.orrish.automation.entrypoint;
 
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class SuiteTearDown {
 
         junitString.append("</testsuites>");
 
-        GeneralUtility.createFile("junitResult.xml", junitString);
+        GeneralSteps.createFile("junitResult.xml", junitString.toString());
 
         if (junitString.toString().contains("<a "))
             System.out.println("ERROR : One of Fitnesse test names has html link preventing from generating unit report properly. Please correct it.");

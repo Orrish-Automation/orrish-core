@@ -1,8 +1,9 @@
 package com.orrish.automation.appiumselenium;
 
+import com.google.common.collect.ImmutableMap;
+import com.orrish.automation.entrypoint.GeneralSteps;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.model.TestStepReportModel;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
@@ -23,6 +24,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
+import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
 import static com.orrish.automation.entrypoint.SetUp.*;
 
@@ -50,8 +53,23 @@ public class SeleniumAppiumActions {
                 desiredCapabilities.setBrowserName(BrowserType.SAFARI);
                 break;
         }
+        //This check is for Selenoid grid execution
+        if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
+            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
+            String videoName = testName + "_" + SetUp.browser + browserVersion;
+            desiredCapabilities.setCapability("videoName", videoName + ".mp4");
+        }
         if (executionCapabilities.size() > 0) {
-            executionCapabilities.forEach(desiredCapabilities::setCapability);
+            executionCapabilities.entrySet().forEach(e -> {
+                String key = e.getKey();
+                String value = e.getValue().trim().toLowerCase();
+                if (value.contentEquals("true") || value.contentEquals("false"))
+                    desiredCapabilities.setCapability(key, Boolean.parseBoolean(value));
+                else if (GeneralSteps.isOnlyDigits(value))
+                    desiredCapabilities.setCapability(key, Integer.parseInt(value));
+                else
+                    desiredCapabilities.setCapability(key, value);
+            });
         }
 
         if (browserVersion != null && browserVersion.trim().length() > 1)
@@ -117,24 +135,29 @@ public class SeleniumAppiumActions {
         return true;
     }
 
-    protected boolean navigateTo(String url) {
+    protected boolean inBrowserNavigateTo(String url) {
         webDriver.navigate().to(url);
         webDriver.manage().window().maximize();
         return true;
     }
 
-    protected boolean navigateBackInWeb() {
+    protected boolean inBrowserNavigateBack() {
         return pageMethods.navigateBack(webDriver);
     }
 
-    protected boolean refreshPage() {
-        return pageMethods.refreshPage();
+    protected boolean refreshWebPage() {
+        return pageMethods.refreshWebPage();
+    }
+
+    protected boolean closeBrowser() {
+        webDriver.close();
+        return true;
     }
 
     protected boolean takeWebScreenshotWithText(String text) {
         if (isScreenshotAtEachStepEnabled) {
             if (screenshotDelayInSeconds > 0) {
-                GeneralUtility.waitSeconds(screenshotDelayInSeconds);
+                waitSeconds(screenshotDelayInSeconds);
             }
             String testName = getCurrentTestName().replace(" ", "");
             String screenshotName = testName + "_Step" + ++stepCounter;
@@ -145,7 +168,7 @@ public class SeleniumAppiumActions {
 
     public String executeOnWebAndReturnString(Object... args) {
         if (!isWebStepPassed) {
-            ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return "";
         }
         String value = executeOnWebAndReturnObject(args).toString();
@@ -153,13 +176,13 @@ public class SeleniumAppiumActions {
             TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, null);
             testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, webDriver);
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " returned " + value);
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
         return value;
     }
 
     public String executeOnMobileAndReturnString(Object... args) {
         if (!isMobileStepPassed) {
-            ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return "";
         }
         String value = executeOnMobileAndReturnObject(args).toString();
@@ -167,7 +190,7 @@ public class SeleniumAppiumActions {
             TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, null);
             testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, appiumDriver);
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " returned " + value);
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
         return value;
     }
 
@@ -175,7 +198,7 @@ public class SeleniumAppiumActions {
         if (isWebStepPassed) {
             return Boolean.parseBoolean(executeOnWebAndReturnObject(args).toString());
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
         return false;
     }
 
@@ -183,7 +206,7 @@ public class SeleniumAppiumActions {
         if (isMobileStepPassed) {
             return Boolean.parseBoolean(executeOnMobileAndReturnObject(args).toString());
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
         return false;
     }
 
@@ -199,8 +222,8 @@ public class SeleniumAppiumActions {
                 case "closeAppOnDevice":
                     isMobileStepPassed = closeAppOnDevice();
                     break;
-                case "goBackToPreviousPageInMobile":
-                    isMobileStepPassed = goBackToPreviousPageInMobile();
+                case "inMobileGoBackToPreviousPage":
+                    isMobileStepPassed = inMobileGoBackToPreviousPage();
                     break;
                 case "pressHomeKey":
                     isMobileStepPassed = pressHomeKey();
@@ -258,7 +281,16 @@ public class SeleniumAppiumActions {
                     isWebStepPassed = launchBrowserAndNavigateTo(args[1].toString());
                     break;
                 case "inBrowserNavigateTo":
-                    isWebStepPassed = navigateTo(args[1].toString());
+                    isWebStepPassed = inBrowserNavigateTo(args[1].toString());
+                    break;
+                case "inBrowserNavigateBack":
+                    isWebStepPassed = inBrowserNavigateBack();
+                    break;
+                case "closeBrowser":
+                    isWebStepPassed = closeBrowser();
+                    break;
+                case "refreshWebPage":
+                    isWebStepPassed = refreshWebPage();
                     break;
                 case "maximizeTheWindow":
                     isWebStepPassed = pageMethods.maximizeTheWindow();
@@ -352,7 +384,7 @@ public class SeleniumAppiumActions {
 
     private void reportExecutionStatus(boolean isStepPassed, Object[] args, RemoteWebDriver remoteWebDriver) {
         if (isStepPassed && !isScreenshotAtEachStepEnabled)
-            ReportUtility.reportPass(GeneralUtility.getMethodStyleStepName(args) + " performed successfully.");
+            ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {
             ReportUtility.REPORT_STATUS status = isStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
             TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, null);
@@ -362,7 +394,7 @@ public class SeleniumAppiumActions {
 
     private boolean reportException(RemoteWebDriver remoteWebDriver, Object[] args, Exception ex) {
         if (remoteWebDriver == null) {
-            ReportUtility.reportFail(GeneralUtility.getMethodStyleStepName(args) + " could not be performed.");
+            ReportUtility.reportFail(getMethodStyleStepName(args) + " could not be performed.");
             ReportUtility.reportExceptionDebug(ex);
         } else {
             TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, ex);
@@ -382,17 +414,21 @@ public class SeleniumAppiumActions {
         return true;
     }
 
-    public boolean goBackToPreviousPageInMobile() {
+    public boolean inMobileGoBackToPreviousPage() {
         return pageMethods.navigateBack(appiumDriver);
     }
 
     public boolean pressHomeKey() {
-        ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
+        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
+        else if (appiumDriver.getPlatformName().toLowerCase().contains("ios"))
+            appiumDriver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
         return true;
     }
 
     public boolean pressBackKey() {
-        ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
+        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
         return true;
     }
 

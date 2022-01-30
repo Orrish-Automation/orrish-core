@@ -38,12 +38,12 @@ Database Steps
 -------------
 |Does DB query|Select NAME from USER where ID=$value|return|someValue|
 |Does DB query|Select country from countries Where id=1|return one of|success,check later|
-|Verify DB query result of |Select * from country where id=1|should have|$expectedValue|
-|$value=|Run database query|Select * from country where id=1|
-|$value=|Run database command |UPDATE USER SET NAME=NULL WHERE ID = 1|
-|$value=|Run query|Select * from countries|and return list as string|
-|$value=|Run query|Select * from countries|and return list|
-|$value=|Wait till the Db query|Select NAME from users where name=surat|returns value up to|20|seconds|
+|Does DB query|Select * from country where id=1|result contain|$expectedValue|
+|$value=|Run DB query|Select * from country where id=1|and get single value|
+|$value=|Run DB query|Select * from countries|and return list as string|
+|$value=|Run DB query|Select * from countries|and return list|
+|$value=|Wait till DB query|Select NAME from users where name=surat|returns value waiting up to|20|seconds|
+|$value=|Run DB command |UPDATE USER SET NAME=NULL WHERE ID = 1|
 |$value=|Get first document from mongo DB for collection|collectionName|
 |$value=|Get first document from mongo DB for collection|collectionName|with criteria|{city:{$eq:\"Value\"}}|
 |$value=|Update mongo DB for collection|terminalCluster|set|country=US|for criteria|{city:\"Value\"}|
@@ -54,6 +54,8 @@ General Steps
 |$value=|echo|some value|
 |Download from url|http://someurl/sample.png|and save as|sample.png|
 |$value=|Concatenate|string1|and|string2|
+|Is|4567|only digits|
+|Close browser|
 |$value|Get sum of integer values in list|[34,23,67]|
 |$value=|Get sum of decimal values in list|[34.56,345.56,1.01]|
 |$value= |Get|6 |character random alpha numeric string|
@@ -86,6 +88,8 @@ Browser Steps
 -------------
 |Launch browser and navigate to|http://someurl|
 |In browser navigate to|http://someurl|
+|In browser navigate back|
+|Refresh web page|
 |Maximize the window|
 |Take web screenshot with text|
 |Click|#btn-sample|for|Next button|
@@ -116,7 +120,7 @@ Mobile Steps
 |Launch app on device|
 |Take mobile screenshot with text|some text|
 |Close app on device|
-|Go back to previous page in mobile|
+|In mobile go back to previous page|
 |Press home key|
 |Press back key|
 |Swipe once vertically|

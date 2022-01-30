@@ -1,7 +1,6 @@
 package com.orrish.automation.entrypoint;
 
 import com.aventstack.extentreports.ExtentTest;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ExtentReportUtility;
 import com.orrish.automation.utility.report.ReportPortalUtility;
 import com.orrish.automation.utility.report.ReportUtility;
@@ -10,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static com.orrish.automation.entrypoint.GeneralSteps.camelCaseToWords;
 
 public class ReportSteps {
 
@@ -33,7 +34,7 @@ public class ReportSteps {
     }
 
     public static boolean setSuiteName(String suiteName) {
-        suiteName = GeneralUtility.camelCaseToWords(suiteName);
+        suiteName = camelCaseToWords(suiteName);
         suiteCreated = true;
         if (suiteNode == null || !suiteNode.getModel().getName().equals(suiteName)) {
             suiteNode = ExtentReportUtility.getInstance().createTest(suiteName);
@@ -49,7 +50,7 @@ public class ReportSteps {
     public static boolean setChildNode(String testName) {
         if (suiteNode == null)
             return false;
-        testName = GeneralUtility.camelCaseToWords(testName);
+        testName = camelCaseToWords(testName);
         childNode = suiteNode.createNode(testName);
         return true;
     }
@@ -60,7 +61,7 @@ public class ReportSteps {
             setSuiteName(suiteName);
             testName = testName.split("::")[1].trim();
         }
-        testName = GeneralUtility.camelCaseToWords(testName);
+        testName = camelCaseToWords(testName);
         if (childNode != null) {
             currentTest = childNode.createNode(testName);
         } else if (suiteCreated) {
@@ -85,18 +86,18 @@ public class ReportSteps {
         return ReportPortalUtility.getInstance().isReportPortalEnabled();
     }
 
-    public boolean writeInReport(String valueToWrite) {
+    public static boolean writeInReport(String valueToWrite) {
         ReportUtility.reportInfo(valueToWrite);
         return true;
     }
 
     //Effective when run after a scenario in decision table
-    public boolean updateReport() {
+    public static boolean updateReport() {
         ReportUtility.updateReport();
         return true;
     }
 
-    public boolean showImageWithText(String url, String text) {
+    public static boolean showImageWithText(String url, String text) {
         ReportUtility.reportWithImage(url, ReportUtility.REPORT_STATUS.INFO, text);
         return true;
     }

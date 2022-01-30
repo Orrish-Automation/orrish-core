@@ -14,10 +14,9 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportPortalUtility;
 import com.orrish.automation.utility.report.ReportUtility;
-import com.orrish.automation.utility.verification.VerifyAndReportUtility;
+import com.orrish.automation.utility.verification.GeneralAndAPIVerifyAndReportUtility;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
@@ -26,9 +25,9 @@ import io.restassured.specification.RequestSpecification;
 import java.io.IOException;
 import java.util.*;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.getMapFromString;
 import static com.orrish.automation.entrypoint.GeneralSteps.replaceStringWithIn;
 import static com.orrish.automation.entrypoint.SetUp.jsonRequestTemplate;
-import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 
@@ -63,7 +62,7 @@ public class APISteps {
     //doNotPass will not pass this node
     //null will pass null
     public String replaceDataInJsonTemplateWith(String keyValueAsString) {
-        Map mapFromString = GeneralUtility.getMapFromString(keyValueAsString, "=");
+        Map mapFromString = getMapFromString(keyValueAsString, "=");
         return getModifiedRequest(mapFromString, jsonRequestTemplate);
     }
 
@@ -134,9 +133,11 @@ public class APISteps {
     }
 
     public boolean callPOSTWithRequest(String requestBody) {
-        requestBody = requestBody.replace("<pre>", "").replace("</pre>", "").replace("<br/>", "").trim();
-        if (requestBody.startsWith("\n"))
-            requestBody = requestBody.replaceFirst("\n", "").trim();
+        if (requestBody != null) {
+            requestBody = requestBody.replace("<pre>", "").replace("</pre>", "").replace("<br/>", "").trim();
+            if (requestBody.startsWith("\n"))
+                requestBody = requestBody.replaceFirst("\n", "").trim();
+        }
         return callAPIWithRequest(requestBody, "POST");
     }
 
@@ -250,19 +251,23 @@ public class APISteps {
     }
 
     public boolean isResponseJsonEqualTo(String expectedResponseString) {
-        return VerifyAndReportUtility.verifyJsons(apiResponse, expectedResponseString);
+        return GeneralAndAPIVerifyAndReportUtility.verifyJsons(apiResponse, expectedResponseString);
     }
 
     public boolean verifyValues(String responseToVerify) {
-        return VerifyAndReportUtility.verifyValues(responseToVerify);
+        return GeneralAndAPIVerifyAndReportUtility.verifyValues(responseToVerify);
     }
 
     public boolean verifyResponseFor(String responseToVerify) {
-        return VerifyAndReportUtility.verifyResponseFor(apiResponse, responseToVerify);
+        return GeneralAndAPIVerifyAndReportUtility.verifyResponseFor(apiResponse, responseToVerify);
     }
 
     public boolean verifyForInJsonString(String responseToVerify, String json) {
-        return VerifyAndReportUtility.verifyResponseStringFor(json, responseToVerify);
+        return GeneralAndAPIVerifyAndReportUtility.verifyResponseStringFor(json, responseToVerify);
+    }
+
+    public boolean verifyObjectNodeCount(String node, String count) {
+        return GeneralAndAPIVerifyAndReportUtility.verifyObjectNodeCount(apiResponse, node, count.trim());
     }
 
     public List getAllValuesOfInList(String exactNode, String parentNode) {

@@ -1,7 +1,7 @@
 package com.orrish.automation.utility.verification;
 
+import com.orrish.automation.entrypoint.GeneralSteps;
 import com.orrish.automation.model.VerificationResultModel;
-import com.orrish.automation.utility.GeneralUtility;
 import io.restassured.response.Response;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -11,10 +11,10 @@ import java.util.*;
 
 import static io.restassured.path.json.JsonPath.from;
 
-public class VerificationUtility {
+public class GeneralAndAPIVerifiyUtility {
 
     public static VerificationResultModel verifyValues(String responseToVerify) {
-        Map<String, String> valueToVerify = GeneralUtility.getMapFromString(responseToVerify, "=");
+        Map<String, String> valueToVerify = GeneralSteps.getMapFromString(responseToVerify, "=");
         Map<Integer, VerificationResultModel> eachVerificationResult = new HashMap<>();
         Set<String> keys = valueToVerify.keySet();
         boolean finalVerificationResult = true;
@@ -192,6 +192,24 @@ public class VerificationUtility {
         return verifyConditionAndReturn(actualValue.contentEquals(expectedValue.trim()),
                 "Successfully verified " + node + ". It was :\"" + actualValue + "\"",
                 node + " verification failed. Actual: \"" + actualValue + "\" Expected: \"" + expectedValue + "\"");
+    }
+
+    public static VerificationResultModel verifyObjectNodeCount(Response response, String node, String count) {
+        Map<String, Object> actualValue = from(response.getBody().print()).getJsonObject(node);
+        int expectedCount = Integer.parseInt(count.substring(1));
+        boolean isPassed;
+        if (count.startsWith(">")) {
+            isPassed = actualValue.size() > expectedCount;
+        } else if (count.startsWith("<")) {
+            isPassed = actualValue.size() < expectedCount;
+        } else if (count.startsWith("=")) {
+            isPassed = actualValue.size() == expectedCount;
+        } else {
+            return new VerificationResultModel(false, "Please get the condition as >1 or <2 or =3");
+        }
+        return verifyConditionAndReturn(isPassed,
+                node + " items verification passed. It was " + count,
+                node + " items verification failed. It was " + actualValue.size() + " but expected" + count);
     }
 
     public static boolean compareValues(String expectedCountString, String actualValueString) throws Exception {
