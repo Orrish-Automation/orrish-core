@@ -2,7 +2,6 @@ package com.orrish.automation.appiumselenium;
 
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.model.TestStepReportModel;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
@@ -23,6 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
+import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
 import static com.orrish.automation.entrypoint.SetUp.*;
 
@@ -134,7 +135,7 @@ public class SeleniumAppiumActions {
     protected boolean takeWebScreenshotWithText(String text) {
         if (isScreenshotAtEachStepEnabled) {
             if (screenshotDelayInSeconds > 0) {
-                GeneralUtility.waitSeconds(screenshotDelayInSeconds);
+                waitSeconds(screenshotDelayInSeconds);
             }
             String testName = getCurrentTestName().replace(" ", "");
             String screenshotName = testName + "_Step" + ++stepCounter;
@@ -145,7 +146,7 @@ public class SeleniumAppiumActions {
 
     public String executeOnWebAndReturnString(Object... args) {
         if (!isWebStepPassed) {
-            ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return "";
         }
         String value = executeOnWebAndReturnObject(args).toString();
@@ -153,13 +154,13 @@ public class SeleniumAppiumActions {
             TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, null);
             testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, webDriver);
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " returned " + value);
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
         return value;
     }
 
     public String executeOnMobileAndReturnString(Object... args) {
         if (!isMobileStepPassed) {
-            ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return "";
         }
         String value = executeOnMobileAndReturnObject(args).toString();
@@ -167,7 +168,7 @@ public class SeleniumAppiumActions {
             TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, null);
             testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, appiumDriver);
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " returned " + value);
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
         return value;
     }
 
@@ -175,7 +176,7 @@ public class SeleniumAppiumActions {
         if (isWebStepPassed) {
             return Boolean.parseBoolean(executeOnWebAndReturnObject(args).toString());
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
         return false;
     }
 
@@ -183,7 +184,7 @@ public class SeleniumAppiumActions {
         if (isMobileStepPassed) {
             return Boolean.parseBoolean(executeOnMobileAndReturnObject(args).toString());
         }
-        ReportUtility.reportInfo(GeneralUtility.getMethodStyleStepName(args) + " ignored due to last failure.");
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
         return false;
     }
 
@@ -352,7 +353,7 @@ public class SeleniumAppiumActions {
 
     private void reportExecutionStatus(boolean isStepPassed, Object[] args, RemoteWebDriver remoteWebDriver) {
         if (isStepPassed && !isScreenshotAtEachStepEnabled)
-            ReportUtility.reportPass(GeneralUtility.getMethodStyleStepName(args) + " performed successfully.");
+            ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {
             ReportUtility.REPORT_STATUS status = isStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
             TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, null);
@@ -362,7 +363,7 @@ public class SeleniumAppiumActions {
 
     private boolean reportException(RemoteWebDriver remoteWebDriver, Object[] args, Exception ex) {
         if (remoteWebDriver == null) {
-            ReportUtility.reportFail(GeneralUtility.getMethodStyleStepName(args) + " could not be performed.");
+            ReportUtility.reportFail(getMethodStyleStepName(args) + " could not be performed.");
             ReportUtility.reportExceptionDebug(ex);
         } else {
             TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, ex);

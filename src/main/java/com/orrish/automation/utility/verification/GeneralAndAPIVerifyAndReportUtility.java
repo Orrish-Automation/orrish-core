@@ -1,7 +1,6 @@
 package com.orrish.automation.utility.verification;
 
 import com.orrish.automation.model.VerificationResultModel;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 import io.restassured.response.Response;
 
@@ -9,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class VerifyAndReportUtility {
+import static com.orrish.automation.entrypoint.GeneralSteps.getMapFromString;
+
+public class GeneralAndAPIVerifyAndReportUtility {
 
     public static boolean verifyValues(String responseToVerify) {
-        VerificationResultModel verificationResultModel = VerificationUtility.verifyValues(responseToVerify);
+        VerificationResultModel verificationResultModel = GeneralAndAPIVerifiyUtility.verifyValues(responseToVerify);
         Map<Integer, VerificationResultModel> multiStepResult = verificationResultModel.getMultiStepResult();
         Set<Integer> keysOfSteps = multiStepResult.keySet();
         for (Integer key : keysOfSteps) {
@@ -24,43 +25,43 @@ public class VerifyAndReportUtility {
     }
 
     public static boolean verifyJsons(Response actualResponse, String expectedResponseString) {
-        return executeAndReport(VerificationUtility.verifyJsons(actualResponse, expectedResponseString));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.verifyJsons(actualResponse, expectedResponseString));
     }
 
     public static boolean isValueEqual(String node, String string1, String string2) {
-        return executeAndReport(VerificationUtility.isValueEqual(node, string1, string2));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.isValueEqual(node, string1, string2));
     }
 
     public static boolean isListEqual(List<String> list1, List<String> list2) {
-        return executeAndReport(VerificationUtility.isListEqual(list1, list2));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.isListEqual(list1, list2));
     }
 
     public static boolean doesContain(String string1, String string2) {
-        return executeAndReport(VerificationUtility.doesContain(string1, string2));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.doesContain(string1, string2));
     }
 
     public static boolean doesContainByIgnoringCase(String string1, String string2) {
-        return executeAndReport(VerificationUtility.doesContainByIgnoringCase(string1, string2));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.doesContainByIgnoringCase(string1, string2));
     }
 
     public static boolean doesStartWith(String string1, String string2) {
-        return executeAndReport(VerificationUtility.doesStartWith(string1, string2));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.doesStartWith(string1, string2));
     }
 
     public static boolean doesMatchPattern(String string1, String string2) {
-        return executeAndReport(VerificationUtility.doesMatchPattern(string1, string2));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.doesMatchPattern(string1, string2));
     }
 
     public static boolean isOneOf(String string1, List<String> stringList) {
-        return executeAndReport(VerificationUtility.isOneOf(string1, stringList));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.isOneOf(string1, stringList));
     }
 
     public static boolean isValueInIs(String value, Map values, String expectedValue) {
-        return executeAndReport(VerificationUtility.isValueInIs(value, values, expectedValue));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.isValueInIs(value, values, expectedValue));
     }
 
     public static boolean isValueInIsNot(String value, Map values, String expectedValue) {
-        return executeAndReport(VerificationUtility.isValueInIsNot(value, values, expectedValue));
+        return executeAndReport(GeneralAndAPIVerifiyUtility.isValueInIsNot(value, values, expectedValue));
     }
 
     public static boolean verifyResponseFor(Response response, String responseToVerify) {
@@ -72,7 +73,7 @@ public class VerifyAndReportUtility {
     }
 
     private static boolean verifyResponseFor(Response response, String responseString, String responseToVerify) {
-        Map<String, String> valueToVerify = GeneralUtility.getMapFromString(responseToVerify, "=");
+        Map<String, String> valueToVerify = getMapFromString(responseToVerify, "=");
         Set<String> keys = valueToVerify.keySet();
         for (String key : keys) {
             if (valueToVerify.get(key).toLowerCase().trim().contains("donotverify")) {
@@ -85,8 +86,8 @@ public class VerifyAndReportUtility {
         VerificationResultModel verificationResultModel;
         try {
             verificationResultModel = response != null
-                    ? VerificationUtility.verifyResponseFor(response, valueToVerify)
-                    : VerificationUtility.verifyResponseStringFor(responseString, valueToVerify);
+                    ? GeneralAndAPIVerifiyUtility.verifyResponseFor(response, valueToVerify)
+                    : GeneralAndAPIVerifiyUtility.verifyResponseStringFor(responseString, valueToVerify);
         } catch (Exception ex) {
             ReportUtility.reportFail("Response may be invalid.");
             ReportUtility.reportExceptionDebug(ex);
@@ -100,6 +101,10 @@ public class VerifyAndReportUtility {
             ReportUtility.report(status, eachVerification.getVerificationResultString());
         }
         return verificationResultModel.getOverallResult();
+    }
+
+    public static boolean verifyObjectNodeCount(Response response, String node, String count) {
+        return executeAndReport(GeneralAndAPIVerifiyUtility.verifyObjectNodeCount(response, node, count));
     }
 
     private static boolean executeAndReport(VerificationResultModel verificationResultModel) {

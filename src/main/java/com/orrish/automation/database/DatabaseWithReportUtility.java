@@ -5,13 +5,14 @@ import com.orrish.automation.utility.report.ReportUtility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.orrish.automation.entrypoint.SetUp.databaseService;
 import static com.orrish.automation.entrypoint.SetUp.mongoDbConnectionString;
 
 public class DatabaseWithReportUtility {
 
-    public static boolean runQueryAndCompareResult(String query, List expectedValue) {
+    public static boolean isDbQueryResultIn(String query, List expectedValue) {
         if (expectedValue.get(0).toString().trim().toLowerCase().contentEquals("donotverify")) {
             ReportUtility.reportInfo("DB query not run. It is marked not to be verified.");
             return true;
@@ -31,9 +32,18 @@ public class DatabaseWithReportUtility {
         }
     }
 
-    public static String runQuery(String query) {
-        List values = runQueryOrCommand(query, false);
-        return values.size() > 0 ? String.valueOf(values.get(0)) : "";
+    public static String runQueryAndReturnString(String query) {
+        List<Map<String, Object>> values = runQueryOrCommand(query, false);
+        if (values == null || values.size() == 0)
+            return "No Data from database.";
+        if(values.size() > 1)
+            return "Database returned more than one row. Please refine your query.";
+        if(!(values.get(0) instanceof java.util.Map))
+            return String.valueOf(values.get(0));
+        if (values.get(0).keySet().size() > 1)
+            return "Database returned more than one column. Please refine your query.";
+        String key = values.get(0).keySet().stream().findFirst().get();
+        return values.get(0).get(key).toString();
     }
 
     public static String runCommand(String command) {
@@ -51,7 +61,9 @@ public class DatabaseWithReportUtility {
                 return valueToReturn;
             } else {
                 List valueFromDatabase = databaseService.runQuery(queryOrCommandToRun);
-                ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueFromDatabase);
+                if (SetUp.printDatabaseQueryInReport) {
+                    ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueFromDatabase);
+                }
                 return valueFromDatabase;
             }
         } catch (Exception ex) {

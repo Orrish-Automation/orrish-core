@@ -1,13 +1,14 @@
 package com.orrish.automation.entrypoint;
 
 import com.orrish.automation.database.DatabaseWithReportUtility;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportUtility;
-import com.orrish.automation.utility.verification.VerifyAndReportUtility;
+import com.orrish.automation.utility.verification.GeneralAndAPIVerifyAndReportUtility;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 
 public class DatabaseSteps {
 
@@ -24,49 +25,60 @@ public class DatabaseSteps {
     }
 
     public boolean doesDBQueryReturnOneOf(String query, List expectedValue) {
-        return !shouldDBStepBeExecuted() || DatabaseWithReportUtility.runQueryAndCompareResult(query, expectedValue);
+        return !shouldDBStepBeExecuted() || DatabaseWithReportUtility.isDbQueryResultIn(query, expectedValue);
     }
 
-    public boolean verifyDBQueryResultOfShouldHave(String query, String valueToCompare) {
+    public boolean doesDBQueryResultContain(String query, String valueToCompare) {
         if (shouldDBStepBeExecuted()) {
             if (valueToCompare.trim().toLowerCase().contentEquals("donotverify")) {
                 ReportUtility.reportInfo("Not running query as it is marked to be not verified.");
                 return true;
             }
-            String valueFromDatabase = String.valueOf(DatabaseWithReportUtility.runQuery(query));
-            return VerifyAndReportUtility.doesContain(valueFromDatabase, valueToCompare);
+            String valueFromDatabase = String.valueOf(DatabaseWithReportUtility.runQueryAndReturnString(query));
+            return GeneralAndAPIVerifyAndReportUtility.doesContain(valueFromDatabase, valueToCompare);
         }
         return true;
     }
 
-    public String runDatabaseQuery(String queryToRun) {
+    public String runDBQueryAndGetSingleValue(String queryToRun) {
         if (shouldDBStepBeExecuted()) {
-            List valueToReturn = runQueryOrCommand(queryToRun, false);
-            return valueToReturn.size() == 0 ? null : String.valueOf(valueToReturn.get(0));
+            return DatabaseWithReportUtility.runQueryAndReturnString(queryToRun);
         }
         return "";
     }
 
-    public String runDatabaseCommand(String commandToRun) {
+    public String runDBQueryAndReturnListAsString(String queryToRun) {
+        return String.valueOf(runDBQueryAndReturnList(queryToRun));
+    }
+
+    public List runDBQueryAndReturnList(String query) {
+        return runQueryOrCommand(query, false);
+    }
+
+    public String waitTillDBQueryReturnsValueWaitingUpToSeconds(String queryToRun, int seconds) {
+        if (shouldDBStepBeExecuted()) {
+            do {
+                //wait a second and try again
+                waitSeconds(1);
+                String dataToBeReturned = String.valueOf(runQueryOrCommand(queryToRun, false).get(0));
+                if (!dataToBeReturned.equals("null")) {
+                    return dataToBeReturned;
+                }
+            } while (--seconds > 0);
+        }
+        return null;
+    }
+
+    public String runDBCommand(String commandToRun) {
         return shouldDBStepBeExecuted()
                 ? String.valueOf(runQueryOrCommand(commandToRun, true).get(0))
                 : "";
     }
 
     private List runQueryOrCommand(String query, boolean isCommand) {
-        List valueToReturn = new ArrayList();
-        valueToReturn.add("");
         return shouldDBStepBeExecuted()
                 ? DatabaseWithReportUtility.runQueryOrCommand(query, isCommand)
-                : valueToReturn;
-    }
-
-    public String runQueryAndReturnListAsString(String queryToRun) {
-        return String.valueOf(runQueryAndReturnList(queryToRun));
-    }
-
-    public List runQueryAndReturnList(String query) {
-        return runQueryOrCommand(query, false);
+                : new ArrayList();
     }
 
     public String getFirstDocumentFromMongoDBForCollectionWithCriteria(String collectionName, String criteria) {
@@ -85,20 +97,6 @@ public class DatabaseSteps {
             if (dataToBeReturned != null)
                 ReportUtility.reportJsonAsInfo("Got first document from mongodb for collection " + collectionName, dataToBeReturned);
             return dataToBeReturned;
-        }
-        return null;
-    }
-
-    public String waitTillTheDbQueryReturnsValueUpToSeconds(String queryToRun, int seconds) {
-        if (shouldDBStepBeExecuted()) {
-            do {
-                //wait a second and try again
-                GeneralUtility.waitSeconds(1);
-                String dataToBeReturned = String.valueOf(runQueryOrCommand(queryToRun, false).get(0));
-                if (!dataToBeReturned.equals("null")) {
-                    return dataToBeReturned;
-                }
-            } while (--seconds > 0);
         }
         return null;
     }

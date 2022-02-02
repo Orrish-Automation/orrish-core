@@ -26,8 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentExtentTest;
-import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class ExtentReportUtility {
 

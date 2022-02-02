@@ -1,6 +1,6 @@
 package com.orrish.automation.utility.report;
 
-import com.orrish.automation.utility.GeneralUtility;
+import com.orrish.automation.entrypoint.GeneralSteps;
 import io.restassured.RestAssured;
 import io.restassured.builder.MultiPartSpecBuilder;
 import io.restassured.http.ContentType;
@@ -26,6 +26,7 @@ public class ReportPortalUtility {
     protected String testItem;
     protected String stepItem;
     String launchId;
+
     private ReportPortalUtility() {
     }
 
@@ -209,7 +210,7 @@ public class ReportPortalUtility {
 
     public void reportPortalLogStepWithJSON(REPORT_PORTAL_LOG_TYPE level, String message, String jsonBody) {
 
-        File file = GeneralUtility.createFile("jsonBody.txt", jsonBody);
+        File file = GeneralSteps.createFile("jsonBody.txt", jsonBody);
         String url = reportPortalBaseUrl + reportPortalProject + "log";
         String currentTime = getCurrentTime();
         String body = "[{ \"launchUuid\": \"" + launchId + "\"," +

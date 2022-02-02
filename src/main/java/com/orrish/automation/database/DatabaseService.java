@@ -15,13 +15,26 @@ public class DatabaseService {
     private static DatabaseService databaseService;
 
     static {
-        basicDataSource.setDriverClassName(SetUp.databaseDriverClassName);
+        basicDataSource.setDriverClassName(getDriverClassName());
         basicDataSource.setUrl(SetUp.databaseConnectionString);
         basicDataSource.setUsername(SetUp.databaseUserName);
         basicDataSource.setPassword(SetUp.databasePassword);
         basicDataSource.setMinIdle(5);
         basicDataSource.setMaxIdle(10);
         basicDataSource.setMaxOpenPreparedStatements(100);
+    }
+
+    private static String getDriverClassName() {
+        if (SetUp.databaseConnectionString.contains("mysql")) {
+            return "com.mysql.cj.jdbc.Driver";
+        } else if (SetUp.databaseConnectionString.contains("oracle")) {
+            return "oracle.jdbc.driver.OracleDriver";
+        } else if (SetUp.databaseConnectionString.contains("postgresql")) {
+            return "org.postgresql.Driver";
+        } else if (SetUp.databaseConnectionString.contains("snowflake")) {
+            return "com.snowflake.client.jdbc.SnowflakeDriver";
+        }
+        return "";
     }
 
     private DatabaseService() {
@@ -45,7 +58,7 @@ public class DatabaseService {
         } finally {
             basicDataSource = new BasicDataSource();
         }
-        basicDataSource.setDriverClassName(SetUp.databaseDriverClassName);
+        basicDataSource.setDriverClassName(getDriverClassName());
         basicDataSource.setUrl(SetUp.databaseConnectionString);
         basicDataSource.setUsername(SetUp.databaseUserName);
         basicDataSource.setPassword(SetUp.databasePassword);
@@ -61,23 +74,15 @@ public class DatabaseService {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int columns = resultSetMetaData.getColumnCount();
-                if (columns == 1) {
-                    List<String> valueToReturn = new ArrayList<>();
-                    while (resultSet.next()) {
-                        valueToReturn.add(resultSet.getString(1));
+                List<Map<String, Object>> resultRows = new ArrayList<>();
+                while (resultSet.next()) {
+                    Map<String, Object> eachRow = new HashMap<>(columns);
+                    for (int i = 1; i <= columns; ++i) {
+                        eachRow.put(resultSetMetaData.getColumnName(i), resultSet.getObject(i));
                     }
-                    return valueToReturn;
-                } else {
-                    List<Map<String, Object>> resultRows = new ArrayList<>();
-                    while (resultSet.next()) {
-                        Map<String, Object> eachRow = new HashMap<>(columns);
-                        for (int i = 1; i <= columns; ++i) {
-                            eachRow.put(resultSetMetaData.getColumnName(i), resultSet.getObject(i));
-                        }
-                        resultRows.add(eachRow);
-                    }
-                    return resultRows;
+                    resultRows.add(eachRow);
                 }
+                return resultRows;
             }
         }
     }

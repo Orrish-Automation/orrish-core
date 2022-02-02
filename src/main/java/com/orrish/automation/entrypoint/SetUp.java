@@ -4,13 +4,14 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.orrish.automation.database.DatabaseService;
-import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.orrish.automation.entrypoint.GeneralSteps.getMapFromString;
 
 public class SetUp {
 
@@ -19,9 +20,9 @@ public class SetUp {
     public static String jsonRequestTemplate;//Template defined which can be replaced with different data in the test case.
 
     //Database
-    public static boolean databaseCheck = false;
+    public static boolean databaseCheck = true;
+    public static boolean printDatabaseQueryInReport = true;
     public static DatabaseService databaseService;
-    public static String databaseDriverClassName;
     public static String databaseConnectionString;
     public static String databaseUserName;
     public static String databasePassword;
@@ -82,12 +83,17 @@ public class SetUp {
     }
 
     public boolean defaultRequestHeaders(String headers) {
-        defaultApiRequestHeaders = GeneralUtility.getMapFromString(headers, "=");
+        defaultApiRequestHeaders = getMapFromString(headers, "=");
         return true;
     }
 
     public boolean jsonRequestTemplate(String templatePassed) {
         jsonRequestTemplate = templatePassed;
+        return true;
+    }
+
+    public boolean printDatabaseQueryInReport(boolean shouldReport) {
+        printDatabaseQueryInReport = shouldReport;
         return true;
     }
 
@@ -110,15 +116,6 @@ public class SetUp {
 
     public boolean databaseConnectionString(String dbConnectionString) {
         databaseConnectionString = dbConnectionString;
-        if (dbConnectionString.contains("mysql")) {
-            databaseDriverClassName = "com.mysql.cj.jdbc.Driver";
-        } else if (dbConnectionString.contains("oracle")) {
-            databaseDriverClassName = "oracle.jdbc.driver.OracleDriver";
-        } else if (dbConnectionString.contains("postgresql")) {
-            databaseDriverClassName = "org.postgresql.Driver";
-        } else if (dbConnectionString.contains("snowflake")) {
-            databaseDriverClassName = "com.snowflake.client.jdbc.SnowflakeDriver";
-        }
         return true;
     }
 
@@ -134,7 +131,7 @@ public class SetUp {
 
     //Common to web and mobile
     public boolean executionCapabilities(String values) {
-        executionCapabilities.putAll(GeneralUtility.getMapFromString(values, "="));
+        executionCapabilities.putAll(getMapFromString(values, "="));
         return true;
     }
 

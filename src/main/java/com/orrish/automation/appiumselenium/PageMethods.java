@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 import static com.orrish.automation.entrypoint.SetUp.defaultWaitTime;
-import static com.orrish.automation.utility.GeneralUtility.waitSeconds;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textMatches;
 
 public class PageMethods {
