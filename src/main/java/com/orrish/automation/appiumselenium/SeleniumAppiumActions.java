@@ -1,5 +1,7 @@
 package com.orrish.automation.appiumselenium;
 
+import com.google.common.collect.ImmutableMap;
+import com.orrish.automation.entrypoint.GeneralSteps;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.model.TestStepReportModel;
 import com.orrish.automation.utility.report.ReportUtility;
@@ -51,8 +53,23 @@ public class SeleniumAppiumActions {
                 desiredCapabilities.setBrowserName(BrowserType.SAFARI);
                 break;
         }
+        //This check is for Selenoid grid execution
+        if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
+            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
+            String videoName = testName + "_" + SetUp.browser + browserVersion;
+            desiredCapabilities.setCapability("videoName", videoName + ".mp4");
+        }
         if (executionCapabilities.size() > 0) {
-            executionCapabilities.forEach(desiredCapabilities::setCapability);
+            executionCapabilities.entrySet().forEach(e -> {
+                String key = e.getKey();
+                String value = e.getValue().trim().toLowerCase();
+                if (value.contentEquals("true") || value.contentEquals("false"))
+                    desiredCapabilities.setCapability(key, Boolean.parseBoolean(value));
+                else if (GeneralSteps.isOnlyDigits(value))
+                    desiredCapabilities.setCapability(key, Integer.parseInt(value));
+                else
+                    desiredCapabilities.setCapability(key, value);
+            });
         }
 
         if (browserVersion != null && browserVersion.trim().length() > 1)
@@ -118,18 +135,23 @@ public class SeleniumAppiumActions {
         return true;
     }
 
-    protected boolean navigateTo(String url) {
+    protected boolean inBrowserNavigateTo(String url) {
         webDriver.navigate().to(url);
         webDriver.manage().window().maximize();
         return true;
     }
 
-    protected boolean navigateBackInWeb() {
+    protected boolean inBrowserNavigateBack() {
         return pageMethods.navigateBack(webDriver);
     }
 
-    protected boolean refreshPage() {
-        return pageMethods.refreshPage();
+    protected boolean refreshWebPage() {
+        return pageMethods.refreshWebPage();
+    }
+
+    protected boolean closeBrowser() {
+        webDriver.close();
+        return true;
     }
 
     protected boolean takeWebScreenshotWithText(String text) {
@@ -200,8 +222,8 @@ public class SeleniumAppiumActions {
                 case "closeAppOnDevice":
                     isMobileStepPassed = closeAppOnDevice();
                     break;
-                case "goBackToPreviousPageInMobile":
-                    isMobileStepPassed = goBackToPreviousPageInMobile();
+                case "inMobileGoBackToPreviousPage":
+                    isMobileStepPassed = inMobileGoBackToPreviousPage();
                     break;
                 case "pressHomeKey":
                     isMobileStepPassed = pressHomeKey();
@@ -259,7 +281,16 @@ public class SeleniumAppiumActions {
                     isWebStepPassed = launchBrowserAndNavigateTo(args[1].toString());
                     break;
                 case "inBrowserNavigateTo":
-                    isWebStepPassed = navigateTo(args[1].toString());
+                    isWebStepPassed = inBrowserNavigateTo(args[1].toString());
+                    break;
+                case "inBrowserNavigateBack":
+                    isWebStepPassed = inBrowserNavigateBack();
+                    break;
+                case "closeBrowser":
+                    isWebStepPassed = closeBrowser();
+                    break;
+                case "refreshWebPage":
+                    isWebStepPassed = refreshWebPage();
                     break;
                 case "maximizeTheWindow":
                     isWebStepPassed = pageMethods.maximizeTheWindow();
@@ -383,17 +414,21 @@ public class SeleniumAppiumActions {
         return true;
     }
 
-    public boolean goBackToPreviousPageInMobile() {
+    public boolean inMobileGoBackToPreviousPage() {
         return pageMethods.navigateBack(appiumDriver);
     }
 
     public boolean pressHomeKey() {
-        ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
+        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
+        else if (appiumDriver.getPlatformName().toLowerCase().contains("ios"))
+            appiumDriver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
         return true;
     }
 
     public boolean pressBackKey() {
-        ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
+        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
         return true;
     }
 

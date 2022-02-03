@@ -6,7 +6,7 @@
 
     <groupId>com.orrish</groupId>
     <artifactId>orrish-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <name>${project.artifactId}</name>
     <description>Test Automation With Central Setup Alone</description>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.6</version>
+            <version>8.0.20</version>
         </dependency>
         <dependency>
             <groupId>net.snowflake</groupId>

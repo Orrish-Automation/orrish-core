@@ -18,12 +18,24 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("inBrowserNavigateTo", url);
     }
 
+    public boolean inBrowserNavigateBack() {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("inBrowserNavigateBack");
+    }
+
+    public boolean refreshWebPage() {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("refreshWebPage");
+    }
+
     public boolean maximizeTheWindow() {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("maximizeTheWindow");
     }
 
     public boolean takeWebScreenshotWithText(String text) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("takeWebScreenshotWithText", text);
+    }
+
+    public boolean closeBrowser(){
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("closeBrowser");
     }
 
     public boolean clickFor(String locator, String description) {

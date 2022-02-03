@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class GeneralSteps {
 
@@ -32,6 +33,8 @@ public class GeneralSteps {
     }
 
     public static String replaceStringWithIn(String valueToFind, String valueToReplace, String stringToActOn) {
+        if (stringToActOn == null)
+            return "Target string is null.";
         stringToActOn = stringToActOn.replace(valueToFind, valueToReplace);
         return stringToActOn;
     }
@@ -54,6 +57,15 @@ public class GeneralSteps {
         int c = a - b;
         ReportUtility.reportInfo(a + "subtracted from " + b + " is: " + c);
         return c;
+    }
+
+    public static boolean isOnlyDigits(String string) {
+        String regex = "[0-9]+";
+        Pattern pattern = Pattern.compile(regex);
+        if (string == null) {
+            return false;
+        }
+        return pattern.matcher(string).matches();
     }
 
     public static String getSumOfIntegerValuesInList(List<String> stringValues) {
@@ -208,7 +220,8 @@ public class GeneralSteps {
         return valueToReturn;
     }
 
-    public static String aggregateValuesWithCommaInThem(String[] lines, int processingNodeNumber, String keyValueSeparatedBy) {
+    public static String aggregateValuesWithCommaInThem(String[] lines, int processingNodeNumber, String
+            keyValueSeparatedBy) {
         StringBuilder valueToReturn = new StringBuilder(lines[processingNodeNumber]);
         for (int i = processingNodeNumber + 1; i < lines.length; i++) {
             if (lines[i].contains(keyValueSeparatedBy) || lines[i].trim().length() == 0 || lines[i].trim().startsWith("</pre>"))

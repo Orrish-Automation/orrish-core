@@ -54,6 +54,8 @@ General Steps
 |$value=|echo|some value|
 |Download from url|http://someurl/sample.png|and save as|sample.png|
 |$value=|Concatenate|string1|and|string2|
+|Is|4567|only digits|
+|Close browser|
 |$value|Get sum of integer values in list|[34,23,67]|
 |$value=|Get sum of decimal values in list|[34.56,345.56,1.01]|
 |$value= |Get|6 |character random alpha numeric string|
@@ -86,6 +88,8 @@ Browser Steps
 -------------
 |Launch browser and navigate to|http://someurl|
 |In browser navigate to|http://someurl|
+|In browser navigate back|
+|Refresh web page|
 |Maximize the window|
 |Take web screenshot with text|
 |Click|#btn-sample|for|Next button|
@@ -116,7 +120,7 @@ Mobile Steps
 |Launch app on device|
 |Take mobile screenshot with text|some text|
 |Close app on device|
-|Go back to previous page in mobile|
+|In mobile go back to previous page|
 |Press home key|
 |Press back key|
 |Swipe once vertically|

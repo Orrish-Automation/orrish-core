@@ -133,9 +133,11 @@ public class APISteps {
     }
 
     public boolean callPOSTWithRequest(String requestBody) {
-        requestBody = requestBody.replace("<pre>", "").replace("</pre>", "").replace("<br/>", "").trim();
-        if (requestBody.startsWith("\n"))
-            requestBody = requestBody.replaceFirst("\n", "").trim();
+        if (requestBody != null) {
+            requestBody = requestBody.replace("<pre>", "").replace("</pre>", "").replace("<br/>", "").trim();
+            if (requestBody.startsWith("\n"))
+                requestBody = requestBody.replaceFirst("\n", "").trim();
+        }
         return callAPIWithRequest(requestBody, "POST");
     }
 
