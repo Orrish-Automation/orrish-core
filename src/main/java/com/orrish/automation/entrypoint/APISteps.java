@@ -63,7 +63,7 @@ public class APISteps {
     //null will pass null
     public String replaceDataInJsonTemplateWith(String keyValueAsString) {
         Map mapFromString = getMapFromString(keyValueAsString, "=");
-        return getModifiedRequest(mapFromString, jsonRequestTemplate);
+        return getModifiedAPIRequest(mapFromString, jsonRequestTemplate);
     }
 
     //This is a plain Java replace functionality to manipulate data for data driven testing
@@ -71,7 +71,7 @@ public class APISteps {
         return replaceStringWithIn(valueToFind, valueToReplace, jsonRequestTemplate);
     }
 
-    public String getModifiedRequest(Map<String, Object> keyValues, String requestAsString) {
+    public String getModifiedAPIRequest(Map<String, Object> keyValues, String requestAsString) {
         try {
             JsonNode node;
             try {
@@ -174,8 +174,7 @@ public class APISteps {
 
     public boolean verifyHTTPStatusCodeIs(int expectedStatusCode) {
         if (apiResponse == null) {
-            String noResponse = "No API response received in previous request. So, HTTP status code could not be verified.";
-            ReportUtility.reportFail(noResponse);
+            ReportUtility.reportFail("No API response received in previous request. So, HTTP status code could not be verified.");
             return false;
         }
         int actualStatusCode = apiResponse.statusCode();
@@ -183,8 +182,7 @@ public class APISteps {
             ReportUtility.reportPass("Verified HTTP status code. It was " + expectedStatusCode);
             return true;
         }
-        String messageToReturn = "Expected status code: " + expectedStatusCode + " Actual status code:" + actualStatusCode;
-        ReportUtility.reportFail(messageToReturn);
+        ReportUtility.reportFail("Expected status code: " + expectedStatusCode + " Actual status code:" + actualStatusCode);
         return false;
     }
 
@@ -202,21 +200,13 @@ public class APISteps {
     public String getFromJsonString(String jsonPath, String jsonString) {
         String valueToReturn = jsonPath + " node not found. Ensure this jsonPath exists in API response.";
         try {
-            valueToReturn = getValueWithoutReporting(jsonPath, jsonString);
+            Object actualValue = JsonPath.parse(jsonString).read(jsonPath);
+            valueToReturn = getStringFromExtractedJsonValue(actualValue);
             ReportUtility.reportInfo(true, jsonPath + " value is :" + valueToReturn);
         } catch (Exception ex) {
             ReportUtility.reportInfo(true, valueToReturn);
         }
         return valueToReturn;
-    }
-
-    public String getValueWithoutReporting(String jsonPath, String jsonString) {
-        Object actualValue = JsonPath.parse(jsonString).read(jsonPath);
-        if (actualValue instanceof ArrayList) {
-            int length = ((ArrayList<?>) actualValue).size();
-            return (length == 1) ? ((ArrayList<?>) actualValue).get(0).toString() : "No unique result found. Total number of such nodes found are : " + length;
-        }
-        return actualValue.toString();
     }
 
     public String getFromResponseCookie(String cookieName) {
@@ -231,6 +221,10 @@ public class APISteps {
         Object actualValue = (apiResponse.header("Content-Type").contains("xml"))
                 ? io.restassured.path.xml.XmlPath.from(responseBodyString).get(jsonPath).toString()
                 : JsonPath.parse(responseBodyString).read(jsonPath);
+        return getStringFromExtractedJsonValue(actualValue);
+    }
+
+    private String getStringFromExtractedJsonValue(Object actualValue) {
         if (actualValue instanceof ArrayList) {
             int length = ((ArrayList<?>) actualValue).size();
             return (length == 1) ? ((ArrayList<?>) actualValue).get(0).toString() : "No unique result found. Total number of such nodes found are : " + length;

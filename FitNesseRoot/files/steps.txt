@@ -56,6 +56,7 @@ General Steps
 |$value=|Concatenate|string1|and|string2|
 |Is|4567|only digits|
 |Close browser|
+|Quit browser|
 |$value|Get sum of integer values in list|[34,23,67]|
 |$value=|Get sum of decimal values in list|[34.56,345.56,1.01]|
 |$value= |Get|6 |character random alpha numeric string|

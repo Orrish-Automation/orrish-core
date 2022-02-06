@@ -1,14 +1,6 @@
 package com.orrish.automation.entrypoint;
 
-import com.orrish.automation.appiumselenium.SeleniumAppiumActions;
-
 public class SeleniumAppiumSteps extends AppiumSteps {
-
-    SeleniumAppiumActions seleniumAppiumActions;
-
-    public SeleniumAppiumSteps() {
-        seleniumAppiumActions = new SeleniumAppiumActions();
-    }
 
     public boolean launchBrowserAndNavigateTo(String url) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("launchBrowserAndNavigateTo", url);
@@ -36,6 +28,10 @@ public class SeleniumAppiumSteps extends AppiumSteps {
 
     public boolean closeBrowser(){
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("closeBrowser");
+    }
+
+    public boolean quitBrowser(){
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("quitBrowser");
     }
 
     public boolean clickFor(String locator, String description) {

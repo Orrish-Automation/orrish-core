@@ -15,13 +15,7 @@ public class DatabaseService {
     private static DatabaseService databaseService;
 
     static {
-        basicDataSource.setDriverClassName(getDriverClassName());
-        basicDataSource.setUrl(SetUp.databaseConnectionString);
-        basicDataSource.setUsername(SetUp.databaseUserName);
-        basicDataSource.setPassword(SetUp.databasePassword);
-        basicDataSource.setMinIdle(5);
-        basicDataSource.setMaxIdle(10);
-        basicDataSource.setMaxOpenPreparedStatements(100);
+        setBasicDataSource();
     }
 
     private static String getDriverClassName() {
@@ -58,6 +52,11 @@ public class DatabaseService {
         } finally {
             basicDataSource = new BasicDataSource();
         }
+        setBasicDataSource();
+        return true;
+    }
+
+    private static void setBasicDataSource() {
         basicDataSource.setDriverClassName(getDriverClassName());
         basicDataSource.setUrl(SetUp.databaseConnectionString);
         basicDataSource.setUsername(SetUp.databaseUserName);
@@ -65,7 +64,6 @@ public class DatabaseService {
         basicDataSource.setMinIdle(5);
         basicDataSource.setMaxIdle(10);
         basicDataSource.setMaxOpenPreparedStatements(100);
-        return true;
     }
 
     public List runQuery(String query) throws Exception {

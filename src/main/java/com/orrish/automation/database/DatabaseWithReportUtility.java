@@ -24,10 +24,10 @@ public class DatabaseWithReportUtility {
         }
         String valueFromDb = String.valueOf(valueListFromDb.get(0));
         if (expectedValue.contains(valueFromDb)) {
-            ReportUtility.reportPass("Database result " + valueFromDb + " is in the expected value " + expectedValue);
+            ReportUtility.reportPass("Database value: " + valueFromDb + System.lineSeparator() + "Expected: " + expectedValue);
             return true;
         } else {
-            ReportUtility.reportFail("Database result " + valueFromDb + " is not in the expected value " + expectedValue);
+            ReportUtility.reportFail("Database value: " + valueFromDb + System.lineSeparator() + "Expected:  " + expectedValue);
             return false;
         }
     }
@@ -36,9 +36,9 @@ public class DatabaseWithReportUtility {
         List<Map<String, Object>> values = runQueryOrCommand(query, false);
         if (values == null || values.size() == 0)
             return "No Data from database.";
-        if(values.size() > 1)
+        if (values.size() > 1)
             return "Database returned more than one row. Please refine your query.";
-        if(!(values.get(0) instanceof java.util.Map))
+        if (!(values.get(0) instanceof java.util.Map))
             return String.valueOf(values.get(0));
         if (values.get(0).keySet().size() > 1)
             return "Database returned more than one column. Please refine your query.";

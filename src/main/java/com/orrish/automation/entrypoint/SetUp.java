@@ -1,6 +1,5 @@
 package com.orrish.automation.entrypoint;
 
-import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.orrish.automation.database.DatabaseService;
@@ -46,7 +45,6 @@ public class SetUp {
     public static String browserVersion;
     //Web only - Playwright
     public static Playwright playwright;
-    public static Browser playwrightBrowser;
     public static Page playwrightPage;
     public static boolean isPlaywrightHeadless;
 
@@ -69,6 +67,10 @@ public class SetUp {
     public static String APP_ACTIVITY;
 
     //General
+    public static boolean isVideoRecordingEnabled() {
+        return executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true");
+    }
+
     public boolean extentReportLocation(String location) {
         ReportUtility.setExtentReportLocation(location);
         return true;

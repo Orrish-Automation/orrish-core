@@ -1,32 +1,58 @@
 package com.orrish.automation.appiumselenium;
 
+import com.google.common.collect.ImmutableMap;
+import com.orrish.automation.entrypoint.GeneralSteps;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.utility.report.ReportUtility;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AndroidMobileCapabilityType;
+import io.appium.java_client.remote.MobileCapabilityType;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.*;
+import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
-import static com.orrish.automation.entrypoint.SetUp.defaultWaitTime;
+import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
+import static com.orrish.automation.entrypoint.SetUp.*;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textMatches;
 
 public class PageMethods {
 
-    protected RemoteWebDriver webDriver;
-    protected AppiumDriver appiumDriver;
     protected WebDriverWait webDriverWait;
     protected WebDriverWait appiumDriverWait;
 
-    public PageMethods() {
-        webDriver = SetUp.webDriver;
-        appiumDriver = SetUp.appiumDriver;
+    private PageMethods() {
+    }
+
+    private static PageMethods pageMethods;
+
+    public static synchronized PageMethods getInstance() {
+        if (pageMethods == null)
+            pageMethods = new PageMethods();
+        return pageMethods;
+    }
+
+
+    public void initializeDriverWait() {
         if (webDriver != null)
             webDriverWait = new WebDriverWait(webDriver, defaultWaitTime);
         if (appiumDriver != null)
@@ -35,13 +61,176 @@ public class PageMethods {
 
     public boolean navigateBack(WebDriver driver) {
         driver.navigate().back();
-        ReportUtility.reportInfo("Navigated backward in page.");
         return true;
     }
 
     public boolean refreshWebPage() {
         webDriver.navigate().refresh();
-        ReportUtility.reportInfo("Refreshed page.");
+        return true;
+    }
+
+    public boolean closeAppOnDevice() {
+        if (appiumDriver != null)
+            appiumDriver.quit();
+        return true;
+    }
+
+    public boolean pressBackKey() {
+        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
+        return true;
+    }
+
+    public boolean pressHomeKey() {
+        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
+        else if (appiumDriver.getPlatformName().toLowerCase().contains("ios"))
+            appiumDriver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
+        return true;
+    }
+
+    public boolean swipeOnceVertically() {
+        Dimension dimension = appiumDriver.manage().window().getSize();
+        int x = dimension.getWidth() / 2;
+        int startY = (int) (dimension.getHeight() * 0.9);
+        int endY = (int) (dimension.getHeight() * 0.1);
+        TouchAction touchAction = new TouchAction(appiumDriver);
+        touchAction.press(PointOption.point(x, startY))
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
+                .moveTo(PointOption.point(x, endY))
+                .release()
+                .perform();
+        return true;
+    }
+
+    public boolean launchBrowserAndNavigateTo(String url) throws MalformedURLException {
+
+        String testName = getCurrentTestName();
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+        desiredCapabilities.setCapability("name", testName);
+        desiredCapabilities.setCapability("acceptInsecureCerts", true);
+
+        switch (browser.trim().toUpperCase()) {
+            case "CHROME":
+                desiredCapabilities.setBrowserName(BrowserType.CHROME);
+                break;
+            case "FIREFOX":
+                desiredCapabilities.setBrowserName(BrowserType.FIREFOX);
+                break;
+            case "SAFARI":
+                desiredCapabilities.setBrowserName(BrowserType.SAFARI);
+                break;
+        }
+        //This check is for Selenoid grid execution
+        if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
+            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
+            String videoName = testName + "_" + SetUp.browser + browserVersion;
+            desiredCapabilities.setCapability("videoName", videoName + ".mp4");
+        }
+        if (executionCapabilities.size() > 0) {
+            executionCapabilities.entrySet().forEach(e -> {
+                String key = e.getKey();
+                String value = e.getValue().trim().toLowerCase();
+                if (value.contentEquals("true") || value.contentEquals("false"))
+                    desiredCapabilities.setCapability(key, Boolean.parseBoolean(value));
+                else if (GeneralSteps.isOnlyDigits(value))
+                    desiredCapabilities.setCapability(key, Integer.parseInt(value));
+                else
+                    desiredCapabilities.setCapability(key, value);
+            });
+        }
+
+        if (browserVersion != null && browserVersion.trim().length() > 1)
+            desiredCapabilities.setVersion(browserVersion);
+        webDriver = new RemoteWebDriver(new URL(seleniumGridURL), desiredCapabilities);
+        webDriver.setFileDetector(new LocalFileDetector());
+        webDriver.navigate().to(url);
+        if (browserWidth > 0 && browserHeight > 0) {
+            webDriver.manage().window().setSize(new Dimension(browserWidth, browserHeight));
+        } else {
+            webDriver.manage().window().maximize();
+        }
+        initializeDriverWait();
+        return true;
+    }
+
+    public boolean launchAppOnDevice() throws MalformedURLException {
+
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("autoGrantPermissions", true);
+        capabilities.setCapability("allowTestPackages", true);
+        capabilities.setCapability("fullReset", true);
+        if (platformName != null) {
+            capabilities.setCapability("platformName", platformName);
+        }
+        if (deviceName != null) {
+            capabilities.setCapability("deviceName", deviceName);
+        }
+        if (platformVersion != null) {
+            capabilities.setCapability("platformVersion", platformVersion);
+        }
+        if (app != null) {
+            capabilities.setCapability("app", app);
+        }
+        if (automationName != null) {
+            capabilities.setCapability("automationName", automationName);
+        }
+        if (APP_ACTIVITY != null) {
+            capabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, APP_PACKAGE);
+            capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, APP_ACTIVITY);
+        }
+        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 300);
+        if (xcodeOrgId != null) {
+            capabilities.setCapability("xcodeOrgId", xcodeOrgId);
+        }
+        if (xcodeSigningId != null) {
+            capabilities.setCapability("xcodeSigningId", xcodeSigningId);
+        }
+        if (udid != null) {
+            capabilities.setCapability("udid", udid);
+        }
+        if (executionCapabilities.size() > 0) {
+            executionCapabilities.forEach((key, value) -> capabilities.setCapability(key, value));
+        }
+        if (platformName.toLowerCase().contains("android")) {
+            appiumDriver = new AndroidDriver(new URL(appiumServerURL), capabilities);
+        } else {
+            appiumDriver = new IOSDriver(new URL(appiumServerURL), capabilities);
+        }
+        initializeDriverWait();
+        return true;
+    }
+
+    protected boolean takeMobileScreenshotWithText(String text) {
+        ReportUtility.reportWithScreenshot(appiumDriver, text, ReportUtility.REPORT_STATUS.INFO, text);
+        return true;
+    }
+
+    protected boolean inBrowserNavigateTo(String url) {
+        webDriver.navigate().to(url);
+        webDriver.manage().window().maximize();
+        return true;
+    }
+
+    protected boolean closeBrowser() {
+        webDriver.close();
+        return true;
+    }
+
+    protected boolean quitBrowser() {
+        webDriver.quit();
+        return true;
+    }
+
+    protected boolean takeWebScreenshotWithText(String text) {
+        if (isScreenshotAtEachStepEnabled) {
+            if (screenshotDelayInSeconds > 0) {
+                waitSeconds(screenshotDelayInSeconds);
+            }
+            String testName = getCurrentTestName().replace(" ", "");
+            String screenshotName = testName + "_Step" + ++stepCounter;
+            ReportUtility.reportWithScreenshot(webDriver, screenshotName, ReportUtility.REPORT_STATUS.INFO, text);
+        }
         return true;
     }
 
@@ -67,7 +256,7 @@ public class PageMethods {
         return waitForElementSync(driver, locator, false);
     }
 
-    private boolean waitForElementSync(WebDriver driver, String locator, boolean shouldBeDisplayed) {
+    protected boolean waitForElementSync(WebDriver driver, String locator, boolean shouldBeDisplayed) {
         List<String> locators = Arrays.asList(locator.split(",,"));
         locators.removeIf(e -> e.trim().length() == 0);
         for (String eachLocator : locators) {
@@ -169,10 +358,10 @@ public class PageMethods {
     protected WebElement waitForAndGetElement(WebDriver remoteWebDriver, By byElement) {
         if (remoteWebDriver instanceof AppiumDriver) {
             appiumDriverWait.until(ExpectedConditions.visibilityOfElementLocated(byElement));
-            return SetUp.appiumDriver.findElement(byElement);
+            return appiumDriver.findElement(byElement);
         }
         webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(byElement));
-        return SetUp.webDriver.findElement(byElement);
+        return webDriver.findElement(byElement);
     }
 
     public boolean clickRowContainingText(String value) {

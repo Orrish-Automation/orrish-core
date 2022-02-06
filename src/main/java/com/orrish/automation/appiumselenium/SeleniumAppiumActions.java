@@ -1,170 +1,18 @@
 package com.orrish.automation.appiumselenium;
 
-import com.google.common.collect.ImmutableMap;
-import com.orrish.automation.entrypoint.GeneralSteps;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.model.TestStepReportModel;
 import com.orrish.automation.utility.report.ReportUtility;
-import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.nativekey.AndroidKey;
-import io.appium.java_client.android.nativekey.KeyEvent;
-import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.remote.AndroidMobileCapabilityType;
-import io.appium.java_client.remote.MobileCapabilityType;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.remote.BrowserType;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-
 import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
-import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
-import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
 import static com.orrish.automation.entrypoint.SetUp.*;
 
 public class SeleniumAppiumActions {
 
     protected boolean isWebStepPassed = true;
     protected boolean isMobileStepPassed = true;
-    protected PageMethods pageMethods;
-
-    public boolean launchBrowserAndNavigateTo(String url) throws MalformedURLException {
-
-        String testName = getCurrentTestName();
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability("name", testName);
-        desiredCapabilities.setCapability("acceptInsecureCerts", true);
-
-        switch (browser.trim().toUpperCase()) {
-            case "CHROME":
-                desiredCapabilities.setBrowserName(BrowserType.CHROME);
-                break;
-            case "FIREFOX":
-                desiredCapabilities.setBrowserName(BrowserType.FIREFOX);
-                break;
-            case "SAFARI":
-                desiredCapabilities.setBrowserName(BrowserType.SAFARI);
-                break;
-        }
-        //This check is for Selenoid grid execution
-        if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
-            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
-            String videoName = testName + "_" + SetUp.browser + browserVersion;
-            desiredCapabilities.setCapability("videoName", videoName + ".mp4");
-        }
-        if (executionCapabilities.size() > 0) {
-            executionCapabilities.entrySet().forEach(e -> {
-                String key = e.getKey();
-                String value = e.getValue().trim().toLowerCase();
-                if (value.contentEquals("true") || value.contentEquals("false"))
-                    desiredCapabilities.setCapability(key, Boolean.parseBoolean(value));
-                else if (GeneralSteps.isOnlyDigits(value))
-                    desiredCapabilities.setCapability(key, Integer.parseInt(value));
-                else
-                    desiredCapabilities.setCapability(key, value);
-            });
-        }
-
-        if (browserVersion != null && browserVersion.trim().length() > 1)
-            desiredCapabilities.setVersion(browserVersion);
-        webDriver = new RemoteWebDriver(new URL(seleniumGridURL), desiredCapabilities);
-        webDriver.setFileDetector(new LocalFileDetector());
-        webDriver.navigate().to(url);
-        if (browserWidth > 0 && browserHeight > 0) {
-            webDriver.manage().window().setSize(new Dimension(browserWidth, browserHeight));
-        } else {
-            webDriver.manage().window().maximize();
-        }
-        if (pageMethods == null)
-            pageMethods = new PageMethods();
-        return true;
-    }
-
-    public boolean launchAppOnDevice() throws MalformedURLException {
-
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("autoGrantPermissions", true);
-        capabilities.setCapability("allowTestPackages", true);
-        capabilities.setCapability("fullReset", true);
-        if (platformName != null) {
-            capabilities.setCapability("platformName", platformName);
-        }
-        if (deviceName != null) {
-            capabilities.setCapability("deviceName", deviceName);
-        }
-        if (platformVersion != null) {
-            capabilities.setCapability("platformVersion", platformVersion);
-        }
-        if (app != null) {
-            capabilities.setCapability("app", app);
-        }
-        if (automationName != null) {
-            capabilities.setCapability("automationName", automationName);
-        }
-        if (APP_ACTIVITY != null) {
-            capabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, APP_PACKAGE);
-            capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, APP_ACTIVITY);
-        }
-        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 300);
-        if (xcodeOrgId != null) {
-            capabilities.setCapability("xcodeOrgId", xcodeOrgId);
-        }
-        if (xcodeSigningId != null) {
-            capabilities.setCapability("xcodeSigningId", xcodeSigningId);
-        }
-        if (udid != null) {
-            capabilities.setCapability("udid", udid);
-        }
-        if (executionCapabilities.size() > 0) {
-            executionCapabilities.forEach((key, value) -> capabilities.setCapability(key, value));
-        }
-        if (platformName.toLowerCase().contains("android")) {
-            appiumDriver = new AndroidDriver(new URL(appiumServerURL), capabilities);
-        } else {
-            appiumDriver = new IOSDriver(new URL(appiumServerURL), capabilities);
-        }
-        if (pageMethods == null)
-            pageMethods = new PageMethods();
-        return true;
-    }
-
-    protected boolean inBrowserNavigateTo(String url) {
-        webDriver.navigate().to(url);
-        webDriver.manage().window().maximize();
-        return true;
-    }
-
-    protected boolean inBrowserNavigateBack() {
-        return pageMethods.navigateBack(webDriver);
-    }
-
-    protected boolean refreshWebPage() {
-        return pageMethods.refreshWebPage();
-    }
-
-    protected boolean closeBrowser() {
-        webDriver.close();
-        return true;
-    }
-
-    protected boolean takeWebScreenshotWithText(String text) {
-        if (isScreenshotAtEachStepEnabled) {
-            if (screenshotDelayInSeconds > 0) {
-                waitSeconds(screenshotDelayInSeconds);
-            }
-            String testName = getCurrentTestName().replace(" ", "");
-            String screenshotName = testName + "_Step" + ++stepCounter;
-            ReportUtility.reportWithScreenshot(webDriver, screenshotName, ReportUtility.REPORT_STATUS.INFO, text);
-        }
-        return true;
-    }
+    protected PageMethods pageMethods = PageMethods.getInstance();
 
     public String executeOnWebAndReturnString(Object... args) {
         if (!isWebStepPassed) {
@@ -214,25 +62,25 @@ public class SeleniumAppiumActions {
         try {
             switch (args[0].toString()) {
                 case "launchAppOnDevice":
-                    isMobileStepPassed = launchAppOnDevice();
+                    isMobileStepPassed = pageMethods.launchAppOnDevice();
                     break;
                 case "takeMobileScreenshotWithText":
-                    isMobileStepPassed = takeMobileScreenshotWithText(args[1].toString());
+                    isMobileStepPassed = pageMethods.takeMobileScreenshotWithText(args[1].toString());
                     break;
                 case "closeAppOnDevice":
-                    isMobileStepPassed = closeAppOnDevice();
+                    isMobileStepPassed = pageMethods.closeAppOnDevice();
                     break;
                 case "inMobileGoBackToPreviousPage":
-                    isMobileStepPassed = inMobileGoBackToPreviousPage();
+                    isMobileStepPassed = pageMethods.navigateBack(appiumDriver);
                     break;
                 case "pressHomeKey":
-                    isMobileStepPassed = pressHomeKey();
+                    isMobileStepPassed = pageMethods.pressHomeKey();
                     break;
                 case "pressBackKey":
-                    isMobileStepPassed = pressBackKey();
+                    isMobileStepPassed = pageMethods.pressBackKey();
                     break;
                 case "swipeOnceVertically":
-                    isMobileStepPassed = swipeOnceVertically();
+                    isMobileStepPassed = pageMethods.swipeOnceVertically();
                     break;
                 case "tapFor":
                     isMobileStepPassed = pageMethods.clickFor(appiumDriver, args[1].toString());
@@ -276,27 +124,50 @@ public class SeleniumAppiumActions {
 
     protected Object executeOnWebAndReturnObject(Object... args) {
         try {
+            /*
+            if (args.length == 1) {
+                Method method = pageMethods.getClass().getMethod(args[0].toString());
+                if (!method.getReturnType().getTypeName().contains("boolean")) {
+                    return method.invoke(pageMethods);
+                } else {
+                    isWebStepPassed = (boolean) method.invoke(pageMethods);
+                }
+            } else if (args.length == 2) {
+                Method method = pageMethods.getClass().getMethod(args[0].toString(), String.class);
+                if (!method.getReturnType().getTypeName().contains("boolean")) {
+                    return method.invoke(pageMethods);
+                } else {
+                    isWebStepPassed = (boolean) method.invoke(pageMethods, args[1].toString());
+                }
+            } else {
+                isWebStepPassed = false;
+                throw new Exception("Method " + GeneralSteps.getMethodStyleStepName(args) + " not implemented.");
+            }
+             */
             switch (args[0].toString()) {
                 case "launchBrowserAndNavigateTo":
-                    isWebStepPassed = launchBrowserAndNavigateTo(args[1].toString());
+                    isWebStepPassed = pageMethods.launchBrowserAndNavigateTo(args[1].toString());
                     break;
                 case "inBrowserNavigateTo":
-                    isWebStepPassed = inBrowserNavigateTo(args[1].toString());
+                    isWebStepPassed = pageMethods.inBrowserNavigateTo(args[1].toString());
                     break;
                 case "inBrowserNavigateBack":
-                    isWebStepPassed = inBrowserNavigateBack();
+                    isWebStepPassed = pageMethods.navigateBack(webDriver);
                     break;
                 case "closeBrowser":
-                    isWebStepPassed = closeBrowser();
+                    isWebStepPassed = pageMethods.closeBrowser();
+                    break;
+                case "quitBrowser":
+                    isWebStepPassed = pageMethods.quitBrowser();
                     break;
                 case "refreshWebPage":
-                    isWebStepPassed = refreshWebPage();
+                    isWebStepPassed = pageMethods.refreshWebPage();
                     break;
                 case "maximizeTheWindow":
                     isWebStepPassed = pageMethods.maximizeTheWindow();
                     break;
                 case "takeWebScreenshotWithText":
-                    return takeWebScreenshotWithText(args[1].toString());
+                    return pageMethods.takeWebScreenshotWithText(args[1].toString());
                 case "clickFor":
                     isWebStepPassed = pageMethods.clickFor(webDriver, args[1].toString());
                     break;
@@ -374,6 +245,11 @@ public class SeleniumAppiumActions {
                 default:
                     throw new Exception(args[0].toString() + " method not implemented yet.");
             }
+            /*
+        } catch (InvocationTargetException invocationTargetException) {
+            isWebStepPassed = false;
+            return reportException(webDriver, args, invocationTargetException.getTargetException());
+             */
         } catch (Exception ex) {
             isWebStepPassed = false;
             return reportException(webDriver, args, ex);
@@ -392,7 +268,7 @@ public class SeleniumAppiumActions {
         }
     }
 
-    private boolean reportException(RemoteWebDriver remoteWebDriver, Object[] args, Exception ex) {
+    private boolean reportException(RemoteWebDriver remoteWebDriver, Object[] args, Throwable ex) {
         if (remoteWebDriver == null) {
             ReportUtility.reportFail(getMethodStyleStepName(args) + " could not be performed.");
             ReportUtility.reportExceptionDebug(ex);
@@ -401,49 +277,6 @@ public class SeleniumAppiumActions {
             testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.FAIL, remoteWebDriver);
         }
         return false;
-    }
-
-    protected boolean takeMobileScreenshotWithText(String text) {
-        ReportUtility.reportWithScreenshot(appiumDriver, text, ReportUtility.REPORT_STATUS.INFO, text);
-        return true;
-    }
-
-    public boolean closeAppOnDevice() {
-        if (appiumDriver != null)
-            appiumDriver.quit();
-        return true;
-    }
-
-    public boolean inMobileGoBackToPreviousPage() {
-        return pageMethods.navigateBack(appiumDriver);
-    }
-
-    public boolean pressHomeKey() {
-        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
-            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
-        else if (appiumDriver.getPlatformName().toLowerCase().contains("ios"))
-            appiumDriver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
-        return true;
-    }
-
-    public boolean pressBackKey() {
-        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
-            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
-        return true;
-    }
-
-    public boolean swipeOnceVertically() {
-        Dimension dimension = appiumDriver.manage().window().getSize();
-        int x = dimension.getWidth() / 2;
-        int startY = (int) (dimension.getHeight() * 0.9);
-        int endY = (int) (dimension.getHeight() * 0.1);
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.press(PointOption.point(x, startY))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
-                .moveTo(PointOption.point(x, endY))
-                .release()
-                .perform();
-        return true;
     }
 
 }

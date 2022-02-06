@@ -1,7 +1,10 @@
 package com.orrish.automation.entrypoint;
 
 import com.orrish.automation.utility.report.ReportUtility;
+import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 import static com.orrish.automation.entrypoint.ReportSteps.*;
@@ -20,11 +23,16 @@ public class TearDown {
                     ReportUtility.reportExceptionDebug(ex);
                 }
             }
-            if (playwright != null) {
-                playwright.close();
-            }
-            if (playwrightBrowser != null) {
-                playwrightBrowser.close();
+            try {
+                if (playwrightPage != null && !playwrightPage.isClosed()) {
+                    playwrightPage.close();
+                    savePlaywrightVideoIfEnabled();
+                }
+                if (playwright != null) {
+                    playwright.close();
+                }
+            } catch (Exception ex) {
+                ReportUtility.reportExceptionDebug(ex);
             }
             if (appiumDriver != null && appiumDriver.getSessionId() != null) {
                 try {
@@ -52,4 +60,17 @@ public class TearDown {
             ReportUtility.updateReport();
         }
     }
+
+    private void savePlaywrightVideoIfEnabled() {
+        if (SetUp.isVideoRecordingEnabled()) {
+            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
+            String parentFolder = String.valueOf(playwrightPage.video().path().getParent());
+            String extension = FilenameUtils.getExtension(playwrightPage.video().path().getFileName().toString());
+            String testName = getCurrentTestName().replace(" ", "");
+            String videoName = testName + "_" + SetUp.browser + browserVersion + "." + extension;
+            playwrightPage.video().saveAs(Paths.get(parentFolder + File.separator + videoName));
+            playwrightPage.video().delete();
+        }
+    }
+
 }

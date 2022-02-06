@@ -19,11 +19,11 @@ public class AppiumSteps {
     }
 
     public boolean closeAppOnDevice() {
-        return seleniumAppiumActions.closeAppOnDevice();
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("closeAppOnDevice");
     }
 
     public boolean inMobileGoBackToPreviousPage() {
-        return seleniumAppiumActions.inMobileGoBackToPreviousPage();
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("inMobileGoBackToPreviousPage");
     }
 
     public boolean pressHomeKey() {
@@ -31,7 +31,7 @@ public class AppiumSteps {
     }
 
     public boolean pressBackKey() {
-        return seleniumAppiumActions.pressBackKey();
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("pressBackKey");
     }
 
     public boolean swipeOnceVertically() {

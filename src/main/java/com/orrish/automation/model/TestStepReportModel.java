@@ -10,10 +10,10 @@ import static com.orrish.automation.entrypoint.SetUp.playwrightPage;
 public class TestStepReportModel {
 
     private final String[] stepNames;
-    private final Exception exception;
+    private final Throwable exception;
     private final int stepCounter;
 
-    public TestStepReportModel(int stepCounterPassed, Object[] args, Exception exceptionPassed) {
+    public TestStepReportModel(int stepCounterPassed, Object[] args, Throwable exceptionPassed) {
         stepNames = new String[args.length];
         int i = 0;
         for (Object eachObject : args)
