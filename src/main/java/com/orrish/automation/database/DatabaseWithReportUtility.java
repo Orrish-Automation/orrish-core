@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.orrish.automation.entrypoint.SetUp.databaseService;
 import static com.orrish.automation.entrypoint.SetUp.mongoDbConnectionString;
 
 public class DatabaseWithReportUtility {
@@ -17,31 +16,26 @@ public class DatabaseWithReportUtility {
             ReportUtility.reportInfo("DB query not run. It is marked not to be verified.");
             return true;
         }
-        List valueListFromDb = runQueryOrCommand(query, false);
-        if (valueListFromDb.size() == 0) {
-            ReportUtility.reportFail("Database returned no entries. So, expected value " + expectedValue + " was not present.");
-            return false;
-        }
-        String valueFromDb = String.valueOf(valueListFromDb.get(0));
+        String valueFromDb = runDBQueryAndGetCell(query);
         if (expectedValue.contains(valueFromDb)) {
-            ReportUtility.reportPass("Database result " + valueFromDb + " is in the expected value " + expectedValue);
+            ReportUtility.reportPass("Database value: " + valueFromDb + System.lineSeparator() + "Expected: " + expectedValue);
             return true;
         } else {
-            ReportUtility.reportFail("Database result " + valueFromDb + " is not in the expected value " + expectedValue);
+            ReportUtility.reportFail("Database value: " + valueFromDb + System.lineSeparator() + "Expected:  " + expectedValue);
             return false;
         }
     }
 
-    public static String runQueryAndReturnString(String query) {
+    public static String runDBQueryAndGetCell(String query) {
         List<Map<String, Object>> values = runQueryOrCommand(query, false);
         if (values == null || values.size() == 0)
-            return "No Data from database.";
-        if(values.size() > 1)
-            return "Database returned more than one row. Please refine your query.";
-        if(!(values.get(0) instanceof java.util.Map))
+            return "No Data";
+        if (values.size() > 1)
+            return "Database returned " + values.size() + " records. Only 1 is expected.";
+        if (!(values.get(0) instanceof java.util.Map))
             return String.valueOf(values.get(0));
         if (values.get(0).keySet().size() > 1)
-            return "Database returned more than one column. Please refine your query.";
+            return "Database returned " + values.get(0).keySet().size() + " columns. Only 1 is expected.";
         String key = values.get(0).keySet().stream().findFirst().get();
         return values.get(0).get(key).toString();
     }
@@ -51,20 +45,18 @@ public class DatabaseWithReportUtility {
     }
 
     public static List runQueryOrCommand(String queryOrCommandToRun, boolean isCommand) {
-        List<String> valueToReturn = new ArrayList<>();
+        List valueToReturn = new ArrayList<>();
         SetUp.setUpDatabase();
         try {
             if (isCommand) {
-                int count = databaseService.runCommand(queryOrCommandToRun);
+                int count = DatabaseService.getInstance().runCommand(queryOrCommandToRun);
                 ReportUtility.reportInfo("Command : " + queryOrCommandToRun + " returned " + count);
                 valueToReturn.add(count + " row(s) affected.");
-                return valueToReturn;
             } else {
-                List valueFromDatabase = databaseService.runQuery(queryOrCommandToRun);
+                valueToReturn = DatabaseService.getInstance().runQuery(queryOrCommandToRun);
                 if (SetUp.printDatabaseQueryInReport) {
-                    ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueFromDatabase);
+                    ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueToReturn);
                 }
-                return valueFromDatabase;
             }
         } catch (Exception ex) {
             ReportUtility.reportInfo("Query/Command : " + queryOrCommandToRun + " threw exception : " + ex.getMessage());

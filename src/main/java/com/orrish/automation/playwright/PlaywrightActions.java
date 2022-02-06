@@ -3,52 +3,93 @@ package com.orrish.automation.playwright;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.SelectOption;
-import com.orrish.automation.entrypoint.ReportSteps;
 import com.orrish.automation.entrypoint.SetUp;
-import com.orrish.automation.model.TestStepReportModel;
 import com.orrish.automation.utility.report.ReportUtility;
+import com.orrish.automation.utility.report.UIStepReporter;
+import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
-import static com.orrish.automation.entrypoint.SetUp.isScreenshotAtEachStepEnabled;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
+import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
+import static com.orrish.automation.entrypoint.SetUp.*;
 
 public class PlaywrightActions {
 
+    protected static Playwright playwright;
+    protected static Page playwrightPage;
     protected boolean isPlaywrightStepPassed = true;
+
+    private static PlaywrightActions playwrightActions;
+
+    public static PlaywrightActions getInstance() {
+        if (playwrightActions == null) {
+            synchronized (PlaywrightActions.class) {
+                if (playwrightActions == null) {
+                    playwrightActions = new PlaywrightActions();
+                }
+            }
+        }
+        return playwrightActions;
+    }
+
+    public boolean isPlaywrightRunning() {
+        return playwrightPage != null;
+    }
+
+    public Page getPlaywrightPage() {
+        return playwrightPage;
+    }
+
+    public void quitPlaywright() {
+        try {
+            if (playwrightPage != null && !playwrightPage.isClosed()) {
+                playwrightPage.close();
+                savePlaywrightVideoIfEnabled();
+            }
+            if (playwright != null) {
+                playwright.close();
+            }
+        } catch (Exception ex) {
+            ReportUtility.reportExceptionDebug(ex);
+        }
+    }
 
     protected boolean launchBrowserAndNavigateTo(String url) {
 
-        String testName = ReportSteps.getCurrentTestName();
-        SetUp.playwright = Playwright.create();
+        playwright = Playwright.create();
         Browser browser;
-        BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions().setHeadless(SetUp.isPlaywrightHeadless);
+        BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions().setHeadless(isPlaywrightHeadless);
 
         switch (SetUp.browser.trim().toUpperCase()) {
             case "CHROME":
-                browser = SetUp.playwright.chromium().launch(launchOptions);
+                browser = playwright.chromium().launch(launchOptions);
                 break;
             case "FIREFOX":
-                browser = SetUp.playwright.firefox().launch(launchOptions);
+                browser = playwright.firefox().launch(launchOptions);
                 break;
             case "SAFARI":
-                browser = SetUp.playwright.webkit().launch(launchOptions);
+                browser = playwright.webkit().launch(launchOptions);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + SetUp.browser.trim().toUpperCase());
         }
         Browser.NewContextOptions browserContext = new Browser.NewContextOptions().setIgnoreHTTPSErrors(true);
+        if (isVideoRecordingEnabled()) {
+            browserContext.setRecordVideoDir(Paths.get("videos/"));
+        }
         BrowserContext context = browser.newContext(browserContext);
-
-        SetUp.playwrightPage = context.newPage();
-        SetUp.playwrightPage.navigate(url);
-        String videoName = testName + "_" + SetUp.browser + "_" + browser.version();
+        playwrightPage = context.newPage();
+        playwrightPage.setDefaultTimeout(defaultWaitTime * 1000);
+        playwrightPage.navigate(url);
         return true;
     }
 
     protected boolean navigateTo(String url) {
-        SetUp.playwrightPage.navigate(url);
+        playwrightPage.navigate(url);
         return true;
     }
 
@@ -62,50 +103,50 @@ public class PlaywrightActions {
     }
 
     protected boolean clickFor(String locator) {
-        SetUp.playwrightPage.click(locator);
-        SetUp.playwrightPage.waitForLoadState(LoadState.DOMCONTENTLOADED);
+        playwrightPage.click(locator);
+        playwrightPage.waitForLoadState(LoadState.DOMCONTENTLOADED);
         return true;
     }
 
     protected boolean clickWithText(String locator, String text) {
-        SetUp.playwrightPage.locator(locator + ":has-text(\"" + text + "\")").click();
+        playwrightPage.locator(locator + ":has-text(\"" + text + "\")").click();
         return true;
     }
 
     protected boolean clickRowContainingText(String text) {
-        SetUp.playwrightPage.locator("tr:has-text(\"" + text + "\")").click();
+        playwrightPage.locator("tr:has-text(\"" + text + "\")").click();
         return true;
     }
 
     protected boolean clickWhicheverIsDisplayedIn(String locator) {
-        SetUp.playwrightPage.locator(locator).click();
+        playwrightPage.locator(locator).click();
         return true;
     }
 
     protected boolean enterInTextFieldFor(String value, String locator) {
-        SetUp.playwrightPage.fill(locator, value);
+        playwrightPage.fill(locator, value);
         return true;
     }
 
     protected boolean enterInTextFieldNumber(String text, int whichField) {
-        SetUp.playwrightPage.waitForSelector("input");
-        List<ElementHandle> elementHandleList = SetUp.playwrightPage.querySelectorAll("input");
+        playwrightPage.waitForSelector("input");
+        List<ElementHandle> elementHandleList = playwrightPage.querySelectorAll("input");
         elementHandleList.get(whichField - 1).fill(text); //Convert to zero based index.
         return true;
     }
 
     protected boolean isTextPresentInWebpage(String text) {
-        ElementHandle value = SetUp.playwrightPage.querySelector("text=" + text);
+        ElementHandle value = playwrightPage.querySelector("text=" + text);
         return value.textContent().contains(text);
     }
 
     protected String clickAndReturnAlertText(String locator) {
         final String[] message = new String[1];
-        SetUp.playwrightPage.onDialog(dialog -> {
+        playwrightPage.onDialog(dialog -> {
             message[0] = dialog.message();
             dialog.dismiss();
         });
-        SetUp.playwrightPage.click(locator);
+        playwrightPage.click(locator);
         return message[0];
     }
 
@@ -115,30 +156,30 @@ public class PlaywrightActions {
     }
 
     protected boolean clickAndAcceptAlertIfPresent(String locator) {
-        SetUp.playwrightPage.onDialog(dialog -> {
+        playwrightPage.onDialog(dialog -> {
             ReportUtility.reportInfo("Alert with text \"" + dialog.message() + "\" on clicking " + locator + " is accepted.");
             dialog.accept();
         });
-        SetUp.playwrightPage.click(locator);
+        playwrightPage.click(locator);
         return true;
     }
 
     protected boolean selectFromDropdown(String value, String locator) {
-        SetUp.playwrightPage.selectOption(locator, new SelectOption().setLabel(value));
+        playwrightPage.selectOption(locator, new SelectOption().setLabel(value));
         return true;
     }
 
     protected boolean selectUnselectCheckboxesWithText(String value, boolean shouldBeSelected) {
         if (shouldBeSelected)
-            SetUp.playwrightPage.check("text=" + value);
+            playwrightPage.check("text=" + value);
         else
-            SetUp.playwrightPage.uncheck("text=" + value);
+            playwrightPage.uncheck("text=" + value);
         return true;
     }
 
     protected boolean waitUntilIsGoneFor(String locator) {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            ElementHandle elementHandle = SetUp.playwrightPage.querySelector(locator);
+            ElementHandle elementHandle = playwrightPage.querySelector(locator);
             if (elementHandle == null)
                 return true;
             waitSeconds(1);
@@ -147,7 +188,7 @@ public class PlaywrightActions {
     }
 
     protected boolean waitUntilIsDisplayedFor(String locator) {
-        return SetUp.playwrightPage.waitForSelector(locator).isVisible();
+        return playwrightPage.waitForSelector(locator).isVisible();
     }
 
     protected boolean waitUntilOneOfTheLocatorsIsDisplayed(String locator) {
@@ -163,11 +204,11 @@ public class PlaywrightActions {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
             for (String eachLocator : locators) {
                 try {
-                    if (SetUp.playwrightPage.isVisible(eachLocator)) {
+                    if (playwrightPage.isVisible(eachLocator)) {
                         if ("visible".contains(value)) {
                             return true;
                         } else if ("enabled".contains(value)) {
-                            if (SetUp.playwrightPage.isEnabled(eachLocator))
+                            if (playwrightPage.isEnabled(eachLocator))
                                 return true;
                         }
                     }
@@ -189,9 +230,9 @@ public class PlaywrightActions {
 
     private boolean waitUntilElementTextCheck(String locator, String text, boolean shouldContain) {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            if (shouldContain && SetUp.playwrightPage.textContent(locator).contains(text))
+            if (shouldContain && playwrightPage.textContent(locator).contains(text))
                 return true;
-            if (!shouldContain && !SetUp.playwrightPage.textContent(locator).contains(text))
+            if (!shouldContain && !playwrightPage.textContent(locator).contains(text))
                 return true;
             waitSeconds(1);
         }
@@ -199,38 +240,32 @@ public class PlaywrightActions {
     }
 
     protected String getTextFromLocator(String locator) {
-        return SetUp.playwrightPage.textContent(locator);
+        return playwrightPage.textContent(locator);
     }
 
     protected boolean executeJavascript(String jsCode) {
-        SetUp.playwrightPage.evaluate(jsCode);
+        playwrightPage.evaluate(jsCode);
         return true;
     }
 
     public String executeOnWebAndReturnString(Object... args) {
-        if (!isPlaywrightStepPassed) {
-            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
+        Object valueToReturn = executeOnWebAndReturnObject(args);
+        if (valueToReturn == null)
             return "";
-        }
-        String value = executeOnWebAndReturnObject(args).toString();
-        if (isScreenshotAtEachStepEnabled) {
-            TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, null);
-            testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, null);
-        }
-        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
-        return value;
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        return valueToReturn.toString();
     }
 
     public boolean executeOnWebAndReturnBoolean(Object... args) {
-        if (!(args.length > 0) || isPlaywrightStepPassed) {
-        } else if (!isPlaywrightStepPassed) {
-            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
-            return false;
-        }
-        return Boolean.parseBoolean(executeOnWebAndReturnObject(args).toString());
+        Object valueToReturn = executeOnWebAndReturnObject(args);
+        return valueToReturn != null && Boolean.parseBoolean(valueToReturn.toString());
     }
 
     protected Object executeOnWebAndReturnObject(Object... args) {
+        if (!isPlaywrightStepPassed) {
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
+            return null;
+        }
         try {
             switch (args[0].toString()) {
                 case "launchBrowserAndNavigateTo":
@@ -309,18 +344,30 @@ public class PlaywrightActions {
             }
         } catch (Exception ex) {
             isPlaywrightStepPassed = false;
-            TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, ex);
-            testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.FAIL, null);
+            UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, ex);
+            UIStepReporter.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.FAIL, null);
             return false;
         }
         if (isPlaywrightStepPassed && !isScreenshotAtEachStepEnabled)
             ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {
             ReportUtility.REPORT_STATUS status = isPlaywrightStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
-            TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, null);
-            testStepReportModel.reportStepResultWithScreenshot(status, null);
+            UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, null);
+            UIStepReporter.reportStepResultWithScreenshot(status, null);
         }
         return isPlaywrightStepPassed;
+    }
+
+    private void savePlaywrightVideoIfEnabled() {
+        if (SetUp.isVideoRecordingEnabled()) {
+            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
+            String parentFolder = String.valueOf(playwrightPage.video().path().getParent());
+            String extension = FilenameUtils.getExtension(playwrightPage.video().path().getFileName().toString());
+            String testName = getCurrentTestName().replace(" ", "");
+            String videoName = testName + "_" + SetUp.browser + browserVersion + "." + extension;
+            playwrightPage.video().saveAs(Paths.get(parentFolder + File.separator + videoName));
+            playwrightPage.video().delete();
+        }
     }
 
 }

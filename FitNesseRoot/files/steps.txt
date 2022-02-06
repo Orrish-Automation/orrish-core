@@ -21,6 +21,8 @@ API Steps
 |Call PUT with request |$request  |
 |Call DELETE for endpoint  |${BASE_SERVER}/name/1 |
 |Call DELETE with request  |$request  |
+|Call|POST|with request|$request|
+|Call|POST|with request|$request|without reporting|
 |$value=|Get response body|
 |Verify HTTP status code is|200 |
 |$value= |Get from response|country.name  |
@@ -39,9 +41,9 @@ Database Steps
 |Does DB query|Select NAME from USER where ID=$value|return|someValue|
 |Does DB query|Select country from countries Where id=1|return one of|success,check later|
 |Does DB query|Select * from country where id=1|result contain|$expectedValue|
-|$value=|Run DB query|Select * from country where id=1|and get single value|
-|$value=|Run DB query|Select * from countries|and return list as string|
-|$value=|Run DB query|Select * from countries|and return list|
+|$value=|Run DB query|Select * from country where id=1|and get cell|
+|$value=|Run DB query|Select * from countries|and get column|
+|$value=|Run DB query|Select * from countries|and get records|
 |$value=|Wait till DB query|Select NAME from users where name=surat|returns value waiting up to|20|seconds|
 |$value=|Run DB command |UPDATE USER SET NAME=NULL WHERE ID = 1|
 |$value=|Get first document from mongo DB for collection|collectionName|
@@ -55,7 +57,7 @@ General Steps
 |Download from url|http://someurl/sample.png|and save as|sample.png|
 |$value=|Concatenate|string1|and|string2|
 |Is|4567|only digits|
-|Close browser|
+|ensure|Are all values in list|$dbResult|one of|[,null]|
 |$value|Get sum of integer values in list|[34,23,67]|
 |$value=|Get sum of decimal values in list|[34.56,345.56,1.01]|
 |$value= |Get|6 |character random alpha numeric string|
@@ -69,10 +71,10 @@ General Steps
 |$value=|Split|abce-adsfa|with delimiter|-|
 |$value=|Split|abce-adsfa|with delimiter|-|and return last string|
 |$value=|Get index|1|from array|[a,b]|
-|Does  |value1|contain|value2  |
+|Does|value1|contain|value2  |
 |Does|$value1| contain by ignoring case|$value2|
-|Does  |value1|start with|value2  |
-|Does  |value1|match pattern |value2  |
+|Does|value1|start with|value2  |
+|Does|value1|match pattern |value2  |
 |Is|$valueFromResponse  |Equal |$valueFromDB|
 |Is value|name|in|username|is|Present|
 |Is List |$listFromResponse  |equal |$listFromDB |
@@ -91,7 +93,12 @@ Browser Steps
 |In browser navigate back|
 |Refresh web page|
 |Maximize the window|
+|Close browser|
+|Quit browser|
 |Take web screenshot with text|
+|Is element|#next|displayed for|next|
+|Is element|#next-button|enabled for|next|
+|Is element|#checkbox|selected for|next|
 |Click|#btn-sample|for|Next button|
 |Click|#btn-sample|with text|Continue|
 |Click whichever is displayed in|#success,,#error|
@@ -119,7 +126,7 @@ Mobile Steps
 -------------
 |Launch app on device|
 |Take mobile screenshot with text|some text|
-|Close app on device|
+|Quit app on device|
 |In mobile go back to previous page|
 |Press home key|
 |Press back key|

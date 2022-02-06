@@ -1,17 +1,12 @@
 package com.orrish.automation.entrypoint;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
 import com.orrish.automation.database.DatabaseService;
 import com.orrish.automation.utility.report.ReportUtility;
-import io.appium.java_client.AppiumDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMapFromString;
+import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
 
 public class SetUp {
 
@@ -22,7 +17,6 @@ public class SetUp {
     //Database
     public static boolean databaseCheck = true;
     public static boolean printDatabaseQueryInReport = true;
-    public static DatabaseService databaseService;
     public static String databaseConnectionString;
     public static String databaseUserName;
     public static String databasePassword;
@@ -42,17 +36,12 @@ public class SetUp {
     public static int browserHeight = 0;
     //Web only - Selenium
     public static String seleniumGridURL;
-    public static RemoteWebDriver webDriver;
     public static String browserVersion;
     //Web only - Playwright
-    public static Playwright playwright;
-    public static Browser playwrightBrowser;
-    public static Page playwrightPage;
     public static boolean isPlaywrightHeadless;
 
     //Mobile - Common to iOS and Android
     public static String appiumServerURL;
-    public static AppiumDriver appiumDriver;
     public static String automationName;
     public static String platformName;
     public static String platformVersion;
@@ -69,8 +58,19 @@ public class SetUp {
     public static String APP_ACTIVITY;
 
     //General
+    public static boolean showPageInfoOnFailure = false;
+
+    public static boolean isVideoRecordingEnabled() {
+        return executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true");
+    }
+
     public boolean extentReportLocation(String location) {
         ReportUtility.setExtentReportLocation(location);
+        return true;
+    }
+
+    public boolean showPageInfoOnFailure(boolean value) {
+        showPageInfoOnFailure = value;
         return true;
     }
 
@@ -242,7 +242,7 @@ public class SetUp {
 
     public static void setUpDatabase() {
         if (databaseCheck) {
-            databaseService = DatabaseService.getInstance();
+            DatabaseService databaseService = DatabaseService.getInstance();
             if (!databaseService.getConnectionString().contains(databaseConnectionString)) {
                 databaseService.reassignDataSource();
             }

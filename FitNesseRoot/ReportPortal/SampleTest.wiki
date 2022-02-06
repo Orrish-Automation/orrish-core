@@ -1,0 +1,9 @@
+'''Test Objective''': Show report portal integration. Ensure report portal details is populated in the Suite Set Up.
+'''Status''': Draft
+'''Test case id''': <some id>
+
+!|script                                                           |
+|Set test name        |${PAGE_NAME}                                |
+|Call GET for endpoint|https://jsonplaceholder.typicode.com/users/1|
+|$name=               |Get        |name         |from response     |
+|Does                 |$name      |contain      |Leanne Graham     |

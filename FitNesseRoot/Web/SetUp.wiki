@@ -15,6 +15,7 @@ This uses Playwright Appium Steps. If you use Selenium based grid, please use th
 |API Steps              |
 |Playwright Appium Steps|
 *!
+
 |script                                   |
 |Set suite name              |Sample suite|
 |Take screenshot at each step|true        |

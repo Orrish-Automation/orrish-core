@@ -1,20 +1,25 @@
-package com.orrish.automation.utility.verification;
+package com.orrish.automation.utility;
 
-import com.orrish.automation.entrypoint.GeneralSteps;
 import com.orrish.automation.model.VerificationResultModel;
 import io.restassured.response.Response;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static io.restassured.path.json.JsonPath.from;
 
-public class GeneralAndAPIVerifiyUtility {
+public class VerifyUtility {
 
     public static VerificationResultModel verifyValues(String responseToVerify) {
-        Map<String, String> valueToVerify = GeneralSteps.getMapFromString(responseToVerify, "=");
+        Map<String, String> valueToVerify = GeneralUtility.getMapFromString(responseToVerify, "=");
         Map<Integer, VerificationResultModel> eachVerificationResult = new HashMap<>();
         Set<String> keys = valueToVerify.keySet();
         boolean finalVerificationResult = true;
@@ -32,17 +37,34 @@ public class GeneralAndAPIVerifiyUtility {
         return new VerificationResultModel(false, eachVerificationResult);
     }
 
+    public static VerificationResultModel areAllValuesInListOneOf(List actualList, List expectedList) {
+        for (Object value : actualList) {
+            if (!expectedList.contains(String.valueOf(value))) {
+                return new VerificationResultModel(false, value + " is not in the expected value " + expectedList);
+            }
+        }
+        return new VerificationResultModel(true, "The values in list " + actualList + " are one of " + expectedList);
+    }
+
+    public static VerificationResultModel isOnlyDigits(String string) {
+        String regex = "[0-9]+";
+        Pattern pattern = Pattern.compile(regex);
+        boolean valueToReturn = (string == null) ? false : pattern.matcher(string).matches();
+        String message = valueToReturn ? string + " contains only digits." : string + " has some characters which are not digits.";
+        return new VerificationResultModel(valueToReturn, message);
+    }
+
     public static VerificationResultModel isValueEqual(String node, String string1, String string2) {
         String passString = "Values you compared are equal : ";
-        String failString = (node == null) ?
-                "Value you entered did not match. First string: '%s' Second string: '%s'"
-                : node + " value you entered did not match. First string: '%s' Second string: '%s'";
         if ((string1 == null && string2 == null)) {
             return new VerificationResultModel(true, passString + " Both are null.");
         }
         if ((String.valueOf(string1).equals(String.valueOf(string2)))) {
             return new VerificationResultModel(true, passString + "string1 is " + string1 + " and string2 is " + string2);
         }
+        String failString = (node == null) ?
+                "Value you entered did not match. First string: '%s' Second string: '%s'"
+                : node + " value you entered did not match. First string: '%s' Second string: '%s'";
         if (string1 == null || string2 == null) {
             return new VerificationResultModel(false, String.format(failString, string1, string2));
         }
@@ -118,6 +140,15 @@ public class GeneralAndAPIVerifiyUtility {
         } catch (Exception ex) {
             return new VerificationResultModel(false, "Exception occurred : " + ex.getMessage());
         }
+    }
+
+    public static VerificationResultModel downloadFromUrlAndSaveAs(String url, String fileName) {
+        try (InputStream in = new URL(url).openStream()) {
+            Files.copy(in, Paths.get(fileName));
+        } catch (IOException ex) {
+            return new VerificationResultModel(false, url + " could not be saved. " + ex.getMessage());
+        }
+        return new VerificationResultModel(true, url + " successfully saved with filename " + fileName);
     }
 
     public static VerificationResultModel verifyResponseFor(Response response, Map<String, String> valueToVerify) {

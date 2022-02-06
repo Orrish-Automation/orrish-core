@@ -2,5 +2,5 @@
 '''Status''':
 '''Test case id''': <some id>
 
-!|script                                                           |
-|Set test name        |Sample test                                 |
+!|script                           |
+|Set test name        |Sample test |

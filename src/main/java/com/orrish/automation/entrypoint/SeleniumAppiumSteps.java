@@ -1,14 +1,6 @@
 package com.orrish.automation.entrypoint;
 
-import com.orrish.automation.appiumselenium.SeleniumAppiumActions;
-
 public class SeleniumAppiumSteps extends AppiumSteps {
-
-    SeleniumAppiumActions seleniumAppiumActions;
-
-    public SeleniumAppiumSteps() {
-        seleniumAppiumActions = new SeleniumAppiumActions();
-    }
 
     public boolean launchBrowserAndNavigateTo(String url) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("launchBrowserAndNavigateTo", url);
@@ -36,6 +28,10 @@ public class SeleniumAppiumSteps extends AppiumSteps {
 
     public boolean closeBrowser(){
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("closeBrowser");
+    }
+
+    public boolean quitBrowser(){
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("quitBrowser");
     }
 
     public boolean clickFor(String locator, String description) {
@@ -78,6 +74,18 @@ public class SeleniumAppiumSteps extends AppiumSteps {
 
     public boolean waitUntilIsDisplayedFor(String locator, String description) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsDisplayedFor", locator, description);
+    }
+
+    public boolean isElementDisplayedFor(String locator, String description) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementDisplayedFor", locator, description);
+    }
+
+    public boolean isElementEnabledFor(String locator, String description) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementEnabledFor", locator, description);
+    }
+
+    public boolean isElementSelectedFor(String locator, String description) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementSelectedFor", locator, description);
     }
 
     //Double comma separated values, single comma may be present in xpath, hence double comma

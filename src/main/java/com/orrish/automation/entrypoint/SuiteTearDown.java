@@ -12,7 +12,7 @@ public class SuiteTearDown {
     public SuiteTearDown() {
 
         ReportUtility.finishReportPortalReport();
-        Map<String, LinkedList<String>> results = ReportSteps.testResults;
+        Map<String, LinkedList<String>> results = ReportSteps.suiteTestResults;
         List<String> passedCases = results.get("pass") == null ? new ArrayList<>() : results.get("pass");
         List<String> failedCases = results.get("fail") == null ? new ArrayList<>() : results.get("fail");
         List<String> skippedCases = results.get("skip") == null ? new ArrayList<>() : results.get("skip");

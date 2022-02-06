@@ -1,449 +1,300 @@
 package com.orrish.automation.appiumselenium;
 
-import com.google.common.collect.ImmutableMap;
-import com.orrish.automation.entrypoint.GeneralSteps;
-import com.orrish.automation.entrypoint.SetUp;
-import com.orrish.automation.model.TestStepReportModel;
 import com.orrish.automation.utility.report.ReportUtility;
-import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.nativekey.AndroidKey;
-import io.appium.java_client.android.nativekey.KeyEvent;
-import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.remote.AndroidMobileCapabilityType;
-import io.appium.java_client.remote.MobileCapabilityType;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.remote.BrowserType;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.LocalFileDetector;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Map;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
-import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
-import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
-import static com.orrish.automation.entrypoint.SetUp.*;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class SeleniumAppiumActions {
 
     protected boolean isWebStepPassed = true;
     protected boolean isMobileStepPassed = true;
-    protected PageMethods pageMethods;
+    protected SeleniumPageMethods seleniumPageMethods = SeleniumPageMethods.getInstance();
+    protected AppiumPageMethods appiumPageMethods = AppiumPageMethods.getInstance();
 
-    public boolean launchBrowserAndNavigateTo(String url) throws MalformedURLException {
-
-        String testName = getCurrentTestName();
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability("name", testName);
-        desiredCapabilities.setCapability("acceptInsecureCerts", true);
-
-        switch (browser.trim().toUpperCase()) {
-            case "CHROME":
-                desiredCapabilities.setBrowserName(BrowserType.CHROME);
-                break;
-            case "FIREFOX":
-                desiredCapabilities.setBrowserName(BrowserType.FIREFOX);
-                break;
-            case "SAFARI":
-                desiredCapabilities.setBrowserName(BrowserType.SAFARI);
-                break;
-        }
-        //This check is for Selenoid grid execution
-        if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
-            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
-            String videoName = testName + "_" + SetUp.browser + browserVersion;
-            desiredCapabilities.setCapability("videoName", videoName + ".mp4");
-        }
-        if (executionCapabilities.size() > 0) {
-            executionCapabilities.entrySet().forEach(e -> {
-                String key = e.getKey();
-                String value = e.getValue().trim().toLowerCase();
-                if (value.contentEquals("true") || value.contentEquals("false"))
-                    desiredCapabilities.setCapability(key, Boolean.parseBoolean(value));
-                else if (GeneralSteps.isOnlyDigits(value))
-                    desiredCapabilities.setCapability(key, Integer.parseInt(value));
-                else
-                    desiredCapabilities.setCapability(key, value);
-            });
-        }
-
-        if (browserVersion != null && browserVersion.trim().length() > 1)
-            desiredCapabilities.setVersion(browserVersion);
-        webDriver = new RemoteWebDriver(new URL(seleniumGridURL), desiredCapabilities);
-        webDriver.setFileDetector(new LocalFileDetector());
-        webDriver.navigate().to(url);
-        if (browserWidth > 0 && browserHeight > 0) {
-            webDriver.manage().window().setSize(new Dimension(browserWidth, browserHeight));
-        } else {
-            webDriver.manage().window().maximize();
-        }
-        if (pageMethods == null)
-            pageMethods = new PageMethods();
-        return true;
-    }
-
-    public boolean launchAppOnDevice() throws MalformedURLException {
-
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("autoGrantPermissions", true);
-        capabilities.setCapability("allowTestPackages", true);
-        capabilities.setCapability("fullReset", true);
-        if (platformName != null) {
-            capabilities.setCapability("platformName", platformName);
-        }
-        if (deviceName != null) {
-            capabilities.setCapability("deviceName", deviceName);
-        }
-        if (platformVersion != null) {
-            capabilities.setCapability("platformVersion", platformVersion);
-        }
-        if (app != null) {
-            capabilities.setCapability("app", app);
-        }
-        if (automationName != null) {
-            capabilities.setCapability("automationName", automationName);
-        }
-        if (APP_ACTIVITY != null) {
-            capabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, APP_PACKAGE);
-            capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, APP_ACTIVITY);
-        }
-        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 300);
-        if (xcodeOrgId != null) {
-            capabilities.setCapability("xcodeOrgId", xcodeOrgId);
-        }
-        if (xcodeSigningId != null) {
-            capabilities.setCapability("xcodeSigningId", xcodeSigningId);
-        }
-        if (udid != null) {
-            capabilities.setCapability("udid", udid);
-        }
-        if (executionCapabilities.size() > 0) {
-            executionCapabilities.forEach((key, value) -> capabilities.setCapability(key, value));
-        }
-        if (platformName.toLowerCase().contains("android")) {
-            appiumDriver = new AndroidDriver(new URL(appiumServerURL), capabilities);
-        } else {
-            appiumDriver = new IOSDriver(new URL(appiumServerURL), capabilities);
-        }
-        if (pageMethods == null)
-            pageMethods = new PageMethods();
-        return true;
-    }
-
-    protected boolean inBrowserNavigateTo(String url) {
-        webDriver.navigate().to(url);
-        webDriver.manage().window().maximize();
-        return true;
-    }
-
-    protected boolean inBrowserNavigateBack() {
-        return pageMethods.navigateBack(webDriver);
-    }
-
-    protected boolean refreshWebPage() {
-        return pageMethods.refreshWebPage();
-    }
-
-    protected boolean closeBrowser() {
-        webDriver.close();
-        return true;
-    }
-
-    protected boolean takeWebScreenshotWithText(String text) {
-        if (isScreenshotAtEachStepEnabled) {
-            if (screenshotDelayInSeconds > 0) {
-                waitSeconds(screenshotDelayInSeconds);
-            }
-            String testName = getCurrentTestName().replace(" ", "");
-            String screenshotName = testName + "_Step" + ++stepCounter;
-            ReportUtility.reportWithScreenshot(webDriver, screenshotName, ReportUtility.REPORT_STATUS.INFO, text);
-        }
-        return true;
+    public boolean executeOnWebAndReturnBoolean(Object... args) {
+        Object valueToReturn = executeOnWebAndReturnObject(args);
+        return valueToReturn != null && Boolean.parseBoolean(valueToReturn.toString());
     }
 
     public String executeOnWebAndReturnString(Object... args) {
-        if (!isWebStepPassed) {
-            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
+        Object valueToReturn = executeOnWebAndReturnObject(args);
+        if (valueToReturn == null)
             return "";
-        }
-        String value = executeOnWebAndReturnObject(args).toString();
-        if (isScreenshotAtEachStepEnabled) {
-            TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, null);
-            testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, webDriver);
-        }
-        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
-        return value;
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        return valueToReturn.toString();
     }
 
-    public String executeOnMobileAndReturnString(Object... args) {
-        if (!isMobileStepPassed) {
-            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
-            return "";
-        }
-        String value = executeOnMobileAndReturnObject(args).toString();
-        if (isScreenshotAtEachStepEnabled) {
-            TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, null);
-            testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.INFO, appiumDriver);
-        }
-        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + value);
-        return value;
+    public Map executeOnWebAndReturnMap(Object... args) {
+        Object valueToReturn = executeOnWebAndReturnObject(args);
+        if (valueToReturn == null)
+            return null;
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        return (Map) valueToReturn;
     }
 
-    public boolean executeOnWebAndReturnBoolean(Object... args) {
-        if (isWebStepPassed) {
-            return Boolean.parseBoolean(executeOnWebAndReturnObject(args).toString());
-        }
-        ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
-        return false;
+    public List executeOnWebAndReturnList(Object... args) {
+        Object valueToReturn = executeOnWebAndReturnObject(args);
+        if (valueToReturn == null)
+            return null;
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        return (List) valueToReturn;
     }
 
     public boolean executeOnMobileAndReturnBoolean(Object... args) {
-        if (isMobileStepPassed) {
-            return Boolean.parseBoolean(executeOnMobileAndReturnObject(args).toString());
-        }
-        ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
-        return false;
+        Object valueToReturn = executeOnMobileAndReturnObject(args);
+        return valueToReturn != null && Boolean.parseBoolean(valueToReturn.toString());
+    }
+
+    public String executeOnMobileAndReturnString(Object... args) {
+        Object valueToReturn = executeOnMobileAndReturnObject(args);
+        if (valueToReturn == null)
+            return "";
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        return valueToReturn.toString();
+    }
+
+    public Map executeOnMobileAndReturnMap(Object... args) {
+        Object valueToReturn = executeOnMobileAndReturnObject(args);
+        if (valueToReturn == null)
+            return null;
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        return (Map) valueToReturn;
+    }
+
+    public List executeOnMobileAndReturnList(Object... args) {
+        Object valueToReturn = executeOnMobileAndReturnObject(args);
+        if (valueToReturn == null)
+            return null;
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        return (List) valueToReturn;
     }
 
     protected Object executeOnMobileAndReturnObject(Object... args) {
+        if (!isMobileStepPassed) {
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
+            return null;
+        }
         try {
             switch (args[0].toString()) {
                 case "launchAppOnDevice":
-                    isMobileStepPassed = launchAppOnDevice();
+                    isMobileStepPassed = appiumPageMethods.launchAppOnDevice();
                     break;
                 case "takeMobileScreenshotWithText":
-                    isMobileStepPassed = takeMobileScreenshotWithText(args[1].toString());
+                    isMobileStepPassed = appiumPageMethods.takeMobileScreenshotWithText(args[1].toString());
                     break;
-                case "closeAppOnDevice":
-                    isMobileStepPassed = closeAppOnDevice();
+                case "quitAppOnDevice":
+                    isMobileStepPassed = appiumPageMethods.quitAppOnDevice();
                     break;
                 case "inMobileGoBackToPreviousPage":
-                    isMobileStepPassed = inMobileGoBackToPreviousPage();
+                    isMobileStepPassed = appiumPageMethods.goBackToPreviousPage();
                     break;
                 case "pressHomeKey":
-                    isMobileStepPassed = pressHomeKey();
+                    isMobileStepPassed = appiumPageMethods.pressHomeKey();
                     break;
                 case "pressBackKey":
-                    isMobileStepPassed = pressBackKey();
+                    isMobileStepPassed = appiumPageMethods.pressBackKey();
                     break;
                 case "swipeOnceVertically":
-                    isMobileStepPassed = swipeOnceVertically();
+                    isMobileStepPassed = appiumPageMethods.swipeOnceVertically();
                     break;
                 case "tapFor":
-                    isMobileStepPassed = pageMethods.clickFor(appiumDriver, args[1].toString());
+                    isMobileStepPassed = appiumPageMethods.tapFor(args[1].toString());
                     break;
                 case "tapWithText":
-                    isMobileStepPassed = pageMethods.clickWithText(appiumDriver, args[1].toString(), args[2].toString());
+                    isMobileStepPassed = appiumPageMethods.tapWithText(args[1].toString(), args[2].toString());
                     break;
                 case "tapWhicheverIsDisplayedIn":
-                    isMobileStepPassed = pageMethods.clickWhicheverIsDisplayedIn(appiumDriver, args[1].toString());
+                    isMobileStepPassed = appiumPageMethods.tapWhicheverIsDisplayedIn(args[1].toString());
                     break;
                 case "inMobileWaitUntilIsGoneFor":
-                    isMobileStepPassed = pageMethods.waitUntilIsGoneFor(appiumDriver, args[1].toString());
+                    isMobileStepPassed = appiumPageMethods.waitUntilIsGoneFor(args[1].toString());
                     break;
                 case "inMobileWaitUntilIsDisplayedFor":
-                    isMobileStepPassed = pageMethods.waitUntilIsDisplayedFor(appiumDriver, args[1].toString());
+                    isMobileStepPassed = appiumPageMethods.waitUntilIsDisplayedFor(args[1].toString());
                     break;
                 case "inMobileWaitUntilOneOfTheLocatorsIsEnabled":
-                    isMobileStepPassed = (pageMethods.waitUntilOneOfTheLocatorsIsEnabled(appiumDriver, args[1].toString()) != null);
+                    isMobileStepPassed = appiumPageMethods.waitUntilOneOfTheLocatorsIsEnabled(args[1].toString());
                     break;
                 case "inMobileWaitUntilElementTextContains":
-                    isMobileStepPassed = pageMethods.waitUntilElementTextContains(appiumDriver, args[1].toString(), args[2].toString());
+                    isMobileStepPassed = appiumPageMethods.waitUntilElementTextContains(args[1].toString(), args[2].toString());
                     break;
                 case "inMobileWaitUntilElementTextDoesNotContain":
-                    isMobileStepPassed = pageMethods.waitUntilElementTextDoesNotContain(appiumDriver, args[1].toString(), args[2].toString());
+                    isMobileStepPassed = appiumPageMethods.waitUntilElementTextDoesNotContain(args[1].toString(), args[2].toString());
                     break;
                 case "inMobileEnterInTextFieldFor":
-                    isMobileStepPassed = pageMethods.enterInTextFieldFor(appiumDriver, args[1].toString(), args[2].toString());
+                    isMobileStepPassed = appiumPageMethods.enterInTextFieldFor(args[1].toString(), args[2].toString());
                     break;
                 case "inMobileGetTextFromLocator":
-                    return pageMethods.getTextFromLocator(appiumDriver, args[1].toString());
+                    return appiumPageMethods.getTextFromLocator(args[1].toString());
                 default:
                     throw new Exception(args[0].toString() + " method not implemented yet.");
             }
         } catch (Exception ex) {
             isMobileStepPassed = false;
-            return reportException(appiumDriver, args, ex);
+            appiumPageMethods.reportException(args, ex);
+            return null;
         }
-        reportExecutionStatus(isMobileStepPassed, args, appiumDriver);
+        appiumPageMethods.reportExecutionStatus(isMobileStepPassed, args);
         return isMobileStepPassed;
     }
 
     protected Object executeOnWebAndReturnObject(Object... args) {
+        if (!isWebStepPassed) {
+            ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
+            return null;
+        }
         try {
+            /*
+            //Whole of below switch-case can be done using reflection, but commented now because it is slower.
+            String methodName = args[0].toString();
+            if (methodName.startsWith("inBrowser")) {
+                methodName = methodName.replaceFirst("inBrowser", "");
+                methodName = String.valueOf(methodName.charAt(0)).toLowerCase() + methodName.substring(1);
+            }
+            if (args.length == 1) {
+                Method method = pageMethods.getClass().getMethod(methodName);
+                if (!method.getReturnType().getTypeName().contains("boolean"))
+                    return method.invoke(pageMethods);
+                isWebStepPassed = (boolean) method.invoke(pageMethods);
+            } else if (args.length == 2) {
+                Method method = pageMethods.getClass().getMethod(methodName, String.class);
+                if (!method.getReturnType().getTypeName().contains("boolean"))
+                    return method.invoke(pageMethods, args[1].toString());
+                isWebStepPassed = (boolean) method.invoke(pageMethods, args[1].toString());
+            } else if (args.length == 3) {
+                Method method = pageMethods.getClass().getMethod(methodName, String.class, String.class);
+                if (!method.getReturnType().getTypeName().contains("boolean"))
+                    return method.invoke(pageMethods, args[1].toString(), args[2].toString());
+                isWebStepPassed = (boolean) method.invoke(pageMethods, args[1].toString(), args[2].toString());
+            } else {
+                isWebStepPassed = false;
+                throw new Exception("Method " + GeneralUtility.getMethodStyleStepName(args) + " not implemented.");
+            }
+            //*/
+            ///*
             switch (args[0].toString()) {
                 case "launchBrowserAndNavigateTo":
-                    isWebStepPassed = launchBrowserAndNavigateTo(args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.launchBrowserAndNavigateTo(args[1].toString());
                     break;
                 case "inBrowserNavigateTo":
-                    isWebStepPassed = inBrowserNavigateTo(args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.navigateTo(args[1].toString());
                     break;
                 case "inBrowserNavigateBack":
-                    isWebStepPassed = inBrowserNavigateBack();
+                    isWebStepPassed = seleniumPageMethods.navigateBack();
                     break;
                 case "closeBrowser":
-                    isWebStepPassed = closeBrowser();
-                    break;
+                    isWebStepPassed = seleniumPageMethods.closeBrowser();
+                    ReportUtility.reportInfo("closeBrowser() executed successfully.");
+                    return true;
+                case "quitBrowser":
+                    isWebStepPassed = seleniumPageMethods.quitBrowser();
+                    ReportUtility.reportInfo("quitBrowser() executed successfully.");
+                    return true;
                 case "refreshWebPage":
-                    isWebStepPassed = refreshWebPage();
+                    isWebStepPassed = seleniumPageMethods.refreshWebPage();
                     break;
                 case "maximizeTheWindow":
-                    isWebStepPassed = pageMethods.maximizeTheWindow();
+                    isWebStepPassed = seleniumPageMethods.maximizeTheWindow();
                     break;
                 case "takeWebScreenshotWithText":
-                    return takeWebScreenshotWithText(args[1].toString());
+                    return seleniumPageMethods.takeWebScreenshotWithText(args[1].toString());
                 case "clickFor":
-                    isWebStepPassed = pageMethods.clickFor(webDriver, args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.click(args[1].toString());
                     break;
                 case "clickWithText":
-                    isWebStepPassed = pageMethods.clickWithText(webDriver, args[1].toString(), args[2].toString());
+                    isWebStepPassed = seleniumPageMethods.clickWithText(args[1].toString(), args[2].toString());
                     break;
                 case "clickWhicheverIsDisplayedIn":
-                    isWebStepPassed = pageMethods.clickWhicheverIsDisplayedIn(webDriver, args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.clickWhicheverIsDisplayedIn(args[1].toString());
                     break;
                 case "clickRowContainingText":
-                    return pageMethods.clickRowContainingText(args[1].toString());
+                    return seleniumPageMethods.clickRowContainingText(args[1].toString());
                 case "selectCheckboxForText":
-                    isWebStepPassed = pageMethods.selectUnselectCheckboxesForText(args[1].toString(), true);
+                    isWebStepPassed = seleniumPageMethods.selectCheckboxForText(args[1].toString());
                     break;
                 case "unselectCheckboxForText":
-                    isWebStepPassed = pageMethods.selectUnselectCheckboxesForText(args[1].toString(), false);
+                    isWebStepPassed = seleniumPageMethods.unselectCheckboxForText(args[1].toString());
                     break;
                 case "waitUntilIsGoneFor":
-                    isWebStepPassed = pageMethods.waitUntilIsGoneFor(webDriver, args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.waitUntilIsGone(args[1].toString());
                     break;
                 case "waitUntilIsDisplayedFor":
-                    isWebStepPassed = pageMethods.waitUntilIsDisplayedFor(webDriver, args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.waitUntilIsDisplayed(args[1].toString());
                     break;
                 case "waitUntilOneOfTheLocatorsIsDisplayed":
-                    isWebStepPassed = (pageMethods.waitUntilOneOfTheLocatorsIsDisplayed(webDriver, args[1].toString()) != null);
+                    isWebStepPassed = (seleniumPageMethods.waitUntilOneOfTheLocatorsIsDisplayed(args[1].toString()) != null);
                     break;
                 case "waitUntilOneOfTheLocatorsIsEnabled":
-                    isWebStepPassed = (pageMethods.waitUntilOneOfTheLocatorsIsEnabled(webDriver, args[1].toString()) != null);
+                    isWebStepPassed = (seleniumPageMethods.waitUntilOneOfTheLocatorsIsEnabled(args[1].toString()) != null);
                     break;
                 case "waitUntilElementTextContains":
-                    isWebStepPassed = pageMethods.waitUntilElementTextContains(webDriver, args[1].toString(), args[2].toString());
+                    isWebStepPassed = seleniumPageMethods.waitUntilElementTextContains(args[1].toString(), args[2].toString());
                     break;
                 case "waitUntilElementTextDoesNotContain":
-                    isWebStepPassed = pageMethods.waitUntilElementTextDoesNotContain(webDriver, args[1].toString(), args[2].toString());
+                    isWebStepPassed = seleniumPageMethods.waitUntilElementTextDoesNotContain(args[1].toString(), args[2].toString());
                     break;
+                case "isElementDisplayedFor":
+                    return seleniumPageMethods.isElementDisplayedFor(args[1].toString());
+                case "isElementEnabledFor":
+                    return seleniumPageMethods.isElementEnabledFor(args[1].toString());
+                case "isElementSelectedFor":
+                    return seleniumPageMethods.isElementSelectedFor(args[1].toString());
                 case "enterInTextFieldFor":
-                    isWebStepPassed = pageMethods.enterInTextFieldFor(webDriver, args[1].toString(), args[2].toString());
+                    isWebStepPassed = seleniumPageMethods.enterInTextField(args[1].toString(), args[2].toString());
                     break;
                 case "enterInTextFieldNumber":
-                    isWebStepPassed = pageMethods.enterInTextFieldNumber(args[1].toString(), Integer.parseInt(args[2].toString()));
+                    isWebStepPassed = seleniumPageMethods.enterInTextFieldNumber(args[1].toString(), args[2].toString());
                     break;
                 case "isTextPresentInWebpage":
-                    isWebStepPassed = pageMethods.isTextPresentInWebpage(args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.isTextPresentInWebpage(args[1].toString());
                     break;
                 case "getAlertText":
-                    return pageMethods.getAlertText();
+                    return seleniumPageMethods.getAlertText();
                 case "dismissAlertIfPresent":
-                    isWebStepPassed = pageMethods.dismissAlertIfPresent();
+                    isWebStepPassed = seleniumPageMethods.dismissAlertIfPresent();
                     break;
                 case "acceptAlertIfPresent":
-                    isWebStepPassed = pageMethods.acceptAlertIfPresent();
+                    isWebStepPassed = seleniumPageMethods.acceptAlertIfPresent();
                     break;
                 case "selectFromDropdown":
-                    isWebStepPassed = pageMethods.selectFromDropdown(args[1].toString(), args[2].toString());
+                    isWebStepPassed = seleniumPageMethods.selectFromDropdown(args[1].toString(), args[2].toString());
                     break;
                 case "selectDropdownByText":
-                    isWebStepPassed = pageMethods.selectDropdownByText(args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.selectDropdownByText(args[1].toString());
                     break;
                 case "getTextFromLocator":
-                    return pageMethods.getTextFromLocator(webDriver, args[1].toString());
+                    return seleniumPageMethods.getTextFromLocator(args[1].toString());
                 case "executeJavascript":
-                    isWebStepPassed = pageMethods.executeJavascript(args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.executeJavascript(args[1].toString());
                     break;
                 case "scrollTo":
-                    isWebStepPassed = pageMethods.scrollTo(args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.scrollTo(args[1].toString());
                     break;
                 case "scrollToBottom":
-                    isWebStepPassed = pageMethods.executeJavascript("window.scrollTo(0, document.body.scrollHeight)");
+                    isWebStepPassed = seleniumPageMethods.scrollToBottom();
                     break;
                 case "getCurrentWindowId":
-                    return pageMethods.getCurrentWindowId();
+                    return seleniumPageMethods.getCurrentWindowId();
                 case "switchToWindowId":
-                    isWebStepPassed = pageMethods.switchToWindowId(args[1].toString());
+                    isWebStepPassed = seleniumPageMethods.switchToWindowId(args[1].toString());
                     break;
                 default:
                     throw new Exception(args[0].toString() + " method not implemented yet.");
             }
+            //*/
         } catch (Exception ex) {
             isWebStepPassed = false;
-            return reportException(webDriver, args, ex);
+            seleniumPageMethods.reportExecutionStatus(false, args);
+            Exception exception = (ex instanceof InvocationTargetException) ? (Exception) ((InvocationTargetException) ex).getTargetException() : ex;
+            seleniumPageMethods.reportException(args, exception);
+            return null;
         }
-        reportExecutionStatus(isWebStepPassed, args, webDriver);
+        seleniumPageMethods.reportExecutionStatus(isWebStepPassed, args);
         return isWebStepPassed;
-    }
-
-    private void reportExecutionStatus(boolean isStepPassed, Object[] args, RemoteWebDriver remoteWebDriver) {
-        if (isStepPassed && !isScreenshotAtEachStepEnabled)
-            ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
-        else {
-            ReportUtility.REPORT_STATUS status = isStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
-            TestStepReportModel testStepReportModel = new TestStepReportModel(++SetUp.stepCounter, args, null);
-            testStepReportModel.reportStepResultWithScreenshot(status, remoteWebDriver);
-        }
-    }
-
-    private boolean reportException(RemoteWebDriver remoteWebDriver, Object[] args, Exception ex) {
-        if (remoteWebDriver == null) {
-            ReportUtility.reportFail(getMethodStyleStepName(args) + " could not be performed.");
-            ReportUtility.reportExceptionDebug(ex);
-        } else {
-            TestStepReportModel testStepReportModel = new TestStepReportModel(++stepCounter, args, ex);
-            testStepReportModel.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.FAIL, remoteWebDriver);
-        }
-        return false;
-    }
-
-    protected boolean takeMobileScreenshotWithText(String text) {
-        ReportUtility.reportWithScreenshot(appiumDriver, text, ReportUtility.REPORT_STATUS.INFO, text);
-        return true;
-    }
-
-    public boolean closeAppOnDevice() {
-        if (appiumDriver != null)
-            appiumDriver.quit();
-        return true;
-    }
-
-    public boolean inMobileGoBackToPreviousPage() {
-        return pageMethods.navigateBack(appiumDriver);
-    }
-
-    public boolean pressHomeKey() {
-        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
-            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
-        else if (appiumDriver.getPlatformName().toLowerCase().contains("ios"))
-            appiumDriver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
-        return true;
-    }
-
-    public boolean pressBackKey() {
-        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
-            ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
-        return true;
-    }
-
-    public boolean swipeOnceVertically() {
-        Dimension dimension = appiumDriver.manage().window().getSize();
-        int x = dimension.getWidth() / 2;
-        int startY = (int) (dimension.getHeight() * 0.9);
-        int endY = (int) (dimension.getHeight() * 0.1);
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.press(PointOption.point(x, startY))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
-                .moveTo(PointOption.point(x, endY))
-                .release()
-                .perform();
-        return true;
     }
 
 }

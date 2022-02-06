@@ -1,8 +1,6 @@
 package com.orrish.automation.entrypoint;
 
 import com.aventstack.extentreports.ExtentTest;
-import com.orrish.automation.utility.report.ExtentReportUtility;
-import com.orrish.automation.utility.report.ReportPortalUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 
 import java.util.HashMap;
@@ -10,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.camelCaseToWords;
+import static com.orrish.automation.utility.GeneralUtility.camelCaseToWords;
 
 public class ReportSteps {
 
@@ -19,7 +17,7 @@ public class ReportSteps {
     public static ExtentTest childNode;
     public static ExtentTest currentTest;
     public static List<ExtentTest> testList = new LinkedList<>();
-    public static Map<String, LinkedList<String>> testResults = new HashMap<>();
+    public static Map<String, LinkedList<String>> suiteTestResults = new HashMap<>();
 
     public static ExtentTest getCurrentExtentTest() {
         if (currentTest == null && suiteNode == null)
@@ -37,10 +35,10 @@ public class ReportSteps {
         suiteName = camelCaseToWords(suiteName);
         suiteCreated = true;
         if (suiteNode == null || !suiteNode.getModel().getName().equals(suiteName)) {
-            suiteNode = ExtentReportUtility.getInstance().createTest(suiteName);
-            if (ReportPortalUtility.getInstance().isReportPortalEnabled()) {
+            suiteNode = ReportUtility.createExtentTest(suiteName);
+            if (ReportUtility.isReportPortalEnabled()) {
                 String finalParentNameName = suiteName;
-                Thread thread = new Thread(() -> ReportPortalUtility.getInstance().reportPortalStartSuite(finalParentNameName));
+                Thread thread = new Thread(() -> ReportUtility.reportPortalStartSuite(finalParentNameName));
                 thread.run();
             }
         }
@@ -67,23 +65,19 @@ public class ReportSteps {
         } else if (suiteCreated) {
             currentTest = suiteNode.createNode(testName);
         } else {
-            currentTest = ExtentReportUtility.getInstance().createTest(testName);
+            currentTest = ReportUtility.createExtentTest(testName);
         }
         testList.add(currentTest);
-        if (isReportPortalEnabled()) {
+        if (ReportUtility.isReportPortalEnabled()) {
             String testNameForReportPortal = testName;
             Thread threadStartTest = new Thread(() -> {
-                ReportPortalUtility.getInstance().reportPortalStartTest(testNameForReportPortal);
+                ReportUtility.reportPortalStartTest(testNameForReportPortal);
                 //ReportPortalUtility.getInstance().reportPortalStartTestStep(testNameForReportPortal);
             }
             );
             threadStartTest.run();
         }
         return true;
-    }
-
-    public static boolean isReportPortalEnabled() {
-        return ReportPortalUtility.getInstance().isReportPortalEnabled();
     }
 
     public static boolean writeInReport(String valueToWrite) {

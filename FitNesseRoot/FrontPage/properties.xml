@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <properties>
-<AddChild/>
-<Edit/>
-<Files/>
-<Properties/>
-<Prune/>
-<RecentChanges/>
-<Search/>
-<Static/>
-<Versions/>
-<WhereUsed/>
-<secure-read/>
-<secure-test/>
-<secure-write/>
+    <AddChild/>
+    <Edit/>
+    <Files/>
+    <Properties/>
+    <Prune/>
+    <RecentChanges/>
+    <Search/>
+    <Static/>
+    <Versions/>
+    <WhereUsed/>
+    <secure-read/>
+    <secure-test/>
+    <secure-write/>
 </properties>

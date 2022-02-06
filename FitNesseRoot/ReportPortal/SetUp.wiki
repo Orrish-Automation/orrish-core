@@ -1,0 +1,5 @@
+|script                                   |
+|Set suite name              |Sample suite|
+|Take screenshot at each step|true        |
+|Playwright headless         |true        |
+|Browser                     |chrome      |
