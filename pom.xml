@@ -6,7 +6,7 @@
 
     <groupId>com.orrish</groupId>
     <artifactId>orrish-core</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <name>${project.artifactId}</name>
     <description>Test Automation With Central Setup Alone</description>

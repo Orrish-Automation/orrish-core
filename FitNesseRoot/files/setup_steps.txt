@@ -32,3 +32,4 @@ Set up Steps - use only the values you need.
 |xcodeOrgId|value|
 |xcodeSigningId|value|
 |Execution capabilities|enableVideo=true,enableVNC=true|
+|Show page info on failure|true|

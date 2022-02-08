@@ -18,8 +18,8 @@ public class AppiumSteps {
         return seleniumAppiumActions.executeOnMobileAndReturnBoolean("takeMobileScreenshotWithText", text);
     }
 
-    public boolean closeAppOnDevice() {
-        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("closeAppOnDevice");
+    public boolean quitAppOnDevice() {
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("quitAppOnDevice");
     }
 
     public boolean inMobileGoBackToPreviousPage() {

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.orrish.automation.entrypoint.SetUp.databaseService;
 import static com.orrish.automation.entrypoint.SetUp.mongoDbConnectionString;
 
 public class DatabaseWithReportUtility {
@@ -55,12 +54,12 @@ public class DatabaseWithReportUtility {
         SetUp.setUpDatabase();
         try {
             if (isCommand) {
-                int count = databaseService.runCommand(queryOrCommandToRun);
+                int count = DatabaseService.getInstance().runCommand(queryOrCommandToRun);
                 ReportUtility.reportInfo("Command : " + queryOrCommandToRun + " returned " + count);
                 valueToReturn.add(count + " row(s) affected.");
                 return valueToReturn;
             } else {
-                List valueFromDatabase = databaseService.runQuery(queryOrCommandToRun);
+                List valueFromDatabase = DatabaseService.getInstance().runQuery(queryOrCommandToRun);
                 if (SetUp.printDatabaseQueryInReport) {
                     ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueFromDatabase);
                 }

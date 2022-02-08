@@ -120,7 +120,7 @@ Mobile Steps
 -------------
 |Launch app on device|
 |Take mobile screenshot with text|some text|
-|Close app on device|
+|Quit app on device|
 |In mobile go back to previous page|
 |Press home key|
 |Press back key|

@@ -1,20 +1,53 @@
 package com.orrish.automation.utility.report;
 
+import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.orrish.automation.entrypoint.ReportSteps;
 import com.orrish.automation.entrypoint.SetUp;
+import com.orrish.automation.playwright.PlaywrightActions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 
 public class ReportUtility {
 
+    public static ExtentTest createExtentTest(String suiteNode) {
+        return ExtentReportUtility.getInstance().createTest(suiteNode);
+    }
+
     public static void setExtentReportLocation(String location) {
         ExtentReportUtility.setExtentReportLocation(location);
     }
 
-    private static boolean isReportPortalEnabled() {
+    public static boolean setReportPortalUrl(String url) {
+        ReportPortalUtility.reportPortalBaseUrl = url;
+        return true;
+    }
+
+    public static boolean setReportPortalProject(String projectName) {
+        ReportPortalUtility.reportPortalProject = projectName;
+        return true;
+    }
+
+    public static boolean setReportPortalApiToken(String apiKey) {
+        ReportPortalUtility.reportPortalApiToken = apiKey;
+        return true;
+    }
+
+    public static boolean isReportPortalEnabled() {
         return ReportPortalUtility.getInstance().isReportPortalEnabled();
+    }
+
+    public static void reportPortalStartSuite(String finalParentNameName) {
+        ReportPortalUtility.getInstance().reportPortalStartSuite(finalParentNameName);
+    }
+
+    public static void reportPortalStartTest(String testNameForReportPortal) {
+        ReportPortalUtility.getInstance().reportPortalStartTest(testNameForReportPortal);
+    }
+
+    public static void setReportPortalOverallTestResult(boolean value) {
+        ReportPortalUtility.overallTestResult = value ? ReportPortalUtility.overallTestResult : ReportPortalUtility.REPORT_PORTAL_TEST_STATUS.failed;
     }
 
     private static Status getExtentStatus(REPORT_STATUS status) {
@@ -140,7 +173,8 @@ public class ReportUtility {
     }
 
     public static void reportMarkupAsDebug(String text) {
-        reportMarkup(true, REPORT_STATUS.DEBUG, text);
+        if (SetUp.showPageInfoOnFailure)
+            reportMarkup(true, REPORT_STATUS.DEBUG, text);
     }
 
     public static void reportMarkupAsPass(String text) {
@@ -188,7 +222,7 @@ public class ReportUtility {
     private static void report(REPORT_STATUS status, Object[] stepNamesPassed, RemoteWebDriver driver, int stepCounter, Exception exception) {
         String stepNameWithParameters = getMethodStyleStepName(stepNamesPassed);
         String message = stepNameWithParameters + " could not be executed successfully.";
-        if (driver != null || SetUp.playwrightPage != null) {
+        if (driver != null || PlaywrightActions.getInstance().isPlaywrightRunning()) {
             String testName = ReportSteps.getCurrentExtentTest().getModel().getName().replace(" ", "");
             String screenShotName = testName + "_Step" + stepCounter;
             reportWithScreenshot(driver, screenShotName, status, message);

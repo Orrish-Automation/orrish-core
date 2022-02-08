@@ -16,10 +16,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ReportPortalUtility {
 
-    public static String reportPortalBaseUrl;
-    public static String reportPortalProject;
-    public static String reportPortalApiToken;
-    public static REPORT_PORTAL_TEST_STATUS overallTestResult = REPORT_PORTAL_TEST_STATUS.passed;
+    protected static String reportPortalBaseUrl;
+    protected static String reportPortalProject;
+    protected static String reportPortalApiToken;
+    protected static REPORT_PORTAL_TEST_STATUS overallTestResult = REPORT_PORTAL_TEST_STATUS.passed;
     private static ReportPortalUtility reportPortalUtility;
     protected String topLevelSuiteItem;
     protected String currentSuiteItem;
@@ -30,7 +30,7 @@ public class ReportPortalUtility {
     private ReportPortalUtility() {
     }
 
-    public static ReportPortalUtility getInstance() {
+    protected static ReportPortalUtility getInstance() {
         if (reportPortalUtility == null)
             reportPortalUtility = new ReportPortalUtility();
         return reportPortalUtility;
@@ -47,12 +47,12 @@ public class ReportPortalUtility {
         return message;
     }
 
-    public boolean isReportPortalEnabled() {
+    protected boolean isReportPortalEnabled() {
         return (reportPortalBaseUrl != null && reportPortalProject != null && reportPortalApiToken != null
                 && reportPortalBaseUrl.trim().startsWith("http") && reportPortalProject.trim().length() > 0 && reportPortalApiToken.trim().length() > 0);
     }
 
-    public void resetSuiteLevel() {
+    protected void resetSuiteLevel() {
         //If you created a sub suite, this will reset it to the top level suite.
         if (!currentSuiteItem.equals(topLevelSuiteItem)) {
             reportPortalFinishSuite();
@@ -60,7 +60,7 @@ public class ReportPortalUtility {
         }
     }
 
-    public void startLaunch(String launchName) {
+    protected void startLaunch(String launchName) {
         String responseBody = sendPOSTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "launch", "{\n" +
                 "  \"name\": \"" + launchName + "\",\n" +
                 "  \"startTime\": \"" + getCurrentTime() + "\"" +
@@ -68,7 +68,7 @@ public class ReportPortalUtility {
         launchId = getFromBody(responseBody);
     }
 
-    public void reportPortalStartSuite(String suiteName) {
+    protected void reportPortalStartSuite(String suiteName) {
         resetSuiteLevel();
         String responseBodyString = sendPOSTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "item",
                 "{\n" +
@@ -80,7 +80,7 @@ public class ReportPortalUtility {
         currentSuiteItem = getFromBody(responseBodyString);
     }
 
-    public void reportPortalStartTest(String testName) {
+    protected void reportPortalStartTest(String testName) {
         if (currentSuiteItem == null) {
             reportPortalStartSuite("Suite Run");
             topLevelSuiteItem = currentSuiteItem;
@@ -95,7 +95,7 @@ public class ReportPortalUtility {
     }
 
     //Optionally, you can create test step
-    public String reportPortalStartTestStep(String stepName) {
+    protected String reportPortalStartTestStep(String stepName) {
         String responseBody = sendPOSTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "item/" + testItem, "{\n" +
                 "  \"name\": \"" + stepName + "\",\n" +
                 "  \"startTime\": \"" + getCurrentTime() + "\",\n" +
@@ -107,7 +107,7 @@ public class ReportPortalUtility {
     }
 
     //Optionally, if you created test step, remember to finish the step.
-    public String reportPortalFinishTestStep(REPORT_PORTAL_TEST_STATUS status) {
+    protected String reportPortalFinishTestStep(REPORT_PORTAL_TEST_STATUS status) {
         String responseBody = sendPUTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "item/" + stepItem,
                 "{\n" +
                         "  \"endTime\": \"" + getCurrentTime() + "\",\n" +
@@ -118,7 +118,7 @@ public class ReportPortalUtility {
     }
 
     //Status is optional if you created test steps earlier
-    public void reportPortalFinishTest(REPORT_PORTAL_TEST_STATUS status) {
+    protected void reportPortalFinishTest(REPORT_PORTAL_TEST_STATUS status) {
         String responseBody = sendPUTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "item/" + testItem,
                 "{\n" +
                         "  \"endTime\": \"" + getCurrentTime() + "\",\n" +
@@ -131,7 +131,7 @@ public class ReportPortalUtility {
 
     //Log steps here
 
-    public void reportPortalFinishSuite() {
+    protected void reportPortalFinishSuite() {
         String responseBody = sendPUTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "item/" + currentSuiteItem,
                 "{\n" +
                         "  \"endTime\": \"" + getCurrentTime() + "\",\n" +
@@ -140,7 +140,7 @@ public class ReportPortalUtility {
         getFromBody(responseBody);
     }
 
-    public void reportPortalFinishLaunch() {
+    protected void reportPortalFinishLaunch() {
         String responseBody = sendPUTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "launch/" + launchId + "/finish",
                 "{\n" +
                         "  \"endTime\": \"" + getCurrentTime() + "\"\n" +
@@ -148,7 +148,7 @@ public class ReportPortalUtility {
         getFromBody(responseBody);
     }
 
-    public void reportPortalLogStep(REPORT_PORTAL_LOG_TYPE level, String message) {
+    protected void reportPortalLogStep(REPORT_PORTAL_LOG_TYPE level, String message) {
         message = escapeString(message);
         String responseBody = sendPOSTToReportPortalServer(reportPortalBaseUrl + reportPortalProject + "log",
                 "{\n" +
@@ -167,7 +167,7 @@ public class ReportPortalUtility {
         return sdf.format(new java.util.Date());
     }
 
-    public void reportPortalLogStepWithScreenshot(REPORT_PORTAL_LOG_TYPE level, String screenShotPath, String message) {
+    protected void reportPortalLogStepWithScreenshot(REPORT_PORTAL_LOG_TYPE level, String screenShotPath, String message) {
 
         String[] parts = screenShotPath.split("/");
         String fileName = parts[parts.length - 1];
@@ -208,7 +208,7 @@ public class ReportPortalUtility {
         }
     }
 
-    public void reportPortalLogStepWithJSON(REPORT_PORTAL_LOG_TYPE level, String message, String jsonBody) {
+    protected void reportPortalLogStepWithJSON(REPORT_PORTAL_LOG_TYPE level, String message, String jsonBody) {
 
         File file = GeneralSteps.createFile("jsonBody.txt", jsonBody);
         String url = reportPortalBaseUrl + reportPortalProject + "log";
@@ -274,7 +274,7 @@ public class ReportPortalUtility {
         }
     }
 
-    public enum REPORT_PORTAL_LOG_TYPE {
+    protected enum REPORT_PORTAL_LOG_TYPE {
         FATAL,
         ERROR,
         WARN,
@@ -283,7 +283,7 @@ public class ReportPortalUtility {
         TRACE
     }
 
-    public enum REPORT_PORTAL_TEST_STATUS {
+    protected enum REPORT_PORTAL_TEST_STATUS {
         passed,
         failed,
         stopped,

@@ -1,6 +1,5 @@
 package com.orrish.automation.entrypoint;
 
-import com.orrish.automation.utility.report.ReportPortalUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 
 public class SuiteSetUp {
@@ -9,17 +8,17 @@ public class SuiteSetUp {
     }
 
     public boolean reportPortalUrl(String url) {
-        ReportPortalUtility.reportPortalBaseUrl = url;
+        ReportUtility.setReportPortalUrl(url);
         return true;
     }
 
     public boolean reportPortalProject(String projectName) {
-        ReportPortalUtility.reportPortalProject = projectName;
+        ReportUtility.setReportPortalProject(projectName);
         return true;
     }
 
     public boolean reportPortalApiToken(String apiKey) {
-        ReportPortalUtility.reportPortalApiToken = apiKey;
+        ReportUtility.setReportPortalApiToken(apiKey);
         return true;
     }
 

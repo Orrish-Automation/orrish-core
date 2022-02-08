@@ -14,7 +14,6 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.orrish.automation.utility.report.ReportPortalUtility;
 import com.orrish.automation.utility.report.ReportUtility;
 import com.orrish.automation.utility.verification.GeneralAndAPIVerifyAndReportUtility;
 import io.restassured.RestAssured;
@@ -164,7 +163,7 @@ public class APISteps {
 
     public boolean callAPIWithRequest(String requestBody, String type) {
         boolean value = callAPIWithRequest(requestBody, type, true);
-        ReportPortalUtility.overallTestResult = value ? ReportPortalUtility.overallTestResult : ReportPortalUtility.REPORT_PORTAL_TEST_STATUS.failed;
+        ReportUtility.setReportPortalOverallTestResult(value);
         return value;
     }
 

@@ -11,7 +11,7 @@ import com.aventstack.extentreports.reporter.configuration.ChartLocation;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Page;
-import com.orrish.automation.entrypoint.SetUp;
+import com.orrish.automation.playwright.PlaywrightActions;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -39,7 +39,7 @@ public class ExtentReportUtility {
     private ExtentReportUtility() {
     }
 
-    public static ExtentReports getInstance() {
+    protected static ExtentReports getInstance() {
         String fullReportPath = reportAndScreenshotFolderPath.trim().length() == 0
                 ? reportFileName
                 : reportAndScreenshotFolderPath + File.separator + reportFileName;
@@ -48,7 +48,7 @@ public class ExtentReportUtility {
         return extentReports;
     }
 
-    public static void setExtentReportLocation(String path) {
+    protected static void setExtentReportLocation(String path) {
         reportAndScreenshotFolderPath = path.contains(File.separator) ? StringUtils.substringBeforeLast(path, File.separator) : "";
         reportFileName = path.contains(File.separator) ? StringUtils.substringAfterLast(path, File.separator) : path;
     }
@@ -77,29 +77,29 @@ public class ExtentReportUtility {
         }
     }
 
-    public static void report(Status type, String message) {
+    protected static void report(Status type, String message) {
         getCurrentExtentTest().log(type, message);
     }
 
-    public static void reportInExtent(Status type, String message) {
+    protected static void reportInExtent(Status type, String message) {
         getCurrentExtentTest().log(type, message);
     }
 
-    public static void reportJsonInExtent(String message, String valueToBeJsonFormatted) {
+    protected static void reportJsonInExtent(String message, String valueToBeJsonFormatted) {
         reportInExtent(Status.INFO, message + getFormattedJson(valueToBeJsonFormatted));
     }
 
-    public static void reportException(Status type, Throwable throwable) {
+    protected static void reportException(Status type, Throwable throwable) {
         getCurrentExtentTest().log(type, throwable);
     }
 
-    public static void reportWithMarkUp(Status type, String text) {
+    protected static void reportWithMarkUp(Status type, String text) {
         Markup markupText = MarkupHelper.createCodeBlock(text);
         getCurrentExtentTest().log(type, markupText);
     }
 
-    public static String reportWithScreenshot(RemoteWebDriver driver, String fileName, Status type, String message) {
-        if (driver == null && SetUp.playwrightPage == null)
+    protected static String reportWithScreenshot(RemoteWebDriver driver, String fileName, Status type, String message) {
+        if (driver == null && !PlaywrightActions.getInstance().isPlaywrightRunning())
             return fileName;
         try {
             String fullFileName = reportAndScreenshotFolderPath.trim().length() == 0 ? fileName : reportAndScreenshotFolderPath + File.separator + fileName;
@@ -107,7 +107,7 @@ public class ExtentReportUtility {
             if (destFile.exists())
                 destFile.delete();
             if (driver == null) {
-                SetUp.playwrightPage.screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fullFileName + ".png")));
+                PlaywrightActions.getInstance().getPlaywrightPage().screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fullFileName + ".png")));
             } else {
                 byte[] srcBytes = driver.getScreenshotAs(OutputType.BYTES);
                 BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(srcBytes));
@@ -129,7 +129,7 @@ public class ExtentReportUtility {
         return fileName;
     }
 
-    public static void reportWithImage(String fileName, Status type, String message) {
+    protected static void reportWithImage(String fileName, Status type, String message) {
         try {
             getCurrentExtentTest().log(type, message, MediaEntityBuilder.createScreenCaptureFromPath(fileName).build());
         } catch (Exception ex) {
@@ -138,10 +138,10 @@ public class ExtentReportUtility {
         }
     }
 
-    public static void reportPassInExtent(Object[] stepNamesPassed, boolean shouldTakeScreenshotAtEachStep, RemoteWebDriver driver, int stepCounter) {
+    protected static void reportPassInExtent(Object[] stepNamesPassed, boolean shouldTakeScreenshotAtEachStep, RemoteWebDriver driver, int stepCounter) {
         String stepNameWithParameters = getMethodStyleStepName(stepNamesPassed);
         String extentMessage = stepNameWithParameters + " performed successfully.";
-        if (shouldTakeScreenshotAtEachStep && (driver != null || SetUp.playwrightPage != null)) {
+        if (shouldTakeScreenshotAtEachStep && (driver != null || PlaywrightActions.getInstance().isPlaywrightRunning())) {
             String testName = getCurrentExtentTest().getModel().getName().replace(" ", "");
             String screenshotName = testName + "_Step" + stepCounter;
             reportWithScreenshot(driver, screenshotName, Status.PASS, extentMessage);
@@ -149,7 +149,7 @@ public class ExtentReportUtility {
             report(Status.PASS, extentMessage);
     }
 
-    public static void reportFailInExtent(String message) {
+    protected static void reportFailInExtent(String message) {
         report(Status.FAIL, message);
     }
 
@@ -157,7 +157,7 @@ public class ExtentReportUtility {
         getInstance().flush();
     }
 
-    public static Map<Status, List<String>> getTestResult() {
+    protected static Map<Status, List<String>> getTestResult() {
         Map<Status, List<String>> results = new HashMap<>();
         List<Test> tests = htmlReporter.getTestList();
         for (Test eachTest : tests) {
