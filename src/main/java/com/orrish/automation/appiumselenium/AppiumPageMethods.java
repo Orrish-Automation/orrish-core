@@ -40,6 +40,14 @@ public class AppiumPageMethods {
         return appiumPageMethods;
     }
 
+    public AppiumDriver getAppiumDriver() {
+        return appiumDriver;
+    }
+
+    public WebDriverWait getWebDriverWait() {
+        return appiumDriverWait;
+    }
+
     public boolean launchAppOnDevice() throws MalformedURLException {
 
         DesiredCapabilities capabilities = new DesiredCapabilities();

@@ -37,6 +37,14 @@ public class SeleniumPageMethods {
         return seleniumPageMethods;
     }
 
+    public RemoteWebDriver getWebDriver() {
+        return webDriver;
+    }
+
+    public WebDriverWait getWebDriverWait() {
+        return webDriverWait;
+    }
+
     public boolean quitBrowser() {
 
         if (webDriver != null && webDriver.getSessionId() != null) {
@@ -369,8 +377,8 @@ public class SeleniumPageMethods {
         return true;
     }
 
-    public void reportExecutionStatus(boolean isMobileStepPassed, Object[] args) {
-        CommonPageMethod.reportExecutionStatus(isMobileStepPassed, args, webDriver);
+    public void reportExecutionStatus(boolean isStepPassed, Object[] args) {
+        CommonPageMethod.reportExecutionStatus(isStepPassed, args, webDriver);
     }
 
     public void reportException(Object[] args, Exception ex) {

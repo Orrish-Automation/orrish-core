@@ -176,19 +176,26 @@ public class GeneralSteps {
         return executeShell(cmd, false, false);
     }
 
-    private static boolean executeShell(String cmd, boolean shouldReport, boolean shouldWait) {
-        StringBuilder output = new StringBuilder();
+    private static boolean executeShell(String command, boolean shouldReport, boolean shouldWait) {
         try {
-            Process p = Runtime.getRuntime().exec(cmd);
+            Process process = Runtime.getRuntime().exec(command);
             if (shouldWait) {
-                p.waitFor();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                BufferedReader inputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                process.waitFor();
+                StringBuilder output = new StringBuilder();
                 String line;
-                while ((line = reader.readLine()) != null) {
+                while ((line = inputReader.readLine()) != null) {
                     output.append(line).append("\n");
                 }
-                if (shouldReport)
-                    ReportUtility.reportMarkupAsPass("Command :" + cmd + "\nOutput:" + output);
+                while ((line = errorReader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+                if (shouldReport) {
+                    ReportUtility.reportMarkupAsPass("Command :" + command + "\nOutput:" + output);
+                }
+            } else {
+                ReportUtility.reportMarkupAsPass("Command :" + command + " may have been executed. Since there was no wait for that process, it is not sure whether the command was successful.");
             }
         } catch (Exception ex) {
             ReportUtility.reportExceptionFail(ex);
@@ -196,7 +203,6 @@ public class GeneralSteps {
         }
         return true;
     }
-
 
     //If you want to get sensitive information etc. from environment variable. Example: cloud provider API key etc.
     public static String getFromSystemEnvironmentVariable(String environmentVariableName) {

@@ -57,13 +57,11 @@ public class DatabaseWithReportUtility {
                 int count = DatabaseService.getInstance().runCommand(queryOrCommandToRun);
                 ReportUtility.reportInfo("Command : " + queryOrCommandToRun + " returned " + count);
                 valueToReturn.add(count + " row(s) affected.");
-                return valueToReturn;
             } else {
-                List valueFromDatabase = DatabaseService.getInstance().runQuery(queryOrCommandToRun);
+                valueToReturn = DatabaseService.getInstance().runQuery(queryOrCommandToRun);
                 if (SetUp.printDatabaseQueryInReport) {
-                    ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueFromDatabase);
+                    ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueToReturn);
                 }
-                return valueFromDatabase;
             }
         } catch (Exception ex) {
             ReportUtility.reportInfo("Query/Command : " + queryOrCommandToRun + " threw exception : " + ex.getMessage());

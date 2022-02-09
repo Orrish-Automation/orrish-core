@@ -280,6 +280,7 @@ public class SeleniumAppiumActions {
             //*/
         } catch (Exception ex) {
             isWebStepPassed = false;
+            seleniumPageMethods.reportExecutionStatus(false, args);
             Exception exception = (ex instanceof InvocationTargetException) ? (Exception) ((InvocationTargetException) ex).getTargetException() : ex;
             seleniumPageMethods.reportException(args, exception);
             return null;
