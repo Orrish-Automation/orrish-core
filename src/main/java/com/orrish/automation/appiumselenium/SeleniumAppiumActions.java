@@ -235,6 +235,12 @@ public class SeleniumAppiumActions {
                 case "waitUntilElementTextDoesNotContain":
                     isWebStepPassed = seleniumPageMethods.waitUntilElementTextDoesNotContain(args[1].toString(), args[2].toString());
                     break;
+                case "isElementDisplayedFor":
+                    return seleniumPageMethods.isElementDisplayedFor(args[1].toString());
+                case "isElementEnabledFor":
+                    return seleniumPageMethods.isElementEnabledFor(args[1].toString());
+                case "isElementSelectedFor":
+                    return seleniumPageMethods.isElementSelectedFor(args[1].toString());
                 case "enterInTextFieldFor":
                     isWebStepPassed = seleniumPageMethods.enterInTextField(args[1].toString(), args[2].toString());
                     break;

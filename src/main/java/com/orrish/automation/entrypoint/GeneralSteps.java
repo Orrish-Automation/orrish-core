@@ -143,6 +143,17 @@ public class GeneralSteps {
         return GeneralAndAPIVerifyAndReportUtility.isListEqual(list1, list2);
     }
 
+    public static boolean areAllValuesInListOneOf(List actualList, List expectedList) {
+        for (Object value : actualList) {
+            if (!expectedList.contains(String.valueOf(value))) {
+                ReportUtility.reportFail(value + " is not in the expected value " + expectedList);
+                return false;
+            }
+        }
+        ReportUtility.reportPass("The values in list " + actualList + " are one of " + expectedList);
+        return true;
+    }
+
     public static boolean isOneOf(String string1, List<String> stringList) {
         return GeneralAndAPIVerifyAndReportUtility.isOneOf(string1, stringList);
     }

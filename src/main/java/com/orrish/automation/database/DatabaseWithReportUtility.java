@@ -16,12 +16,7 @@ public class DatabaseWithReportUtility {
             ReportUtility.reportInfo("DB query not run. It is marked not to be verified.");
             return true;
         }
-        List valueListFromDb = runQueryOrCommand(query, false);
-        if (valueListFromDb.size() == 0) {
-            ReportUtility.reportFail("Database returned no entries. So, expected value " + expectedValue + " was not present.");
-            return false;
-        }
-        String valueFromDb = String.valueOf(valueListFromDb.get(0));
+        String valueFromDb = runDBQueryAndGetCell(query);
         if (expectedValue.contains(valueFromDb)) {
             ReportUtility.reportPass("Database value: " + valueFromDb + System.lineSeparator() + "Expected: " + expectedValue);
             return true;
@@ -31,16 +26,16 @@ public class DatabaseWithReportUtility {
         }
     }
 
-    public static String runQueryAndReturnString(String query) {
+    public static String runDBQueryAndGetCell(String query) {
         List<Map<String, Object>> values = runQueryOrCommand(query, false);
         if (values == null || values.size() == 0)
-            return "No Data from database.";
+            return "No Data";
         if (values.size() > 1)
-            return "Database returned more than one row. Please refine your query.";
+            return "Database returned " + values.size() + " records. Only 1 is expected.";
         if (!(values.get(0) instanceof java.util.Map))
             return String.valueOf(values.get(0));
         if (values.get(0).keySet().size() > 1)
-            return "Database returned more than one column. Please refine your query.";
+            return "Database returned " + values.get(0).keySet().size() + " columns. Only 1 is expected.";
         String key = values.get(0).keySet().stream().findFirst().get();
         return values.get(0).get(key).toString();
     }
@@ -50,7 +45,7 @@ public class DatabaseWithReportUtility {
     }
 
     public static List runQueryOrCommand(String queryOrCommandToRun, boolean isCommand) {
-        List<String> valueToReturn = new ArrayList<>();
+        List valueToReturn = new ArrayList<>();
         SetUp.setUpDatabase();
         try {
             if (isCommand) {

@@ -6,7 +6,7 @@
 
     <groupId>com.orrish</groupId>
     <artifactId>orrish-core</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.3</version>
 
     <name>${project.artifactId}</name>
     <description>Test Automation With Central Setup Alone</description>
@@ -62,6 +62,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>12.2.0.1</version>
         </dependency>
         <!-- API dependencies -->
         <dependency>

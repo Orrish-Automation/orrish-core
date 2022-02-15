@@ -7,6 +7,7 @@ import com.orrish.automation.utility.verification.GeneralAndAPIVerifyAndReportUt
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 
@@ -34,25 +35,45 @@ public class DatabaseSteps {
                 ReportUtility.reportInfo("Not running query as it is marked to be not verified.");
                 return true;
             }
-            String valueFromDatabase = String.valueOf(DatabaseWithReportUtility.runQueryAndReturnString(query));
+            String valueFromDatabase = String.valueOf(DatabaseWithReportUtility.runDBQueryAndGetCell(query));
             return GeneralAndAPIVerifyAndReportUtility.doesContain(valueFromDatabase, valueToCompare);
         }
         return true;
     }
 
-    public String runDBQueryAndGetSingleValue(String queryToRun) {
+    public String runDBQueryAndGetCell(String queryToRun) {
         if (shouldDBStepBeExecuted()) {
-            return DatabaseWithReportUtility.runQueryAndReturnString(queryToRun);
+            return DatabaseWithReportUtility.runDBQueryAndGetCell(queryToRun);
         }
         return "";
     }
 
-    public String runDBQueryAndReturnListAsString(String queryToRun) {
-        return String.valueOf(runDBQueryAndReturnList(queryToRun));
+    public List<String> runDBQueryAndGetColumn(String queryToRun) {
+        List<String> valueToReturn = new ArrayList<>();
+        if (shouldDBStepBeExecuted()) {
+            List<Map<String, Object>> valueFromDb = runQueryOrCommand(queryToRun, false);
+            if (valueFromDb.size() == 0)
+                return valueToReturn;
+            if (valueFromDb.get(0).size() != 1) {
+                ReportSteps.writeInReport("You have specified a query which returns more than one column. Please modify query.");
+                return valueToReturn;
+            }
+            valueFromDb.forEach(e -> {
+                String key = e.entrySet().iterator().next().getKey();
+                Object valueObject = e.get(key);
+                String valueString = (valueObject == null) ? "" : String.valueOf(valueObject);
+                valueToReturn.add(valueString);
+            });
+        }
+        return valueToReturn;
     }
 
-    public List runDBQueryAndReturnList(String query) {
-        return runQueryOrCommand(query, false);
+    public List runDBQueryAndGetRecords(String queryToRun) {
+        if (shouldDBStepBeExecuted()) {
+            List valueToReturn = runQueryOrCommand(queryToRun, false);
+            return valueToReturn;
+        }
+        return new ArrayList();
     }
 
     public String waitTillDBQueryReturnsValueWaitingUpToSeconds(String queryToRun, int seconds) {

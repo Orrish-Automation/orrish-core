@@ -179,6 +179,18 @@ public class SeleniumPageMethods {
         return true;
     }
 
+    public boolean isElementDisplayedFor(String locator) {
+        return CommonPageMethod.isElementDisplayedFor(webDriver, locator);
+    }
+
+    public boolean isElementEnabledFor(String locator) {
+        return CommonPageMethod.isElementEnabledFor(webDriver, webDriverWait, locator);
+    }
+
+    public boolean isElementSelectedFor(String locator) {
+        return CommonPageMethod.isElementSelectedFor(webDriver, webDriverWait, locator);
+    }
+
     public boolean isAlertPresent() {
         try {
             webDriver.switchTo().alert();

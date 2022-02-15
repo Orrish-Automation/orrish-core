@@ -76,6 +76,18 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsDisplayedFor", locator, description);
     }
 
+    public boolean isElementDisplayedFor(String locator, String description) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementDisplayedFor", locator, description);
+    }
+
+    public boolean isElementEnabledFor(String locator, String description) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementEnabledFor", locator, description);
+    }
+
+    public boolean isElementSelectedFor(String locator, String description) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementSelectedFor", locator, description);
+    }
+
     //Double comma separated values, single comma may be present in xpath, hence double comma
     public boolean waitUntilOneOfTheLocatorsIsEnabled(String locator) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheLocatorsIsEnabled", locator);

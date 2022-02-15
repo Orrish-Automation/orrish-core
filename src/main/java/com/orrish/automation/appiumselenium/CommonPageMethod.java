@@ -1,8 +1,8 @@
 package com.orrish.automation.appiumselenium;
 
 import com.orrish.automation.entrypoint.SetUp;
-import com.orrish.automation.utility.report.UIStepReporter;
 import com.orrish.automation.utility.report.ReportUtility;
+import com.orrish.automation.utility.report.UIStepReporter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -80,6 +80,30 @@ public class CommonPageMethod {
     public static WebElement waitForAndGetElement(WebDriver webDriver, WebDriverWait webDriverWait, By byElement) {
         webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(byElement));
         return webDriver.findElement(byElement);
+    }
+
+    public static boolean isElementDisplayedFor(RemoteWebDriver webDriver, String locator) {
+        try {
+            return webDriver.findElement(getElementBy(locator)).isDisplayed();
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public static boolean isElementEnabledFor(RemoteWebDriver webDriver, WebDriverWait webDriverWait, String locator) {
+        try {
+            return waitForAndGetElement(webDriver, webDriverWait, getElementBy(locator)).isEnabled();
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public static boolean isElementSelectedFor(RemoteWebDriver webDriver, WebDriverWait webDriverWait, String locator) {
+        try {
+            return waitForAndGetElement(webDriver, webDriverWait, getElementBy(locator)).isSelected();
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     public static By getElementBy(String locator) {

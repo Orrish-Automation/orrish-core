@@ -124,11 +124,11 @@ public class APISteps {
 
     public boolean callGETForEndpoint(String serverEndpoint) {
         setServerEndpoint(serverEndpoint);
-        return callAPIWithRequest(null, "GET");
+        return callWithRequest("GET", null);
     }
 
     public boolean callGETWithRequest(String requestBody) {
-        return callAPIWithRequest(requestBody, "GET");
+        return callWithRequest("GET", requestBody);
     }
 
     public boolean callPOSTWithRequest(String requestBody) {
@@ -137,32 +137,32 @@ public class APISteps {
             if (requestBody.startsWith("\n"))
                 requestBody = requestBody.replaceFirst("\n", "").trim();
         }
-        return callAPIWithRequest(requestBody, "POST");
+        return callWithRequest("POST", requestBody);
     }
 
     public boolean callPOST() {
-        return callAPIWithRequest(null, "POST");
+        return callWithRequest("POST", null);
     }
 
     public boolean callPUTWithRequest(String requestBody) {
-        return callAPIWithRequest(requestBody, "PUT");
+        return callWithRequest("PUT", requestBody);
     }
 
     public boolean callDELETEForEndpoint(String serverEndpoint) {
         setServerEndpoint(serverEndpoint);
-        return callAPIWithRequest(null, "DELETE");
+        return callWithRequest("DELETE", null);
     }
 
     public boolean callDELETEWithRequest(String requestBody) {
-        return callAPIWithRequest(requestBody, "DELETE");
+        return callWithRequest("DELETE", requestBody);
     }
 
-    public boolean callAPIWithRequestWithoutReporting(String requestBody, String type) {
-        return callAPIWithRequest(requestBody, type.toUpperCase().trim(), false);
+    public boolean callWithRequestWithoutReporting(String type, String requestBody) {
+        return callWithRequest(type.toUpperCase().trim(), requestBody, false);
     }
 
-    public boolean callAPIWithRequest(String requestBody, String type) {
-        boolean value = callAPIWithRequest(requestBody, type, true);
+    public boolean callWithRequest(String type, String requestBody) {
+        boolean value = callWithRequest(type, requestBody, true);
         ReportUtility.setReportPortalOverallTestResult(value);
         return value;
     }
@@ -397,7 +397,7 @@ public class APISteps {
         }
     }
 
-    private boolean callAPIWithRequest(String requestBody, String type, boolean shouldReport) {
+    private boolean callWithRequest(String type, String requestBody, boolean shouldReport) {
         try {
             RestAssured.useRelaxedHTTPSValidation();
             ReportUtility.reportInfo(shouldReport, " === Preparing API call ===");
@@ -434,6 +434,7 @@ public class APISteps {
                 ReportUtility.reportJsonAsInfo(shouldReport, "Request form data values are : ", entries.toString());
             }
             RequestSpecification requestSpecification = given().spec(requestSpecBuilder.build()).when();
+            type = type.trim().toUpperCase();
             ReportUtility.reportInfo(shouldReport, "Sending " + type + " request to " + urlToSend);
             if (type.contentEquals("POST"))
                 apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.post() : requestSpecification.post(urlToSend);
@@ -450,10 +451,12 @@ public class APISteps {
             }
             String responseString = apiResponse.getBody().asString();
             String responseContentTypeHeader = apiResponse.getHeader("Content-Type");
-            if (responseContentTypeHeader == null || responseContentTypeHeader.contains("text/xml")) {
-                ReportUtility.reportMarkupAsInfo(shouldReport, "Response body :" + System.lineSeparator() + responseString);
-            } else {
-                ReportUtility.reportJsonAsInfo(shouldReport, "Response body :", responseString);
+            if (shouldReport) {
+                if (responseContentTypeHeader == null || responseContentTypeHeader.contains("text/xml")) {
+                    ReportUtility.reportMarkupAsInfo(shouldReport, "Response body :" + System.lineSeparator() + responseString);
+                } else {
+                    ReportUtility.reportJsonAsInfo(shouldReport, "Response body :", responseString);
+                }
             }
             return true;
         } catch (Exception ex) {
