@@ -26,8 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentExtentTest;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class ExtentReportUtility {
 
@@ -57,8 +57,8 @@ public class ExtentReportUtility {
         if (Files.notExists(Paths.get(reportAndScreenshotFolderPath))) {
             try {
                 Files.createDirectories(Paths.get(reportAndScreenshotFolderPath));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
         htmlReporter = new ExtentHtmlReporter(fileName);
@@ -72,8 +72,7 @@ public class ExtentReportUtility {
             extentReports = new ExtentReports();
             extentReports.attachReporter(htmlReporter);
         } catch (Exception ex) {
-            extentReports = new ExtentReports();
-            extentReports.attachReporter(htmlReporter);
+            ex.printStackTrace();
         }
     }
 

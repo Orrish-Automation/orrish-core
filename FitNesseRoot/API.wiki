@@ -1,5 +1,13 @@
+---
+Suite
+---
+!***< library
 !path target/orrish-core.jar
-
+*!
 This suite contains a sample test which run an API and does a basic validation. After you execute a test, you can check the report by clicking on the link at the bottom or each page.
+You can define variables which can be picked up by tests.
 ------
+!***> Variables
+!define API_URL {https://jsonplaceholder.typicode.com/users/1}
+*!
 !contents -R2 -g -p -f -h

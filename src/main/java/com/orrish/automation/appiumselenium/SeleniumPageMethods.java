@@ -31,9 +31,14 @@ public class SeleniumPageMethods {
 
     private static SeleniumPageMethods seleniumPageMethods;
 
-    public static synchronized SeleniumPageMethods getInstance() {
-        if (seleniumPageMethods == null)
-            seleniumPageMethods = new SeleniumPageMethods();
+    public static SeleniumPageMethods getInstance() {
+        if (seleniumPageMethods == null) {
+            synchronized (SeleniumPageMethods.class) {
+                if (seleniumPageMethods == null) {
+                    seleniumPageMethods = new SeleniumPageMethods();
+                }
+            }
+        }
         return seleniumPageMethods;
     }
 

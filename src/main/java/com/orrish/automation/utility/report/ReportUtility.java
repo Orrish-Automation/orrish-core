@@ -7,7 +7,7 @@ import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.playwright.PlaywrightActions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class ReportUtility {
 
@@ -20,11 +20,13 @@ public class ReportUtility {
     }
 
     public static boolean setReportPortalUrl(String url) {
+        url = url.endsWith("/") ? url : url + "/";
         ReportPortalUtility.reportPortalBaseUrl = url;
         return true;
     }
 
     public static boolean setReportPortalProject(String projectName) {
+        projectName = projectName.endsWith("/") ? projectName : projectName + "/";
         ReportPortalUtility.reportPortalProject = projectName;
         return true;
     }
@@ -75,9 +77,7 @@ public class ReportUtility {
     public static void report(REPORT_STATUS status, String message) {
         ExtentReportUtility.reportInExtent(getExtentStatus(status), message);
         if (isReportPortalEnabled()) {
-            Thread thread = new Thread(() ->
-                    ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), message));
-            thread.run();
+            ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), message);
         }
     }
 
@@ -106,16 +106,14 @@ public class ReportUtility {
     public static void reportWithScreenshot(RemoteWebDriver driver, String screenshotFileName, REPORT_STATUS status, String message) {
         String reportPath = ExtentReportUtility.reportWithScreenshot(driver, screenshotFileName, getExtentStatus(status), message);
         if (isReportPortalEnabled()) {
-            Thread thread = new Thread(() -> ReportPortalUtility.getInstance().reportPortalLogStepWithScreenshot(getReportPortalStatus(status), reportPath, message));
-            thread.run();
+            ReportPortalUtility.getInstance().reportPortalLogStepWithScreenshot(getReportPortalStatus(status), reportPath, message);
         }
     }
 
     public static void reportWithImage(String urlOrFile, REPORT_STATUS status, String message) {
         ExtentReportUtility.reportWithImage(urlOrFile, getExtentStatus(status), message);
         if (isReportPortalEnabled()) {
-            Thread thread = new Thread(() -> ReportPortalUtility.getInstance().reportPortalLogStepWithScreenshot(getReportPortalStatus(status), urlOrFile, message));
-            thread.run();
+            ReportPortalUtility.getInstance().reportPortalLogStepWithScreenshot(getReportPortalStatus(status), urlOrFile, message);
         }
     }
 
@@ -130,8 +128,7 @@ public class ReportUtility {
     private static void reportException(REPORT_STATUS status, Throwable throwable) {
         ExtentReportUtility.reportException(getExtentStatus(status), throwable);
         if (isReportPortalEnabled()) {
-            Thread thread = new Thread(() -> ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), throwable.toString()));
-            thread.run();
+            ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), throwable.toString());
         }
     }
 
@@ -143,15 +140,13 @@ public class ReportUtility {
         if (!shouldReport) return;
         ExtentReportUtility.reportJsonInExtent(text, jsonString);
         if (isReportPortalEnabled()) {
-            Thread thread = new Thread(() -> ReportPortalUtility.getInstance().reportPortalLogStepWithJSON(ReportPortalUtility.REPORT_PORTAL_LOG_TYPE.INFO, text, jsonString));
-            thread.run();
+            ReportPortalUtility.getInstance().reportPortalLogStepWithJSON(ReportPortalUtility.REPORT_PORTAL_LOG_TYPE.INFO, text, jsonString);
         }
     }
 
     public static boolean launchReportPortalReport(String name) {
         if (isReportPortalEnabled()) {
-            Thread thread = new Thread(() -> ReportPortalUtility.getInstance().startLaunch(name.trim()));
-            thread.run();
+            ReportPortalUtility.getInstance().startLaunch(name.trim());
         }
         return true;
     }
@@ -159,12 +154,9 @@ public class ReportUtility {
     public static void updateReport() {
         ExtentReportUtility.getInstance().flush();
         if (isReportPortalEnabled()) {
-            Thread threadTest = new Thread(() -> {
-                //ReportPortalUtility.getInstance().reportPortalFinishTestStep(ExecutionVariables.overallTestResult);
-                ReportPortalUtility.getInstance().reportPortalFinishTest(ReportPortalUtility.overallTestResult);
-                ReportPortalUtility.getInstance().resetSuiteLevel();
-            });
-            threadTest.run();
+            //ReportPortalUtility.getInstance().reportPortalFinishTestStep(ExecutionVariables.overallTestResult);
+            ReportPortalUtility.getInstance().reportPortalFinishTest(ReportPortalUtility.overallTestResult);
+            ReportPortalUtility.getInstance().resetSuiteLevel();
         }
     }
 
@@ -185,25 +177,20 @@ public class ReportUtility {
         if (!shouldReport) return;
         ExtentReportUtility.reportWithMarkUp(getExtentStatus(status), text);
         if (isReportPortalEnabled()) {
-            Thread thread = new Thread(() -> ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), text));
-            thread.run();
+            ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), text);
         }
     }
 
     public static void resetSuite() {
         if (isReportPortalEnabled()) {
-            Thread threadTest = new Thread(() -> ReportPortalUtility.getInstance().resetSuiteLevel());
-            threadTest.run();
+            ReportPortalUtility.getInstance().resetSuiteLevel();
         }
     }
 
     public static void finishReportPortalReport() {
         if (isReportPortalEnabled()) {
-            Thread threadSuite = new Thread(() -> {
-                ReportPortalUtility.getInstance().reportPortalFinishSuite();
-                ReportPortalUtility.getInstance().reportPortalFinishLaunch();
-            });
-            threadSuite.run();
+            ReportPortalUtility.getInstance().reportPortalFinishSuite();
+            ReportPortalUtility.getInstance().reportPortalFinishLaunch();
         }
     }
 

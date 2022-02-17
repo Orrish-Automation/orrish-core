@@ -15,7 +15,6 @@ import com.jayway.jsonpath.internal.JsonContext;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.orrish.automation.utility.report.ReportUtility;
-import com.orrish.automation.utility.verification.GeneralAndAPIVerifyAndReportUtility;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
@@ -24,8 +23,7 @@ import io.restassured.specification.RequestSpecification;
 import java.io.IOException;
 import java.util.*;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMapFromString;
-import static com.orrish.automation.entrypoint.GeneralSteps.replaceStringWithIn;
+import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
 import static com.orrish.automation.entrypoint.SetUp.jsonRequestTemplate;
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
@@ -67,7 +65,7 @@ public class APISteps {
 
     //This is a plain Java replace functionality to manipulate data for data driven testing
     public String replaceStringInJsonTemplateWith(String valueToFind, String valueToReplace) {
-        return replaceStringWithIn(valueToFind, valueToReplace, jsonRequestTemplate);
+        return GeneralSteps.replaceStringWithIn(valueToFind, valueToReplace, jsonRequestTemplate);
     }
 
     public String getModifiedAPIRequest(Map<String, Object> keyValues, String requestAsString) {
@@ -244,23 +242,23 @@ public class APISteps {
     }
 
     public boolean isResponseJsonEqualTo(String expectedResponseString) {
-        return GeneralAndAPIVerifyAndReportUtility.verifyJsons(apiResponse, expectedResponseString);
+        return GeneralSteps.verifyJsons(apiResponse, expectedResponseString);
     }
 
     public boolean verifyValues(String responseToVerify) {
-        return GeneralAndAPIVerifyAndReportUtility.verifyValues(responseToVerify);
+        return GeneralSteps.verifyValues(responseToVerify);
     }
 
     public boolean verifyResponseFor(String responseToVerify) {
-        return GeneralAndAPIVerifyAndReportUtility.verifyResponseFor(apiResponse, responseToVerify);
+        return GeneralSteps.verifyResponseFor(apiResponse, responseToVerify);
     }
 
     public boolean verifyForInJsonString(String responseToVerify, String json) {
-        return GeneralAndAPIVerifyAndReportUtility.verifyResponseStringFor(json, responseToVerify);
+        return GeneralSteps.verifyResponseStringFor(json, responseToVerify);
     }
 
     public boolean verifyObjectNodeCount(String node, String count) {
-        return GeneralAndAPIVerifyAndReportUtility.verifyObjectNodeCount(apiResponse, node, count.trim());
+        return GeneralSteps.verifyObjectNodeCount(apiResponse, node, count.trim());
     }
 
     public List getAllValuesOfInList(String exactNode, String parentNode) {

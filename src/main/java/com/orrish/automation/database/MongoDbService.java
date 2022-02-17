@@ -46,12 +46,16 @@ public class MongoDbService {
     private MongoDbService() {
     }
 
-    public static synchronized MongoDbService getInstance() {
+    public static MongoDbService getInstance() {
         if (mongoDbService == null) {
-            mongoDbService = new MongoDbService();
-            if (exception != null) {
-                ReportUtility.reportInfo("Could not connect to mongodb.");
-                ReportUtility.reportExceptionDebug(exception);
+            synchronized (MongoDbService.class) {
+                if (mongoDatabase == null) {
+                    mongoDbService = new MongoDbService();
+                    if (exception != null) {
+                        ReportUtility.reportInfo("Could not connect to mongodb.");
+                        ReportUtility.reportExceptionDebug(exception);
+                    }
+                }
             }
         }
         return mongoDbService;

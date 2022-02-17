@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.camelCaseToWords;
+import static com.orrish.automation.utility.GeneralUtility.camelCaseToWords;
 
 public class ReportSteps {
 

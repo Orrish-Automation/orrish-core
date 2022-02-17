@@ -6,7 +6,7 @@ import com.orrish.automation.utility.report.ReportUtility;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMapFromString;
+import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
 
 public class SetUp {
 

@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class SeleniumAppiumActions {
 
@@ -172,7 +172,7 @@ public class SeleniumAppiumActions {
                 isWebStepPassed = (boolean) method.invoke(pageMethods, args[1].toString(), args[2].toString());
             } else {
                 isWebStepPassed = false;
-                throw new Exception("Method " + GeneralSteps.getMethodStyleStepName(args) + " not implemented.");
+                throw new Exception("Method " + GeneralUtility.getMethodStyleStepName(args) + " not implemented.");
             }
             //*/
             ///*
@@ -188,10 +188,12 @@ public class SeleniumAppiumActions {
                     break;
                 case "closeBrowser":
                     isWebStepPassed = seleniumPageMethods.closeBrowser();
-                    break;
+                    ReportUtility.reportInfo("closeBrowser() executed successfully.");
+                    return true;
                 case "quitBrowser":
                     isWebStepPassed = seleniumPageMethods.quitBrowser();
-                    break;
+                    ReportUtility.reportInfo("quitBrowser() executed successfully.");
+                    return true;
                 case "refreshWebPage":
                     isWebStepPassed = seleniumPageMethods.refreshWebPage();
                     break;

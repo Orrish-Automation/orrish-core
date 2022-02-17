@@ -3,7 +3,7 @@ package com.orrish.automation.utility.report;
 import com.orrish.automation.playwright.PlaywrightActions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentExtentTest;
 
 public class UIStepReporter {

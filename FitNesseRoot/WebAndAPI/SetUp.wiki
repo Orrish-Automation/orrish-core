@@ -13,6 +13,7 @@ This is Set up page containing basic configuration. Set up is called before each
 |API Steps              |
 |Playwright Appium Steps|
 *!
+
 |script                                   |
 |Set suite name              |Sample suite|
 |Take screenshot at each step|true        |

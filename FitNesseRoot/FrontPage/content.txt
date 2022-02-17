@@ -3,8 +3,9 @@ You can use it as documentation as well. You can format ''italic'' or '''bold'''
 You can read more about !-FitNesse-! by going through [[Quick Guide][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide]] or [[Full documentation][http://fitnesse.org/FitNesse.FullReferenceGuide]]
 
 '''Teams'''
-|[[API][.API]]              |''Test cases for team 1''|
-|[[Web][.Web]]              |''Test cases for team 2''|
-|[[Web and API][.WebAndAPI]]|''Test cases for team 3''|
+|[[API][.API]]                                       |''Test cases for team 1''               |
+|[[Web][.Web]]                                       |''Test cases for team 2''               |
+|[[Web and API][.WebAndAPI]]                         |''Test cases for team 3''               |
+|[[Report Portal Integration Example][.ReportPortal]]|''Example of report portal integration''|
 
 !note Release ${FITNESSE_VERSION}

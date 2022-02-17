@@ -4,30 +4,35 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.SelectOption;
 import com.orrish.automation.entrypoint.SetUp;
-import com.orrish.automation.utility.report.UIStepReporter;
 import com.orrish.automation.utility.report.ReportUtility;
+import com.orrish.automation.utility.report.UIStepReporter;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
 import static com.orrish.automation.entrypoint.SetUp.*;
 
 public class PlaywrightActions {
 
-    private static Playwright playwright;
-    private static Page playwrightPage;
-    private boolean isPlaywrightStepPassed = true;
+    protected static Playwright playwright;
+    protected static Page playwrightPage;
+    protected boolean isPlaywrightStepPassed = true;
 
     private static PlaywrightActions playwrightActions;
 
-    public static synchronized PlaywrightActions getInstance() {
-        if (playwrightActions == null)
-            playwrightActions = new PlaywrightActions();
+    public static PlaywrightActions getInstance() {
+        if (playwrightActions == null) {
+            synchronized (PlaywrightActions.class) {
+                if (playwrightActions == null) {
+                    playwrightActions = new PlaywrightActions();
+                }
+            }
+        }
         return playwrightActions;
     }
 

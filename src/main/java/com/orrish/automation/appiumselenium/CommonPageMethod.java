@@ -14,23 +14,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
 import static com.orrish.automation.entrypoint.SetUp.*;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textMatches;
 
 public class CommonPageMethod {
 
     protected static boolean takeScreenshotWithText(String text, RemoteWebDriver driver) {
-        if (isScreenshotAtEachStepEnabled) {
-            if (screenshotDelayInSeconds > 0) {
-                waitSeconds(screenshotDelayInSeconds);
-            }
-            String testName = getCurrentTestName().replace(" ", "");
-            String screenshotName = testName + "_Step" + ++stepCounter;
-            ReportUtility.reportWithScreenshot(driver, screenshotName, ReportUtility.REPORT_STATUS.INFO, text);
+        if (screenshotDelayInSeconds > 0) {
+            waitSeconds(screenshotDelayInSeconds);
         }
+        String testName = getCurrentTestName().replace(" ", "");
+        String screenshotName = testName + "_Step" + ++stepCounter;
+        ReportUtility.reportWithScreenshot(driver, screenshotName, ReportUtility.REPORT_STATUS.INFO, text);
         return true;
     }
 

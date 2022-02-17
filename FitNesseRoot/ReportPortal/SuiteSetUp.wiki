@@ -1,0 +1,21 @@
+!***< library
+
+|import                          |
+|com.orrish.automation.entrypoint|
+
+|library                |
+|Suite Set Up           |
+|Set Up                 |
+|Tear Down              |
+|Suite Tear Down        |
+|General Steps          |
+|Report Steps           |
+|API Steps              |
+|Playwright Appium Steps|
+*!
+
+!|script                                                    |
+|Report portal url             |${REPORT_PORTAL_URL}        |
+|Report portal project         |${REPORT_PORTAL_PROJECT}    |
+|Report portal api token       |${REPORT_PORTAL_API_TOKEN}  |
+|Launch report portal with name|${REPORT_PORTAL_LAUNCH_NAME}|

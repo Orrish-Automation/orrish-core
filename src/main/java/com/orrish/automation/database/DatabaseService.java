@@ -34,9 +34,13 @@ public class DatabaseService {
     private DatabaseService() {
     }
 
-    public static synchronized DatabaseService getInstance() {
+    public static DatabaseService getInstance() {
         if (databaseService == null) {
-            databaseService = new DatabaseService();
+            synchronized (DatabaseService.class) {
+                if (databaseService == null) {
+                    databaseService = new DatabaseService();
+                }
+            }
         }
         return databaseService;
     }

@@ -1,0 +1,15 @@
+---
+Suite
+---
+!***< library
+!path target/orrish-core.jar
+*!
+This suite shows an example of how results can be sent to report portal server.
+!***> Expand this section to see report portal server details. Click edit on the top of this page to modify if needed.
+!define REPORT_PORTAL_URL {http://<server>/api/v1}
+!define REPORT_PORTAL_PROJECT {<project>}
+!define REPORT_PORTAL_API_TOKEN {<api_token>}
+!define REPORT_PORTAL_LAUNCH_NAME {<launch_name>}
+*!
+------
+!contents -R2 -g -p -f -h

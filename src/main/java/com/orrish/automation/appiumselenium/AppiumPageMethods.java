@@ -34,9 +34,12 @@ public class AppiumPageMethods {
 
     private static AppiumPageMethods appiumPageMethods;
 
-    public static synchronized AppiumPageMethods getInstance() {
+    public static AppiumPageMethods getInstance() {
         if (appiumPageMethods == null)
-            appiumPageMethods = new AppiumPageMethods();
+            synchronized (AppiumPageMethods.class) {
+                if (appiumPageMethods == null)
+                    appiumPageMethods = new AppiumPageMethods();
+            }
         return appiumPageMethods;
     }
 

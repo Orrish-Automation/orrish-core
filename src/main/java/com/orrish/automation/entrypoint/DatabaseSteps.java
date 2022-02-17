@@ -2,7 +2,6 @@ package com.orrish.automation.entrypoint;
 
 import com.orrish.automation.database.DatabaseWithReportUtility;
 import com.orrish.automation.utility.report.ReportUtility;
-import com.orrish.automation.utility.verification.GeneralAndAPIVerifyAndReportUtility;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class DatabaseSteps {
                 return true;
             }
             String valueFromDatabase = String.valueOf(DatabaseWithReportUtility.runDBQueryAndGetCell(query));
-            return GeneralAndAPIVerifyAndReportUtility.doesContain(valueFromDatabase, valueToCompare);
+            return GeneralSteps.doesContain(valueFromDatabase, valueToCompare);
         }
         return true;
     }
