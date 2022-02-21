@@ -1,0 +1,12 @@
+All locators and methods on web landing page are organized here.
+
+!define LOCATOR_SUGGESTION_BOX {!-#jump-to-suggestion-search-global-!}
+
+|scenario                     |Search for _|searchText                             |
+|Enter                        |@searchText |in text field|input|for|search text box|
+|Take web screenshot with text|After entering search text                          |
+
+|scenario                     |Click on search suggestion box                      |
+|Click                        |${LOCATOR_SUGGESTION_BOX}|for        |suggestion box|
+|Wait until                   |${LOCATOR_SUGGESTION_BOX}|is gone for|suggestion box|
+|Take web screenshot with text|Search result page                                  |

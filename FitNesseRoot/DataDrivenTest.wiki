@@ -1,0 +1,8 @@
+---
+Suite
+Test: no
+---
+!***< library
+!path target/orrish-core.jar
+*!
+!contents -R2 -g -p -f -h

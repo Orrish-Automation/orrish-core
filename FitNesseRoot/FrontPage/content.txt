@@ -1,11 +1,18 @@
-Welcome to [[Orrish automation][https://github.com/Orrish-Automation/orrish-core]] powered by FitNesse.
-You can use it as documentation as well. You can format ''italic'' or '''bold''' or any other !style_red(text color.) More details on [[!-FitNesse Page-!][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide#CharacterFORMATTING]] 
-You can read more about !-FitNesse-! by going through [[Quick Guide][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide]] or [[Full documentation][http://fitnesse.org/FitNesse.FullReferenceGuide]]
-
-'''Teams'''
-|[[API][.API]]                                       |''Test cases for team 1''               |
-|[[Web][.Web]]                                       |''Test cases for team 2''               |
-|[[Web and API][.WebAndAPI]]                         |''Test cases for team 3''               |
-|[[Report Portal Integration Example][.ReportPortal]]|''Example of report portal integration''|
-
-!note Release ${FITNESSE_VERSION}
+----
+!c Welcome to [[Orrish automation][https://github.com/Orrish-Automation/orrish-core]] powered by FitNesse.
+!c You can execute tests as well as use it as documentation. You can format ''italic'' or '''bold''' or any other !style_red(text color.) More details on [[!-FitNesse Page-!][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide#CharacterFORMATTING]] 
+!c You can read more about !-FitNesse-! by going through [[Quick Guide][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide]] or [[Full documentation][http://fitnesse.org/FitNesse.FullReferenceGuide]]
+----
+'''Sample structure of tests.''' (You can create pages like this by clicking on the Add->Static Page link above.)
+|[[API][.API]]              |Test cases for Backend team |
+|[[Web][.Web]]              |Test cases for Frontend team|
+|[[Web and API][.WebAndAPI]]|Test cases for UAT team     |
+----
+'''Specific examples'''
+|[[Page Object Model][.PageObject]]                              |Example of page object model in FitNesse. Define scenario and locator in pages, not in code.|
+|[[Data Driven + Conditional Step][.DataDrivenTest]]             |Example of step execution based on a conditon. Uses data driven test.                       |
+|[[Report Portal Integration][.ReportPortal]]                    |Example of report portal integration                                                        |
+|[[Fit Nesse Documentation][.Documentation]]                     |Tips on FitNesse                                                                            |
+|[[Update Available Steps][.Administration.UpdateAvailableSteps]]|''If you want to modify existing available steps seen under footer link, run this page.''   |
+----
+!c !note Release ${FITNESSE_VERSION}

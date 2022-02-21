@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.orrish.automation.entrypoint.GeneralSteps.createFile;
+import static com.orrish.automation.entrypoint.GeneralSteps.createFileWithContent;
 import static io.restassured.path.json.JsonPath.from;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -233,7 +233,7 @@ public class ReportPortalUtility {
 
     protected void reportPortalLogStepWithJSON(REPORT_PORTAL_LOG_TYPE level, String message, String jsonBody) {
         executorService.submit(() -> {
-            File file = createFile("jsonBody.txt", jsonBody);
+            File file = createFileWithContent("jsonBody.txt", jsonBody);
             String url = reportPortalBaseUrl + reportPortalProject + "log";
             String currentTime = getCurrentTime();
             String body = "[{ \"launchUuid\": \"" + launchId + "\"," +

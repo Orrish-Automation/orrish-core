@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
 import static com.orrish.automation.utility.GeneralUtility.camelCaseToWords;
 
 public class ReportSteps {
@@ -92,6 +93,7 @@ public class ReportSteps {
     }
 
     public static boolean showImageWithText(String url, String text) {
+        if (!conditionalStep) return true;
         ReportUtility.reportWithImage(url, ReportUtility.REPORT_STATUS.INFO, text);
         return true;
     }

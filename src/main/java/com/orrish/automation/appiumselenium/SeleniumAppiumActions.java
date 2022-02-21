@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
 import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class SeleniumAppiumActions {
@@ -74,6 +75,7 @@ public class SeleniumAppiumActions {
     }
 
     protected Object executeOnMobileAndReturnObject(Object... args) {
+        if (!conditionalStep) return null;
         if (!isMobileStepPassed) {
             ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return null;
@@ -81,14 +83,20 @@ public class SeleniumAppiumActions {
         try {
             switch (args[0].toString()) {
                 case "launchAppOnDevice":
-                    isMobileStepPassed = appiumPageMethods.launchAppOnDevice();
+                    try {
+                        isMobileStepPassed = appiumPageMethods.launchAppOnDevice();
+                    } catch (Exception ex) {
+                        isWebStepPassed = false;
+                        ReportUtility.reportFail("Could not launch app. Please check SetUp variables are correct.");
+                        return false;
+                    }
                     break;
                 case "takeMobileScreenshotWithText":
                     isMobileStepPassed = appiumPageMethods.takeMobileScreenshotWithText(args[1].toString());
                     break;
                 case "quitAppOnDevice":
                     isMobileStepPassed = appiumPageMethods.quitAppOnDevice();
-                    break;
+                    return true;
                 case "inMobileGoBackToPreviousPage":
                     isMobileStepPassed = appiumPageMethods.goBackToPreviousPage();
                     break;
@@ -143,6 +151,7 @@ public class SeleniumAppiumActions {
     }
 
     protected Object executeOnWebAndReturnObject(Object... args) {
+        if (!conditionalStep) return null;
         if (!isWebStepPassed) {
             ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return null;
@@ -178,7 +187,13 @@ public class SeleniumAppiumActions {
             ///*
             switch (args[0].toString()) {
                 case "launchBrowserAndNavigateTo":
-                    isWebStepPassed = seleniumPageMethods.launchBrowserAndNavigateTo(args[1].toString());
+                    try {
+                        isWebStepPassed = seleniumPageMethods.launchBrowserAndNavigateTo(args[1].toString());
+                    } catch (Exception ex) {
+                        isWebStepPassed = false;
+                        ReportUtility.reportFail("Could not launch browser. Please check SetUp variables are correct.");
+                        return false;
+                    }
                     break;
                 case "inBrowserNavigateTo":
                     isWebStepPassed = seleniumPageMethods.navigateTo(args[1].toString());

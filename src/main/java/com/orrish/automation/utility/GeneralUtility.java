@@ -1,8 +1,6 @@
 package com.orrish.automation.utility;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -71,6 +69,30 @@ public class GeneralUtility {
         return testName.trim();
     }
 
+    public static Map<String, Integer> secondsConvertedToHHmmss(int seconds) {
+        int hour = seconds / 3600;
+        seconds %= 3600;
+        int minute = seconds / 60;
+        seconds %= 60;
+        Map<String, Integer> valueToReturn = new HashMap<>();
+        valueToReturn.put("hours", hour);
+        valueToReturn.put("minutes", minute);
+        valueToReturn.put("seconds", seconds);
+        return valueToReturn;
+    }
+
+    public static String readFile(String fileName) {
+        List<String> actual;
+        try {
+            actual = Files.readAllLines(Paths.get(fileName));
+            final String[] value = {""};
+            actual.forEach(e -> value[0] += e + "\n");
+            return value[0];
+        } catch (IOException e) {
+            return "Could not read files: " + e.getMessage();
+        }
+    }
+
 
     public static File createFile(String fileName, String string) {
         File file = new File(fileName);
@@ -100,27 +122,57 @@ public class GeneralUtility {
         return file;
     }
 
-    public static Map<String, Integer> secondsConvertedToHHmmss(int seconds) {
-        int hour = seconds / 3600;
-        seconds %= 3600;
-        int minute = seconds / 60;
-        seconds %= 60;
-        Map<String, Integer> valueToReturn = new HashMap<>();
-        valueToReturn.put("hours", hour);
-        valueToReturn.put("minutes", minute);
-        valueToReturn.put("seconds", seconds);
-        return valueToReturn;
+    public static boolean deleteLineWithTextInFile(String textToFind, String fileName) {
+        return actionOnTextFile("Delete", fileName, textToFind, null);
     }
 
-    public static String readFile(String fileName) {
-        List<String> actual;
+    public static boolean findLineWithTextInFile(String textToFind, String fileName) {
+        return actionOnTextFile("Find", fileName, textToFind, null);
+    }
+
+    public static boolean replaceTextWithInFile(String textToFind, String replacingText, String fileName) {
+        return actionOnTextFile("Replace", fileName, textToFind, replacingText);
+    }
+
+    private static boolean actionOnTextFile(String action, String fileName, String textToFind, String replacingText) {
+
+        String eachLineOfFile = "";
+
+        String totalLines = "";
+        final String[] originalContent = {""};
         try {
-            actual = Files.readAllLines(Paths.get(fileName));
-            final String[] value = {""};
-            actual.forEach(e -> value[0] += e + "\n");
-            return value[0];
+            List<String> originalContentList = Files.readAllLines(Paths.get(fileName));
+            originalContentList.forEach(e -> originalContent[0] += e + System.lineSeparator());
         } catch (IOException e) {
-            return "Could not read files: " + e.getMessage();
+            e.printStackTrace();
+        }
+        try (FileReader fileReader = new FileReader(fileName);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            while ((eachLineOfFile = bufferedReader.readLine()) != null) {
+                if (action.contains("Find")) {
+                    System.out.println("Found in file: " + fileName);
+                    return true;
+                }
+                if (action.contains("Replace"))
+                    totalLines += eachLineOfFile.replace(textToFind, replacingText) + System.lineSeparator();
+                else if (action.contains("Delete")) {
+                    totalLines += eachLineOfFile.contains(textToFind) ? "" : eachLineOfFile + System.lineSeparator();
+                }
+            }
+            bufferedReader.close();
+            if (!originalContent[0].trim().contentEquals(totalLines.trim())) {
+                // Write the new String with the replaced line OVER the same file
+                FileOutputStream fileOut = new FileOutputStream(fileName);
+                fileOut.write(totalLines.getBytes());
+                fileOut.flush();
+                fileOut.close();
+                System.out.println(action + "d in file: " + fileName);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
         }
     }
 

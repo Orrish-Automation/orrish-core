@@ -1,0 +1,7 @@
+'''!style_green(
+If you are adding any scenario steps or coded steps, you may have to update the method list so that others know about availability of this new method. Run Update available steps below to update the steps.)'''
+!*< lib 
+!path target/orrish-core.jar
+*!
+-----
+!contents -R2 -g -p -f -h

@@ -1,6 +1,10 @@
+!**> !style_blue('''Includes pages''')
+!include .PageObject.Pages.LandingPage
+!include .PageObject.Pages.SearchPage
+*!
 This is Set up page containing basic configuration. Set up is called before each test.
 This uses Playwright Appium Steps. If you use Selenium based grid, please use the class Selenium Appium Steps and add set up variables accordingly. 
-!style_green('''All set up variables are defined [[here][http://files/setup_steps.txt]].''') Use the relevant fields.
+!style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.
 
 !***< library
 
@@ -18,6 +22,6 @@ This uses Playwright Appium Steps. If you use Selenium based grid, please use th
 
 |script                                   |
 |Set suite name              |Sample suite|
-|Take screenshot at each step|true        |
+|Take screenshot at each step|false       |
 |Playwright headless         |true        |
 |Browser                     |chrome      |

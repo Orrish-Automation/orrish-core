@@ -7,16 +7,17 @@ import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.playwright.PlaywrightActions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import static com.orrish.automation.entrypoint.SetUp.reportEnabled;
 import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class ReportUtility {
 
     public static ExtentTest createExtentTest(String suiteNode) {
-        return ExtentReportUtility.getInstance().createTest(suiteNode);
+        return reportEnabled ? ExtentReportUtility.getInstance().createTest(suiteNode) : null;
     }
 
     public static void setExtentReportLocation(String location) {
-        ExtentReportUtility.setExtentReportLocation(location);
+        if (reportEnabled) ExtentReportUtility.setExtentReportLocation(location);
     }
 
     public static boolean setReportPortalUrl(String url) {
@@ -37,19 +38,22 @@ public class ReportUtility {
     }
 
     public static boolean isReportPortalEnabled() {
-        return ReportPortalUtility.getInstance().isReportPortalEnabled();
+        return reportEnabled && ReportPortalUtility.getInstance().isReportPortalEnabled();
     }
 
     public static void reportPortalStartSuite(String finalParentNameName) {
-        ReportPortalUtility.getInstance().reportPortalStartSuite(finalParentNameName);
+        if (isReportPortalEnabled())
+            ReportPortalUtility.getInstance().reportPortalStartSuite(finalParentNameName);
     }
 
     public static void reportPortalStartTest(String testNameForReportPortal) {
-        ReportPortalUtility.getInstance().reportPortalStartTest(testNameForReportPortal);
+        if (isReportPortalEnabled())
+            ReportPortalUtility.getInstance().reportPortalStartTest(testNameForReportPortal);
     }
 
     public static void setReportPortalOverallTestResult(boolean value) {
-        ReportPortalUtility.overallTestResult = value ? ReportPortalUtility.overallTestResult : ReportPortalUtility.REPORT_PORTAL_TEST_STATUS.failed;
+        if (isReportPortalEnabled())
+            ReportPortalUtility.overallTestResult = value ? ReportPortalUtility.overallTestResult : ReportPortalUtility.REPORT_PORTAL_TEST_STATUS.failed;
     }
 
     private static Status getExtentStatus(REPORT_STATUS status) {
@@ -75,7 +79,8 @@ public class ReportUtility {
     }
 
     public static void report(REPORT_STATUS status, String message) {
-        ExtentReportUtility.reportInExtent(getExtentStatus(status), message);
+        if (reportEnabled)
+            ExtentReportUtility.reportInExtent(getExtentStatus(status), message);
         if (isReportPortalEnabled()) {
             ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), message);
         }
@@ -104,14 +109,17 @@ public class ReportUtility {
     }
 
     public static void reportWithScreenshot(RemoteWebDriver driver, String screenshotFileName, REPORT_STATUS status, String message) {
-        String reportPath = ExtentReportUtility.reportWithScreenshot(driver, screenshotFileName, getExtentStatus(status), message);
-        if (isReportPortalEnabled()) {
-            ReportPortalUtility.getInstance().reportPortalLogStepWithScreenshot(getReportPortalStatus(status), reportPath, message);
+        if (reportEnabled) {
+            String reportPath = ExtentReportUtility.reportWithScreenshot(driver, screenshotFileName, getExtentStatus(status), message);
+            if (isReportPortalEnabled()) {
+                ReportPortalUtility.getInstance().reportPortalLogStepWithScreenshot(getReportPortalStatus(status), reportPath, message);
+            }
         }
     }
 
     public static void reportWithImage(String urlOrFile, REPORT_STATUS status, String message) {
-        ExtentReportUtility.reportWithImage(urlOrFile, getExtentStatus(status), message);
+        if (reportEnabled)
+            ExtentReportUtility.reportWithImage(urlOrFile, getExtentStatus(status), message);
         if (isReportPortalEnabled()) {
             ReportPortalUtility.getInstance().reportPortalLogStepWithScreenshot(getReportPortalStatus(status), urlOrFile, message);
         }
@@ -126,7 +134,8 @@ public class ReportUtility {
     }
 
     private static void reportException(REPORT_STATUS status, Throwable throwable) {
-        ExtentReportUtility.reportException(getExtentStatus(status), throwable);
+        if (reportEnabled)
+            ExtentReportUtility.reportException(getExtentStatus(status), throwable);
         if (isReportPortalEnabled()) {
             ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), throwable.toString());
         }
@@ -138,7 +147,8 @@ public class ReportUtility {
 
     public static void reportJsonAsInfo(boolean shouldReport, String text, String jsonString) {
         if (!shouldReport) return;
-        ExtentReportUtility.reportJsonInExtent(text, jsonString);
+        if (reportEnabled)
+            ExtentReportUtility.reportJsonInExtent(text, jsonString);
         if (isReportPortalEnabled()) {
             ReportPortalUtility.getInstance().reportPortalLogStepWithJSON(ReportPortalUtility.REPORT_PORTAL_LOG_TYPE.INFO, text, jsonString);
         }
@@ -152,7 +162,8 @@ public class ReportUtility {
     }
 
     public static void updateReport() {
-        ExtentReportUtility.getInstance().flush();
+        if (reportEnabled)
+            ExtentReportUtility.getInstance().flush();
         if (isReportPortalEnabled()) {
             //ReportPortalUtility.getInstance().reportPortalFinishTestStep(ExecutionVariables.overallTestResult);
             ReportPortalUtility.getInstance().reportPortalFinishTest(ReportPortalUtility.overallTestResult);
@@ -175,7 +186,8 @@ public class ReportUtility {
 
     private static void reportMarkup(boolean shouldReport, REPORT_STATUS status, String text) {
         if (!shouldReport) return;
-        ExtentReportUtility.reportWithMarkUp(getExtentStatus(status), text);
+        if (reportEnabled)
+            ExtentReportUtility.reportWithMarkUp(getExtentStatus(status), text);
         if (isReportPortalEnabled()) {
             ReportPortalUtility.getInstance().reportPortalLogStep(getReportPortalStatus(status), text);
         }
@@ -207,6 +219,8 @@ public class ReportUtility {
     }
 
     private static void report(REPORT_STATUS status, Object[] stepNamesPassed, RemoteWebDriver driver, int stepCounter, Exception exception) {
+        if (!reportEnabled)
+            return;
         String stepNameWithParameters = getMethodStyleStepName(stepNamesPassed);
         String message = stepNameWithParameters + " could not be executed successfully.";
         if (driver != null || PlaywrightActions.getInstance().isPlaywrightRunning()) {

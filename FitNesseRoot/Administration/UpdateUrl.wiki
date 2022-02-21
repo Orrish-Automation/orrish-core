@@ -1,0 +1,10 @@
+---
+Help: Use it if you do not see available steps
+Test
+---
+!style_blue(Running this page ensures that the path is set to your server ip and port to be able to see the steps correctly in the browser.)
+'''!style_red(Remember to update ip address and port number with those of your server.)'''
+------
+!|script                                                                                            |
+|Set test name|Sample test                                                                          |
+|Replace text |"/static|with|"http://localhost:80/files/static|in file|FitNesseRoot/files/index.html|

@@ -11,7 +11,7 @@ import static com.orrish.automation.entrypoint.SetUp.mongoDbConnectionString;
 
 public class DatabaseWithReportUtility {
 
-    public static boolean isDbQueryResultIn(String query, List expectedValue) {
+    public boolean isDbQueryResultIn(String query, List expectedValue) {
         if (expectedValue.get(0).toString().trim().toLowerCase().contentEquals("donotverify")) {
             ReportUtility.reportInfo("DB query not run. It is marked not to be verified.");
             return true;
@@ -26,7 +26,7 @@ public class DatabaseWithReportUtility {
         }
     }
 
-    public static String runDBQueryAndGetCell(String query) {
+    public String runDBQueryAndGetCell(String query) {
         List<Map<String, Object>> values = runQueryOrCommand(query, false);
         if (values == null || values.size() == 0)
             return "No Data";
@@ -37,23 +37,23 @@ public class DatabaseWithReportUtility {
         if (values.get(0).keySet().size() > 1)
             return "Database returned " + values.get(0).keySet().size() + " columns. Only 1 is expected.";
         String key = values.get(0).keySet().stream().findFirst().get();
-        return values.get(0).get(key).toString();
+        return String.valueOf(values.get(0).get(key));
     }
 
-    public static String runCommand(String command) {
+    public String runCommand(String command) {
         return String.valueOf(runQueryOrCommand(command, true).get(0));
     }
 
-    public static List runQueryOrCommand(String queryOrCommandToRun, boolean isCommand) {
+    public List runQueryOrCommand(String queryOrCommandToRun, boolean isCommand) {
         List valueToReturn = new ArrayList<>();
         SetUp.setUpDatabase();
         try {
             if (isCommand) {
-                int count = DatabaseService.getInstance().runCommand(queryOrCommandToRun);
+                int count = DatabaseActions.getInstance().runCommand(queryOrCommandToRun);
                 ReportUtility.reportInfo("Command : " + queryOrCommandToRun + " returned " + count);
                 valueToReturn.add(count + " row(s) affected.");
             } else {
-                valueToReturn = DatabaseService.getInstance().runQuery(queryOrCommandToRun);
+                valueToReturn = DatabaseActions.getInstance().runQuery(queryOrCommandToRun);
                 if (SetUp.printDatabaseQueryInReport) {
                     ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueToReturn);
                 }
@@ -65,30 +65,33 @@ public class DatabaseWithReportUtility {
         return valueToReturn;
     }
 
-    public static List<String> getAllDocumentsFromMongoDBWithCriteria(String collectionName, String criteria) {
+    public List<String> getAllDocumentsFromMongoDBWithCriteria(String collectionName, String criteria) {
         if (SetUp.mongoDbConnectionString == null)
             return null;
         try {
-            List<String> listOfDocuments = MongoDbService.getInstance().getAllDocumentsFromMongoDBWithCriteria(collectionName, criteria);
-            String reportWhere = (criteria == null) ? "" : " with the condition " + criteria;
-            ReportUtility.reportInfo("Found " + listOfDocuments.size() + " documents in collection " + collectionName + reportWhere + ". Returned only the first document.");
+            List<String> listOfDocuments = MongoDbActions.getInstance().getAllDocumentsFromMongoDBWithCriteria(collectionName, criteria);
+            String reportWhere = (criteria == null) ? "" : " with condition " + criteria;
+            ReportUtility.reportInfo("Found " + listOfDocuments.size() + " documents in collection " + collectionName + reportWhere + ".");
             return listOfDocuments;
         } catch (Exception ex) {
             ReportUtility.reportExceptionFail(ex);
-            return null;
+            return new ArrayList<>();
         }
     }
 
-    public static String getFirstDocumentFromMongoDBWithCriteria(String collectionName, String criteria) {
+    public String getFirstDocumentFromMongoDBWithCriteria(String collectionName, String criteria) {
         List<String> documents = getAllDocumentsFromMongoDBWithCriteria(collectionName, criteria);
-        return (documents == null || documents.size() == 0) ? null : documents.get(0);
+        if (documents.size() > 1)
+            ReportUtility.reportInfo("Returning only the first document out of " + documents.size() + " documents.");
+        return (documents == null || documents.size() == 0) ? "" : documents.get(0);
     }
 
-    public static int updateMongoDBForCollectionSetForCriteria(String collectionName, String setValue, String criteria) {
-        return (mongoDbConnectionString == null) ? 0 : MongoDbService.getInstance().updateMongoDBForCollectionSetForCriteria(collectionName, setValue, criteria);
+    public int updateMongoDBForCollectionSetForCriteria(String collectionName, String setValue, String criteria) {
+        return (mongoDbConnectionString == null) ? 0 : MongoDbActions.getInstance().updateMongoDBForCollectionSetForCriteria(collectionName, setValue, criteria);
     }
 
-    public static int deleteInMongoDBForCollectionWithCriteria(String collectionName, String criteria) {
-        return (mongoDbConnectionString == null) ? 0 : MongoDbService.getInstance().deleteInMongoDBForCollectionWithCriteria(collectionName, criteria);
+    public int deleteInMongoDBForCollectionWithCriteria(String collectionName, String criteria) {
+        return (mongoDbConnectionString == null) ? 0 : MongoDbActions.getInstance().deleteInMongoDBForCollectionWithCriteria(collectionName, criteria);
     }
+
 }

@@ -88,5 +88,6 @@ nb-configuration.xml
 FitNesseRoot/files/*.png
 FitNesseRoot/files/**/*.xml
 FitNesseRoot/files/*.html
+!FitNesseRoot/files/index.html
 FitNesseRoot/RecentChanges.wiki
 FitNesseRoot/RerunLastFailures*.wiki

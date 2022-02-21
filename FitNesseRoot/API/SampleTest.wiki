@@ -3,7 +3,7 @@ Help: Status: Automated
 Suites: Sanity
 ---
 A test can contain formatted documentation like this. There is a help text added to it and also a tag is added to this. After you execute, click the link at the bottom of the page to see report.
-!style_green('''To refer to steps that can be used, refer to [[this page][http://files/steps.txt]]''')
+!style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.
 Also uses a variable that is defined in the central location.
 '''Test Objective''': Call an API and do a basic validation.
 '''Status''': Automated.

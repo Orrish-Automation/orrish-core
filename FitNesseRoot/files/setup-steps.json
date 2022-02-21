@@ -1,0 +1,163 @@
+[
+  {
+    "id": 1,
+    "step": "|Set suite name|${PAGE_NAME}|",
+    "help": ""
+  },
+  {
+    "id": 2,
+    "step": "|Database check|true|",
+    "help": "If false, database steps will be skipped in tests."
+  },
+  {
+    "id": 3,
+    "step": "|Mongodb connection string |mongodb://username:password@serverAddress|",
+    "help": ""
+  },
+  {
+    "id": 4,
+    "step": "|Mongodb database name|databaseName|",
+    "help": ""
+  },
+  {
+    "id": 5,
+    "step": "|Database connection string|jdbc:oracle:thin:@111.111.111.111:1521/schema|",
+    "help": ""
+  },
+  {
+    "id": 6,
+    "step": "|Database username|sys as sysdba|",
+    "help": ""
+  },
+  {
+    "id": 7,
+    "step": "|Database password|Test1234|",
+    "help": ""
+  },
+  {
+    "id": 8,
+    "step": "|Default request headers |Content-Type=application/json,Accept=application/json|",
+    "help": ""
+  },
+  {
+    "id": 9,
+    "step": "|Json request template  |{}|",
+    "help": "A template can be defined in Set up which then can be used in tests to modify data."
+  },
+  {
+    "id": 10,
+    "step": "|$baseServer=|Base server|http://ip:port|",
+    "help": ""
+  },
+  {
+    "id": 11,
+    "step": "|Selenium grid URL|http://ip:4444/wd/hub|",
+    "help": ""
+  },
+  {
+    "id": 12,
+    "step": "|Browser |CHROME|",
+    "help": ""
+  },
+  {
+    "id": 13,
+    "step": "|Browser version  |74.0|",
+    "help": ""
+  },
+  {
+    "id": 14,
+    "step": "|Browser dimension|1200x1600|",
+    "help": ""
+  },
+  {
+    "id": 15,
+    "step": "|Default wait time in seconds|10|",
+    "help": ""
+  },
+  {
+    "id": 16,
+    "step": "|Take screenshot at each step|true|",
+    "help": ""
+  },
+  {
+    "id": 17,
+    "step": "|Execution capabilities|enableVideo=true,enableVNC=true|",
+    "help": "Any capability in key-value format that you want to add in selenium and appium capability."
+  },
+  {
+    "id": 18,
+    "step": "|Screenshot delay in seconds|5|",
+    "help": "May be useful if you want to take stable screenshot for image comparison later."
+  },
+  {
+    "id": 19,
+    "step": "|Playwright headless|true|",
+    "help": ""
+  },
+  {
+    "id": 20,
+    "step": "|Appium server URL |http://ip:4723/wd/hub|",
+    "help": ""
+  },
+  {
+    "id": 21,
+    "step": "|Platform name  |Android|",
+    "help": ""
+  },
+  {
+    "id": 22,
+    "step": "|Platform version|11|",
+    "help": ""
+  },
+  {
+    "id": 23,
+    "step": "|Device name |emulator-5554|",
+    "help": ""
+  },
+  {
+    "id": 24,
+    "step": "|Automation name|Uiautomator2|",
+    "help": ""
+  },
+  {
+    "id": 25,
+    "step": "|App|/Users/test/AndroidApp.apk|",
+    "help": ""
+  },
+  {
+    "id": 26,
+    "step": "|App package |com.orrish|",
+    "help": ""
+  },
+  {
+    "id": 27,
+    "step": "|App activity|com.orrish.HomeActivity|",
+    "help": ""
+  },
+  {
+    "id": 28,
+    "step": "|udid|value|",
+    "help": ""
+  },
+  {
+    "id": 29,
+    "step": "|xcodeOrgId|value|",
+    "help": ""
+  },
+  {
+    "id": 30,
+    "step": "|xcodeSigningId|value|",
+    "help": ""
+  },
+  {
+    "id": 31,
+    "step": "|Show page info on failure|true|",
+    "help": "Page dump is shown in report if enabled."
+  },
+  {
+    "id": 32,
+    "step": "|Report Enabled|false|",
+    "help": "If set to false, this will not generate any report."
+  }
+]
+

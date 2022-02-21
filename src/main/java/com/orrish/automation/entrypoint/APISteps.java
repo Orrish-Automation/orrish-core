@@ -14,33 +14,39 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.orrish.automation.api.APIActions;
 import com.orrish.automation.utility.report.ReportUtility;
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseBuilder;
+import io.restassured.http.Header;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;
 import java.util.*;
 
-import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
+import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
 import static com.orrish.automation.entrypoint.SetUp.jsonRequestTemplate;
-import static io.restassured.RestAssured.given;
+import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 
 public class APISteps {
 
-    protected Response apiResponse;
-    protected String apiServerUrl = null;
-    protected Map<String, String> apiRequestFormValues;
-    protected Map<String, String> apiRequestHeaders = new HashMap<>();
+    public Response apiResponse;
+    public String apiServerUrl = null;
+    public Map<String, String> apiRequestFormValues;
+    public Map<String, String> apiRequestHeaders = new HashMap<>();
+
+    GeneralSteps generalSteps = new GeneralSteps();
+
+    public APIActions apiActions;
 
     public boolean setServerEndpoint(String serverEndpoint) {
+        if (!conditionalStep) return true;
         this.apiServerUrl = serverEndpoint;
         return true;
     }
 
     public boolean setRequestHeaders(String headers) {
+        if (!conditionalStep) return true;
         this.apiRequestHeaders = getMapFromString(headers, "=");
         this.apiRequestHeaders.entrySet().removeIf(e -> e.getValue().trim().equalsIgnoreCase("doNotPass"));
         if (SetUp.defaultApiRequestHeaders != null)
@@ -49,6 +55,7 @@ public class APISteps {
     }
 
     public boolean setFormValues(String values) {
+        if (!conditionalStep) return true;
         apiRequestFormValues = getMapFromString(values, ":");
         return true;
     }
@@ -59,16 +66,17 @@ public class APISteps {
     //doNotPass will not pass this node
     //null will pass null
     public String replaceDataInJsonTemplateWith(String keyValueAsString) {
+        if (!conditionalStep) return "";
         Map mapFromString = getMapFromString(keyValueAsString, "=");
         return getModifiedAPIRequest(mapFromString, jsonRequestTemplate);
     }
 
     //This is a plain Java replace functionality to manipulate data for data driven testing
     public String replaceStringInJsonTemplateWith(String valueToFind, String valueToReplace) {
-        return GeneralSteps.replaceStringWithIn(valueToFind, valueToReplace, jsonRequestTemplate);
+        return generalSteps.replaceStringWithIn(valueToFind, valueToReplace, jsonRequestTemplate);
     }
 
-    public String getModifiedAPIRequest(Map<String, Object> keyValues, String requestAsString) {
+    private String getModifiedAPIRequest(Map<String, Object> keyValues, String requestAsString) {
         try {
             JsonNode node;
             try {
@@ -121,6 +129,7 @@ public class APISteps {
     }
 
     public boolean callGETForEndpoint(String serverEndpoint) {
+        if (!conditionalStep) return true;
         setServerEndpoint(serverEndpoint);
         return callWithRequest("GET", null);
     }
@@ -147,6 +156,7 @@ public class APISteps {
     }
 
     public boolean callDELETEForEndpoint(String serverEndpoint) {
+        if (!conditionalStep) return true;
         setServerEndpoint(serverEndpoint);
         return callWithRequest("DELETE", null);
     }
@@ -156,20 +166,27 @@ public class APISteps {
     }
 
     public boolean callWithRequestWithoutReporting(String type, String requestBody) {
-        return callWithRequest(type.toUpperCase().trim(), requestBody, false);
+        return getApiActions().callWithRequest(type.toUpperCase().trim(), requestBody, false);
+    }
+
+    private APIActions getApiActions() {
+        return apiActions = (apiActions == null) ? new APIActions(this) : apiActions;
     }
 
     public boolean callWithRequest(String type, String requestBody) {
-        boolean value = callWithRequest(type, requestBody, true);
+        if (!conditionalStep) return true;
+        boolean value = getApiActions().callWithRequest(type, requestBody, true);
         ReportUtility.setReportPortalOverallTestResult(value);
         return value;
     }
 
     public String getResponseBody() {
+        if (!conditionalStep) return "";
         return apiResponse.getBody().asString();
     }
 
     public boolean verifyHTTPStatusCodeIs(int expectedStatusCode) {
+        if (!conditionalStep) return true;
         if (apiResponse == null) {
             ReportUtility.reportFail("No API response received in previous request. So, HTTP status code could not be verified.");
             return false;
@@ -184,6 +201,7 @@ public class APISteps {
     }
 
     public String getFromResponse(String jsonPath) {
+        if (!conditionalStep) return "";
         String valueToReturn = jsonPath + " node not found. Ensure this jsonPath exists in last API response.";
         try {
             valueToReturn = getFromResponseWithoutReporting(jsonPath);
@@ -195,6 +213,7 @@ public class APISteps {
     }
 
     public String getFromJsonString(String jsonPath, String jsonString) {
+        if (!conditionalStep) return "";
         String valueToReturn = jsonPath + " node not found. Ensure this jsonPath exists in API response.";
         try {
             Object actualValue = JsonPath.parse(jsonString).read(jsonPath);
@@ -207,15 +226,18 @@ public class APISteps {
     }
 
     public String getFromResponseCookie(String cookieName) {
+        if (!conditionalStep) return "";
         return apiResponse.getCookie(cookieName);
     }
 
     public String getFromResponseWithoutReporting(String jsonPath) {
+        if (!conditionalStep) return "";
         if (apiResponse == null) {
             return "Last API response was null.";
         }
         String responseBodyString = apiResponse.getBody().asString();
-        Object actualValue = (apiResponse.header("Content-Type").contains("xml"))
+        Header contentTypeHeader = apiResponse.headers().get("Content-Type");
+        Object actualValue = (contentTypeHeader != null && contentTypeHeader.getName().contains("xml"))
                 ? io.restassured.path.xml.XmlPath.from(responseBodyString).get(jsonPath).toString()
                 : JsonPath.parse(responseBodyString).read(jsonPath);
         return getStringFromExtractedJsonValue(actualValue);
@@ -230,38 +252,50 @@ public class APISteps {
     }
 
     public boolean doesLastResponseMatchSchema(String schema) {
+        if (!conditionalStep) return true;
+        return validateAgainstSchema(apiResponse, schema);
+    }
+
+    public boolean doesMatchSchema(String json, String schema) {
+        if (!conditionalStep) return true;
+        Response response = new ResponseBuilder().setStatusCode(200).setBody(json).build();
+        return validateAgainstSchema(response, schema);
+    }
+
+    private boolean validateAgainstSchema(Response response, String schema) {
         try {
-            apiResponse.then().assertThat().body(matchesJsonSchema(schema));
-            ReportUtility.reportPass("Last API response conforms to the schema provided.");
+            response.then().assertThat().body(matchesJsonSchema(schema));
+            ReportUtility.reportPass("Body conforms to the schema provided.");
             return true;
         } catch (Throwable ex) {
-            ReportUtility.report(ReportUtility.REPORT_STATUS.FAIL, "Last API response does not match the expected schema.");
+            ReportUtility.report(ReportUtility.REPORT_STATUS.FAIL, "Body does not match the expected schema.");
             ReportUtility.reportExceptionDebug(ex);
             return false;
         }
     }
 
     public boolean isResponseJsonEqualTo(String expectedResponseString) {
-        return GeneralSteps.verifyJsons(apiResponse, expectedResponseString);
+        return generalSteps.verifyJsons(apiResponse, expectedResponseString);
     }
 
     public boolean verifyValues(String responseToVerify) {
-        return GeneralSteps.verifyValues(responseToVerify);
+        return generalSteps.verifyValues(responseToVerify);
     }
 
     public boolean verifyResponseFor(String responseToVerify) {
-        return GeneralSteps.verifyResponseFor(apiResponse, responseToVerify);
+        return generalSteps.verifyResponseFor(apiResponse, responseToVerify);
     }
 
     public boolean verifyForInJsonString(String responseToVerify, String json) {
-        return GeneralSteps.verifyResponseStringFor(json, responseToVerify);
+        return generalSteps.verifyResponseStringFor(json, responseToVerify);
     }
 
     public boolean verifyObjectNodeCount(String node, String count) {
-        return GeneralSteps.verifyObjectNodeCount(apiResponse, node, count.trim());
+        return generalSteps.verifyObjectNodeCount(apiResponse, node, count.trim());
     }
 
     public List getAllValuesOfInList(String exactNode, String parentNode) {
+        if (!conditionalStep) return new ArrayList();
         if (parentNode == null || parentNode.trim().toLowerCase().contentEquals("null") || parentNode.trim().length() == 0) {
             parentNode = null;
         }
@@ -294,22 +328,13 @@ public class APISteps {
         return valueToReturn;
     }
 
-    public boolean verifyInResponseIfElse(String jsonPath1, boolean condition, String jsonPath2) {
-        if (condition)
-            return verifyResponseFor(jsonPath1);
-        return verifyResponseFor(jsonPath2);
-    }
-
-    public boolean verifyInResponseIf(String jsonPath, boolean condition) {
-        if (condition)
-            return verifyResponseFor(jsonPath);
-        ReportUtility.reportInfo(jsonPath + " was not verified because it did not meet the condition.");
-        return true;
-    }
-
-    public boolean doesResponseHave(String jsonPath) {
+    public boolean getExistenceOfNodeInResponse(String jsonPath) {
+        if (!conditionalStep) return true;
         try {
-            getFromResponseWithoutReporting(jsonPath);
+            String text = getFromResponseWithoutReporting(jsonPath);
+            if (text.contains("Last API response was null."))
+                throw new Exception("Response is null");
+            ReportUtility.reportInfo(jsonPath + " is present.");
             return true;
         } catch (Exception ex) {
             ReportUtility.reportInfo(jsonPath + " node not found.");
@@ -318,6 +343,7 @@ public class APISteps {
     }
 
     public String getFromResponseHeader(String headerName) {
+        if (!conditionalStep) return "";
         if (apiResponse == null) {
             ReportUtility.reportInfo("Last API response was null.");
             return "Last API response was null.";
@@ -393,96 +419,6 @@ public class APISteps {
                 eachJsonNode.put(keyToReplace, replaceValue);
             }
         }
-    }
-
-    private boolean callWithRequest(String type, String requestBody, boolean shouldReport) {
-        try {
-            RestAssured.useRelaxedHTTPSValidation();
-            ReportUtility.reportInfo(shouldReport, " === Preparing API call ===");
-            Map<String, String> headers = getApiRequestHeaders();
-            RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder().addHeaders(headers);
-            String urlToSend = this.apiServerUrl.trim();
-            String baseUrl = urlToSend.split("\\?")[0];
-            requestSpecBuilder = urlToSend.equals(baseUrl) ? requestSpecBuilder.setBaseUri(baseUrl) : requestSpecBuilder;
-            ReportUtility.reportInfo(shouldReport, "Headers included in the request : " + headers);
-            //Json request
-            if (requestBody != null) {
-                requestSpecBuilder.setBody(requestBody);
-            }
-            String contentTypeHeader = headers.get("Content-Type");
-            if (requestBody != null) {
-                if (contentTypeHeader != null && contentTypeHeader.contains("application/json")) {
-                    ReportUtility.reportJsonAsInfo(shouldReport, "Request body : ", requestBody);
-                } else {
-                    ReportUtility.reportMarkupAsInfo(shouldReport, "Request body : " + System.lineSeparator() + requestBody);
-                }
-            }
-            //Form data request
-            if (contentTypeHeader != null && contentTypeHeader.contains("form-data")) {
-                Set<Map.Entry<String, String>> entries = apiRequestFormValues.entrySet();
-                for (Map.Entry eachEntry : entries) {
-                    requestSpecBuilder.addMultiPart(eachEntry.getKey().toString(), eachEntry.getValue().toString());
-                }
-                ReportUtility.reportJsonAsInfo(shouldReport, "Request form data values are : ", entries.toString());
-            } else if (contentTypeHeader != null && contentTypeHeader.contains("application/x-www-form-urlencoded")) {
-                Set<Map.Entry<String, String>> entries = apiRequestFormValues.entrySet();
-                for (Map.Entry eachEntry : entries) {
-                    requestSpecBuilder.addFormParam(eachEntry.getKey().toString(), eachEntry.getValue().toString());
-                }
-                ReportUtility.reportJsonAsInfo(shouldReport, "Request form data values are : ", entries.toString());
-            }
-            RequestSpecification requestSpecification = given().spec(requestSpecBuilder.build()).when();
-            type = type.trim().toUpperCase();
-            ReportUtility.reportInfo(shouldReport, "Sending " + type + " request to " + urlToSend);
-            if (type.contentEquals("POST"))
-                apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.post() : requestSpecification.post(urlToSend);
-            else if (type.contentEquals("PUT"))
-                apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.put() : requestSpecification.put(urlToSend);
-            else if (type.contentEquals("GET"))
-                apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.get() : requestSpecification.get(urlToSend);
-            else if (type.contentEquals("DELETE"))
-                apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.delete() : requestSpecification.delete(urlToSend);
-            resetHeaderAndEndpoint();
-            if (apiResponse == null || apiResponse.getBody() == null) {
-                ReportUtility.reportFail(shouldReport, "Did not get a valid apiResponse or valid apiResponse body.");
-                return false;
-            }
-            String responseString = apiResponse.getBody().asString();
-            String responseContentTypeHeader = apiResponse.getHeader("Content-Type");
-            if (shouldReport) {
-                if (responseContentTypeHeader == null || responseContentTypeHeader.contains("text/xml")) {
-                    ReportUtility.reportMarkupAsInfo(shouldReport, "Response body :" + System.lineSeparator() + responseString);
-                } else {
-                    ReportUtility.reportJsonAsInfo(shouldReport, "Response body :", responseString);
-                }
-            }
-            return true;
-        } catch (Exception ex) {
-            ReportUtility.reportFail(shouldReport, "Call to the server failed. " + System.lineSeparator() + ex.getMessage());
-            return false;
-        } finally {
-            ReportUtility.reportInfo(shouldReport, " === The API request is complete ===");
-        }
-    }
-
-    private boolean resetHeaderAndEndpoint() {
-        this.apiServerUrl = null;
-        this.apiRequestHeaders = null;
-        this.apiRequestFormValues = null;
-        return true;
-    }
-
-    private Map getApiRequestHeaders() {
-        Map<String, String> headerToReturn = new HashMap<>();
-        if (SetUp.defaultApiRequestHeaders != null)
-            headerToReturn.putAll(SetUp.defaultApiRequestHeaders);
-        if (this.apiRequestHeaders != null) {
-            headerToReturn.putAll(this.apiRequestHeaders);
-        }
-        if (!headerToReturn.containsKey("Content-Type")) {
-            headerToReturn.put("Content-Type", "application/json");
-        }
-        return headerToReturn;
     }
 
 }

@@ -1,6 +1,5 @@
 package com.orrish.automation.database;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
@@ -9,6 +8,7 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.utility.report.ReportUtility;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.json.Converter;
 import org.bson.json.JsonMode;
@@ -23,9 +23,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class MongoDbService {
+public class MongoDbActions {
 
-    private static MongoDbService mongoDbService;
+    private static MongoDbActions mongoDbActions;
     private static MongoDatabase mongoDatabase;
     private static Exception exception;
 
@@ -43,14 +43,14 @@ public class MongoDbService {
         }
     }
 
-    private MongoDbService() {
+    private MongoDbActions() {
     }
 
-    public static MongoDbService getInstance() {
-        if (mongoDbService == null) {
-            synchronized (MongoDbService.class) {
-                if (mongoDatabase == null) {
-                    mongoDbService = new MongoDbService();
+    public static MongoDbActions getInstance() {
+        if (mongoDbActions == null) {
+            synchronized (MongoDbActions.class) {
+                if (mongoDbActions == null) {
+                    mongoDbActions = new MongoDbActions();
                     if (exception != null) {
                         ReportUtility.reportInfo("Could not connect to mongodb.");
                         ReportUtility.reportExceptionDebug(exception);
@@ -58,12 +58,12 @@ public class MongoDbService {
                 }
             }
         }
-        return mongoDbService;
+        return mongoDbActions;
     }
 
     public List<String> getAllDocumentsFromMongoDBWithCriteria(String collectionName, String criteria) {
         MongoCollection<Document> collection = mongoDatabase.getCollection(collectionName);
-        MongoIterable<Document> documents = (criteria == null) ? collection.find() : collection.find(BasicDBObject.parse(criteria));
+        MongoIterable<Document> documents = (criteria == null) ? collection.find() : collection.find(BsonDocument.parse(criteria));
         Iterator<Document> iterator = documents.iterator();
         List<String> listOfDocuments = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -80,17 +80,32 @@ public class MongoDbService {
         return listOfDocuments;
     }
 
+    private Object getValueOfObjectToSet(String value) {
+        try {
+            if (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))
+                return Boolean.parseBoolean(value);
+            return Integer.parseInt(value);
+        } catch (Exception integerException) {
+            try {
+                return Long.parseLong(value);
+            } catch (Exception longException) {
+            }
+        }
+        //Remove quotes if present in the string
+        return value.startsWith("\"") ? value.substring(1, value.length() - 1) : value;
+    }
+
     public int updateMongoDBForCollectionSetForCriteria(String collectionName, String setValue, String criteria) {
         MongoCollection<Document> collection = mongoDatabase.getCollection(collectionName);
         String valueToSetString = setValue.split("=")[1].trim();
-        Object valueToSet = valueToSetString.startsWith("\"") ? valueToSetString.substring(1, valueToSetString.length() - 1) : Long.parseLong(valueToSetString);
-        UpdateResult value = collection.updateOne(BasicDBObject.parse(criteria), Updates.set(setValue.split("=")[0].trim(), valueToSet));
+        Object valueToSet = getValueOfObjectToSet(valueToSetString);
+        UpdateResult value = collection.updateOne(BsonDocument.parse(criteria), Updates.set(setValue.split("=")[0].trim(), valueToSet));
         return (int) value.getModifiedCount();
     }
 
     public int deleteInMongoDBForCollectionWithCriteria(String collectionName, String criteria) {
         MongoCollection<Document> collection = mongoDatabase.getCollection(collectionName);
-        DeleteResult deleteResult = collection.deleteMany(BasicDBObject.parse(criteria));
+        DeleteResult deleteResult = collection.deleteMany(BsonDocument.parse(criteria));
         return (int) deleteResult.getDeletedCount();
     }
 

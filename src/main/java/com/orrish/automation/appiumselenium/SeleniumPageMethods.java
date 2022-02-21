@@ -93,7 +93,7 @@ public class SeleniumPageMethods {
                 String value = e.getValue().trim().toLowerCase();
                 if (value.contentEquals("true") || value.contentEquals("false"))
                     desiredCapabilities.setCapability(key, Boolean.parseBoolean(value));
-                else if (GeneralSteps.isOnlyDigits(value))
+                else if (new GeneralSteps().isOnlyDigits(value))
                     desiredCapabilities.setCapability(key, Integer.parseInt(value));
                 else
                     desiredCapabilities.setCapability(key, value);

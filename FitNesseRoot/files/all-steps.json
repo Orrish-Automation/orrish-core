@@ -1,0 +1,11 @@
+{
+  "steps": [
+    "api-steps.json",
+    "browser-steps.json",
+    "mobile-steps.json",
+    "setup-steps.json",
+    "database-steps.json",
+    "general-steps.json",
+    "report-steps.json"
+  ]
+}
