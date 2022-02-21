@@ -37,7 +37,7 @@ public class DatabaseWithReportUtility {
         if (values.get(0).keySet().size() > 1)
             return "Database returned " + values.get(0).keySet().size() + " columns. Only 1 is expected.";
         String key = values.get(0).keySet().stream().findFirst().get();
-        return values.get(0).get(key).toString();
+        return String.valueOf(values.get(0).get(key));
     }
 
     public static String runCommand(String command) {
