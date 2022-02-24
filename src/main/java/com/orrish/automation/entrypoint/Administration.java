@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static com.orrish.automation.utility.GeneralUtility.replaceTextWithInFile;
+
 public class Administration {
 
     static java.util.List<String> allFileNameList = new ArrayList<>();
@@ -18,7 +20,7 @@ public class Administration {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            printError();
+            printInputError();
         } else if (args[0].contentEquals("replaceExact")) {
             String textFindReplaceFolderLocation = args[1];
             String textToFind = args[2];
@@ -26,7 +28,9 @@ public class Administration {
             getAllFileNames(allFileNameList, Paths.get(textFindReplaceFolderLocation));
             Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
             allFileNameList.removeIf(stringPredicate);
-            replaceExactTextInFiles(textToFind, textToReplace);
+            for (String fileName : allFileNameList) {
+                replaceTextWithInFile(textToFind, textToReplace, fileName);
+            }
 
         } else if (args[0].contentEquals("replaceMethod")) {
             String methodName = args[2].trim();
@@ -65,11 +69,11 @@ public class Administration {
 
             replaceMethodInFiles(replacingString);
         } else {
-            printError();
+            printInputError();
         }
     }
 
-    private static void printError() {
+    private static void printInputError() {
 
         final String ANSI_YELLOW = "\u001B[33m";
         final String ANSI_RESET = "\u001B[0m";
@@ -77,10 +81,11 @@ public class Administration {
         final String ANSI_BLUE = "\u001B[34m";
         final String BOLD_TEXT = "\033[0;1m";
 
-        System.out.println(BOLD_TEXT + ANSI_PURPLE + "Pass argument in one of the formats below." + ANSI_RESET + System.lineSeparator() +
-                ANSI_BLUE + "java -jar <jar_rile>.jar replaceMethod directoryToWorkOn textToFind textToReplace" + ANSI_RESET + System.lineSeparator() +
+        System.out.println(BOLD_TEXT + ANSI_PURPLE + "Pass argument in one of the formats below. Use proper jar file name." + ANSI_RESET + System.lineSeparator() +
+                ANSI_YELLOW + "To delete last result files : " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar clearResult" + ANSI_RESET + System.lineSeparator() +
+                ANSI_YELLOW + "To Replace method in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar replaceMethod directoryToWorkOn textToFind textToReplace" + ANSI_RESET + System.lineSeparator() +
                 BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar replaceMethod '/Users/user/FitNesseRoot' '|ensure|Verify response for|status=SUCCESS|' '|ensure|Verify responses|status=SUCCESS|'" + ANSI_RESET + System.lineSeparator() +
-                ANSI_BLUE + "java -jar <jar_file>.jar replaceExact directoryToWorkOn textToFind textToReplace" + ANSI_RESET + System.lineSeparator() +
+                ANSI_YELLOW + "To replace exact text in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_file>.jar replaceExact directoryToWorkOn textToFind textToReplace" + ANSI_RESET + System.lineSeparator() +
                 BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar replaceExact '/Users/user/FitNesseRoot'  textToFind textToReplace" + ANSI_RESET);
     }
 
@@ -109,41 +114,6 @@ public class Administration {
         methodNameToReturn = StringUtils.uncapitalize(methodNameToReturn);
         return methodNameToReturn;
     }
-
-    private static void replaceExactTextInFiles(String textToFind, String replacingText) {
-
-        String eachLineOfFile = "";
-
-        for (String fileName : allFileNameList) {
-            String totalLines = "";
-            final String[] originalContent = {""};
-            try {
-                List<String> originalContentList = Files.readAllLines(Paths.get(fileName));
-                originalContentList.forEach(e -> originalContent[0] += e + System.lineSeparator());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try (FileReader fileReader = new FileReader(fileName);
-                 BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-                while ((eachLineOfFile = bufferedReader.readLine()) != null) {
-                    totalLines += eachLineOfFile.replace(textToFind, replacingText) + System.lineSeparator();
-                }
-                bufferedReader.close();
-                if (!originalContent[0].trim().contentEquals(totalLines.trim())) {
-                    System.out.println("Replaced in file: " + fileName);
-                    // Write the new String with the replaced line OVER the same file
-                    FileOutputStream fileOut = new FileOutputStream(fileName);
-                    fileOut.write(totalLines.getBytes());
-                    fileOut.flush();
-                    fileOut.close();
-                }
-
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-    }
-
 
     private static void replaceMethodInFiles(String replacingText) {
 

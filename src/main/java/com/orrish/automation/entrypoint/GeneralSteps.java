@@ -330,13 +330,22 @@ public class GeneralSteps {
         return GeneralUtility.readFile(fileName);
     }
 
-    public static File createFile(String fileName, String string) {
+    public static File createFileWithContent(String fileName, String string) {
         return GeneralUtility.createFile(fileName, string);
     }
 
-    public static File appendFile(String fileName, String string) {
+    public static File appendFileWithContent(String fileName, String string) {
         return GeneralUtility.appendFile(fileName, string);
     }
+
+    public static boolean replaceTextWithInFile(String textToFind, String replacingText, String filePath) {
+        return GeneralUtility.replaceTextWithInFile(textToFind, replacingText, filePath);
+    }
+
+    public static boolean deleteLineWithTextInFile(String textToFind, String filePath) {
+        return GeneralUtility.deleteLineWithTextInFile(textToFind, filePath);
+    }
+
 
     public static Map<String, Integer> secondsConvertedToHHmmss(int seconds) {
         return GeneralUtility.secondsConvertedToHHmmss(seconds);

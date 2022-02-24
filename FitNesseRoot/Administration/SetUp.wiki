@@ -1,0 +1,14 @@
+!***< library
+
+|import                          |
+|com.orrish.automation.entrypoint|
+
+|library      |
+|Set Up       |
+|Tear Down    |
+|General Steps|
+|Report Steps |
+|API Steps    |
+*!
+|script                     |
+|Set suite name|Sample suite|

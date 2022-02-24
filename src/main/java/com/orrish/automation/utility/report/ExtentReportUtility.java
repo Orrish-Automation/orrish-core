@@ -32,7 +32,8 @@ import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepNam
 public class ExtentReportUtility {
 
     private static ExtentReports extentReports;
-    private static String reportAndScreenshotFolderPath = "FitNesseRoot" + File.separator + "files";
+    private static String reportPath = "FitNesseRoot" + File.separator + "files";
+    private static String screenshotFolderPath = "";
     private static String reportFileName = "extent.html";
     private static ExtentHtmlReporter htmlReporter;
 
@@ -40,23 +41,26 @@ public class ExtentReportUtility {
     }
 
     protected static ExtentReports getInstance() {
-        String fullReportPath = reportAndScreenshotFolderPath.trim().length() == 0
-                ? reportFileName
-                : reportAndScreenshotFolderPath + File.separator + reportFileName;
-        if (extentReports == null)
+        if (extentReports == null) {
+            String fullReportPath = reportPath.trim().length() == 0
+                    ? reportFileName
+                    : reportPath + File.separator + reportFileName;
+            screenshotFolderPath = reportPath + File.separator + "screenshots";
             createInstance(fullReportPath);
+        }
         return extentReports;
     }
 
     protected static void setExtentReportLocation(String path) {
-        reportAndScreenshotFolderPath = path.contains(File.separator) ? StringUtils.substringBeforeLast(path, File.separator) : "";
+        reportPath = path.contains(File.separator) ? StringUtils.substringBeforeLast(path, File.separator) : "";
+        screenshotFolderPath = reportPath + File.separator + "screenshots";
         reportFileName = path.contains(File.separator) ? StringUtils.substringAfterLast(path, File.separator) : path;
     }
 
     private static void createInstance(String fileName) {
-        if (Files.notExists(Paths.get(reportAndScreenshotFolderPath))) {
+        if (Files.notExists(Paths.get(screenshotFolderPath))) {
             try {
-                Files.createDirectories(Paths.get(reportAndScreenshotFolderPath));
+                Files.createDirectories(Paths.get(screenshotFolderPath));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -101,22 +105,25 @@ public class ExtentReportUtility {
         if (driver == null && !PlaywrightActions.getInstance().isPlaywrightRunning())
             return fileName;
         try {
-            String fullFileName = reportAndScreenshotFolderPath.trim().length() == 0 ? fileName : reportAndScreenshotFolderPath + File.separator + fileName;
-            File destFile = new File(fullFileName + ".png");
-            if (destFile.exists())
-                destFile.delete();
+            String fullFileName = screenshotFolderPath + File.separator + fileName;
+            File destinationFile = new File(fullFileName + ".png");
+            if (destinationFile.exists())
+                destinationFile.delete();
             if (driver == null) {
-                PlaywrightActions.getInstance().getPlaywrightPage().screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fullFileName + ".png")));
+                if (PlaywrightActions.getInstance().isPlaywrightRunning())
+                    PlaywrightActions.getInstance().getPlaywrightPage().screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fullFileName + ".png")));
+                else
+                    return "";
             } else {
                 byte[] srcBytes = driver.getScreenshotAs(OutputType.BYTES);
                 BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(srcBytes));
-                ImageIO.write(bufferedImage, "png", destFile);
+                ImageIO.write(bufferedImage, "png", destinationFile);
             }
             try {
-                getCurrentExtentTest().log(type, message, MediaEntityBuilder.createScreenCaptureFromPath(fileName + ".png").build());
-                fileName = destFile.getAbsolutePath();
+                getCurrentExtentTest().log(type, message, MediaEntityBuilder.createScreenCaptureFromPath("screenshots" + File.separator + fileName + ".png").build());
+                fileName = destinationFile.getAbsolutePath();
             } catch (UncheckedIOException ex) {
-                if (!ex.getMessage().contains("The system cannot find the file specified"))
+                if (!ex.getMessage().contains("The system cannot find the file specified."))
                     throw ex;
             }
         } catch (Exception ex) {

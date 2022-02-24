@@ -1,0 +1,127 @@
+[
+  {
+    "id": 1,
+    "step": "|Set server endpoint|http://ip:port|",
+    "help": ""
+  },
+  {
+    "id": 2,
+    "step": "|Set request headers |applicationReferenceId=$value,first_name=FirstName,last_name=LastName|",
+    "help": ""
+  },
+  {
+    "id": 3,
+    "step": "|Set form values|key1:value1,key2:value2|",
+    "help": ""
+  },
+  {
+    "id": 4,
+    "step": "|$request=|Replace data in json template with|key=value |",
+    "help": "You can define a template request in SetUp and then use this method to replace data."
+  },
+  {
+    "id": 5,
+    "step": "|$request=|Replace string|name|with|$value|in|{}|",
+    "help": ""
+  },
+  {
+    "id": 6,
+    "step": "|Call GET with request |$request  |",
+    "help": ""
+  },
+  {
+    "id": 7,
+    "step": "|Call POST with request|{}  |",
+    "help": ""
+  },
+  {
+    "id": 8,
+    "step": "|Call POST|",
+    "help": ""
+  },
+  {
+    "id": 9,
+    "step": "|Call PUT with request |$request  |",
+    "help": ""
+  },
+  {
+    "id": 10,
+    "step": "|Call DELETE for endpoint  |${BASE_SERVER}/name/1 |",
+    "help": ""
+  },
+  {
+    "id": 11,
+    "step": "|Call DELETE with request  |$request  |",
+    "help": ""
+  },
+  {
+    "id": 12,
+    "step": "|Call|POST|with request|$request|",
+    "help": ""
+  },
+  {
+    "id": 13,
+    "step": "|Call|POST|with request|$request|without reporting|",
+    "help": ""
+  },
+  {
+    "id": 14,
+    "step": "|$value=|Get response body|",
+    "help": ""
+  },
+  {
+    "id": 15,
+    "step": "|Verify HTTP status code is|200 |",
+    "help": ""
+  },
+  {
+    "id": 16,
+    "step": "|$value= |Get from response|country.name  |",
+    "help": ""
+  },
+  {
+    "id": 17,
+    "step": "|$value=|Get|user.name|from json string|jsonString|",
+    "help": ""
+  },
+  {
+    "id": 18,
+    "step": "|$value=|Get from response cookie|cookieName|",
+    "help": ""
+  },
+  {
+    "id": 19,
+    "step": "|Does last response match schema|{}|",
+    "help": ""
+  },
+  {
+    "id": 20,
+    "step": "|Is response json equal to|expectedResponseString|",
+    "help": ""
+  },
+  {
+    "id": 21,
+    "step": "|Verify values|$valueFromResponse=$valueFromDB, $firstName=$nameFromDB|",
+    "help": ""
+  },
+  {
+    "id": 22,
+    "step": "|Verify response for |user.name=test, user.status=active, id=not null, middleName=null,title=doNotVerify, school=exists, university=doesNotExist, address=empty object|",
+    "help": ""
+  },
+  {
+    "id": 23,
+    "step": "|$value=|Does response have |user.name|",
+    "help": ""
+  },
+  {
+    "id": 24,
+    "step": "|$responseHeader=|Get|sessionId|from response header|",
+    "help": ""
+  },
+  {
+    "id": 25,
+    "step": "|ensure|Verify object node|jsonPath|count|2|",
+    "help": "Verifies the count of nodes with this json path."
+  }
+]

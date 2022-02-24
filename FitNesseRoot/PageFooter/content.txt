@@ -1,1 +1,1 @@
- [[Open Test Report][http://files/extent.html]]
+[[Open Test Report][http://files/extent.html]] | [[See Available Steps][http://files/index.html]]

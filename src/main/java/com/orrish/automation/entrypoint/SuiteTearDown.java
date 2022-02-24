@@ -35,7 +35,7 @@ public class SuiteTearDown {
 
         junitString.append("</testsuites>");
 
-        GeneralSteps.createFile("junitResult.xml", junitString.toString());
+        GeneralSteps.createFileWithContent("junitResult.xml", junitString.toString());
 
         if (junitString.toString().contains("<a "))
             System.out.println("ERROR : One of Fitnesse test names has html link preventing from generating unit report properly. Please correct it.");

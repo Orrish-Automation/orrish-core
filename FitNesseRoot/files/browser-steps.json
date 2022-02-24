@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "step": "|Launch browser and navigate to|http://someurl|",
+    "help": ""
+  },
+  {
+    "id": 2,
+    "step": "|In browser navigate to|http://someurl|",
+    "help": "It navigates to a given url when the browser is already open."
+  },
+  {
+    "id": 3,
+    "step": "|In browser navigate back|",
+    "help": "Equivalent to pressing back button."
+  },
+  {
+    "id": 4,
+    "step": "|Refresh web page|",
+    "help": ""
+  },
+  {
+    "id": 5,
+    "step": "|Maximize the window|",
+    "help": ""
+  },
+  {
+    "id": 6,
+    "step": "|Close browser|",
+    "help": "Close the current browser window."
+  },
+  {
+    "id": 7,
+    "step": "|Quit browser|",
+    "help": "Quits browser closing all windows."
+  },
+  {
+    "id": 8,
+    "step": "|Take web screenshot with text|",
+    "help": ""
+  },
+  {
+    "id": 9,
+    "step": "|Is element|#next|displayed for|next|",
+    "help": ""
+  },
+  {
+    "id": 10,
+    "step": "|Is element|#next-button|enabled for|next|",
+    "help": ""
+  },
+  {
+    "id": 11,
+    "step": "|Is element|#checkbox|selected for|next|",
+    "help": ""
+  },
+  {
+    "id": 12,
+    "step": "|Click|#btn-sample|for|Next button|",
+    "help": ""
+  },
+  {
+    "id": 13,
+    "step": "|Click|#btn-sample|with text|Continue|",
+    "help": ""
+  },
+  {
+    "id": 14,
+    "step": "|Click whichever is displayed in|#success,,#error|",
+    "help": ""
+  },
+  {
+    "id": 15,
+    "step": "|Click row containing text|text|",
+    "help": ""
+  },
+  {
+    "id": 16,
+    "step": "|Select checkbox for text|some text|",
+    "help": ""
+  },
+  {
+    "id": 17,
+    "step": "|Unselect checkbox for text|some text|",
+    "help": ""
+  },
+  {
+    "id": 18,
+    "step": "|Wait until element|#button|text contains|some value|",
+    "help": ""
+  },
+  {
+    "id": 19,
+    "step": "|Wait until element|#button|text does not contain|some value|",
+    "help": ""
+  },
+  {
+    "id": 20,
+    "step": "|Wait until|#progressbar,,#error|is gone for|error pop up|",
+    "help": ""
+  },
+  {
+    "id": 21,
+    "step": "|Wait until|#progressbar,,#someValue|is displayed for|success message|",
+    "help": ""
+  },
+  {
+    "id": 22,
+    "step": "|Wait until one of the locators|#success,,#error|is displayed|",
+    "help": ""
+  },
+  {
+    "id": 23,
+    "step": "|Wait until one of the locators|#success,,#error|is enabled|",
+    "help": ""
+  },
+  {
+    "id": 24,
+    "step": "|Enter|some value|in text field|#locator|for|textFieldName|",
+    "help": ""
+  },
+  {
+    "id": 25,
+    "step": "|Enter in text field number|2|",
+    "help": ""
+  },
+  {
+    "id": 26,
+    "step": "|Is text|some text|present in webpage|",
+    "help": ""
+  },
+  {
+    "id": 27,
+    "step": "|Dismiss alert if present|",
+    "help": ""
+  },
+  {
+    "id": 28,
+    "step": "|Click |#button|and accept alert if present|",
+    "help": ""
+  },
+  {
+    "id": 29,
+    "step": "|$value=|Click|#button|and get alert text|",
+    "help": ""
+  },
+  {
+    "id": 30,
+    "step": "|Select|text|from dropdown|#locator|",
+    "help": ""
+  },
+  {
+    "id": 31,
+    "step": "|$value=|Get text from locator|#locator|",
+    "help": ""
+  },
+  {
+    "id": 32,
+    "step": "|Execute javascript|some script|",
+    "help": ""
+  }
+]

@@ -1,0 +1,87 @@
+[
+  {
+    "id": 1,
+    "step": "|Launch app on device|",
+    "help": ""
+  },
+  {
+    "id": 2,
+    "step": "|Take mobile screenshot with text|some text|",
+    "help": ""
+  },
+  {
+    "id": 3,
+    "step": "|Quit app on device|",
+    "help": ""
+  },
+  {
+    "id": 4,
+    "step": "|In mobile go back to previous page|",
+    "help": ""
+  },
+  {
+    "id": 5,
+    "step": "|Press home key|",
+    "help": "Applicable for Android devices."
+  },
+  {
+    "id": 6,
+    "step": "|Press back key|",
+    "help": "Applicable for Android devices."
+  },
+  {
+    "id": 7,
+    "step": "|Swipe once vertically|",
+    "help": ""
+  },
+  {
+    "id": 8,
+    "step": "|Tap|#button1|for|login button|",
+    "help": ""
+  },
+  {
+    "id": 9,
+    "step": "|Tap with text|value|",
+    "help": ""
+  },
+  {
+    "id": 10,
+    "step": "|Tap whichever is displayed in|#successbutton,,#errorbutton|",
+    "help": ""
+  },
+  {
+    "id": 11,
+    "step": "|In mobile wait until element|#button1| text contains|some data|",
+    "help": ""
+  },
+  {
+    "id": 12,
+    "step": "|In mobile wait until element|#button1| text does not contain|some data|",
+    "help": ""
+  },
+  {
+    "id": 13,
+    "step": "|In mobile wait until |#button1|is gone for|login button|",
+    "help": ""
+  },
+  {
+    "id": 14,
+    "step": "|In mobile wait until |#home|is displayed for|home button|",
+    "help": ""
+  },
+  {
+    "id": 15,
+    "step": "|In mobile wait until one of the locators |#successButton,,#errorButton|is enabled|",
+    "help": ""
+  },
+  {
+    "id": 16,
+    "step": "|In mobile enter|john.doe| in text field|#txt_un| for|username textfield|",
+    "help": ""
+  },
+  {
+    "id": 17,
+    "step": "|$value=|In mobile get text from locator|#button|",
+    "help": ""
+  }
+]

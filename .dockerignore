@@ -6,3 +6,4 @@ target/
 FitNesseRoot/files/*.png
 FitNesseRoot/files/testResuts/
 FitNesseRoot/files/*.html
+!FitNesseRoot/files/index.html
