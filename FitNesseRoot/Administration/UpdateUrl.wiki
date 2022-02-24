@@ -7,4 +7,4 @@ Test
 ------
 !|script                                                                                            |
 |Set test name|Sample test                                                                          |
-|Replace text |"/static|with|"http://ip:port/files/static|in file|FitNesseRoot/files/index.html|
+|Replace text |"/static|with|"http://localhost:80/files/static|in file|FitNesseRoot/files/index.html|

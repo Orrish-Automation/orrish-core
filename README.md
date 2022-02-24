@@ -1,3 +1,4 @@
+[![Build Status](https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml/badge.svg)](https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml)
 ## Why another automation tool?
 With currently available open source automation tools, we have to setup our computer and learn a few things before we are ready to write a test. 
 
