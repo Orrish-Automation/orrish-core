@@ -163,5 +163,15 @@
     "id": 32,
     "step": "|Delete line with text|someValue|in file|SomeFolder/someFile.txt|",
     "help": ""
+  },
+  {
+    "id": 33,
+    "step": "|Set conditional value for next step|$matchesSchema|",
+    "help": "Useful if you want to conditionally execute some set of tests. Very useful in data driven tests."
+  },
+  {
+    "id": 34,
+    "step": "|Reset conditional value for next step |",
+    "help": "This marks the end of conditional step execution."
   }
 ]

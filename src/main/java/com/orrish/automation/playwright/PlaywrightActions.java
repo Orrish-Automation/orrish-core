@@ -12,10 +12,11 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
-import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
 import static com.orrish.automation.entrypoint.SetUp.*;
+import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class PlaywrightActions {
 
@@ -45,6 +46,7 @@ public class PlaywrightActions {
     }
 
     public void quitPlaywright() {
+        if (!conditionalStep) return;
         try {
             if (playwrightPage != null && !playwrightPage.isClosed()) {
                 playwrightPage.close();
@@ -59,6 +61,7 @@ public class PlaywrightActions {
     }
 
     protected boolean launchBrowserAndNavigateTo(String url) {
+        if (!conditionalStep) return true;
 
         playwright = Playwright.create();
         Browser browser;
@@ -89,46 +92,55 @@ public class PlaywrightActions {
     }
 
     protected boolean navigateTo(String url) {
+        if (!conditionalStep) return true;
         playwrightPage.navigate(url);
         return true;
     }
 
     protected boolean maximizeTheWindow() throws Exception {
+        if (!conditionalStep) return true;
         throw new Exception("Not implemented. Track issue at https://github.com/microsoft/playwright/issues/4046");
     }
 
     protected boolean takeWebScreenshotWithText(String text) {
+        if (!conditionalStep) return true;
         ReportUtility.reportWithScreenshot(null, text, ReportUtility.REPORT_STATUS.INFO, text);
         return true;
     }
 
     protected boolean clickFor(String locator) {
+        if (!conditionalStep) return true;
         playwrightPage.click(locator);
         playwrightPage.waitForLoadState(LoadState.DOMCONTENTLOADED);
         return true;
     }
 
     protected boolean clickWithText(String locator, String text) {
+        if (!conditionalStep) return true;
         playwrightPage.locator(locator + ":has-text(\"" + text + "\")").click();
         return true;
     }
 
     protected boolean clickRowContainingText(String text) {
+        if (!conditionalStep) return true;
         playwrightPage.locator("tr:has-text(\"" + text + "\")").click();
         return true;
     }
 
     protected boolean clickWhicheverIsDisplayedIn(String locator) {
+        if (!conditionalStep) return true;
         playwrightPage.locator(locator).click();
         return true;
     }
 
     protected boolean enterInTextFieldFor(String value, String locator) {
+        if (!conditionalStep) return true;
         playwrightPage.fill(locator, value);
         return true;
     }
 
     protected boolean enterInTextFieldNumber(String text, int whichField) {
+        if (!conditionalStep) return true;
         playwrightPage.waitForSelector("input");
         List<ElementHandle> elementHandleList = playwrightPage.querySelectorAll("input");
         elementHandleList.get(whichField - 1).fill(text); //Convert to zero based index.
@@ -136,11 +148,13 @@ public class PlaywrightActions {
     }
 
     protected boolean isTextPresentInWebpage(String text) {
+        if (!conditionalStep) return true;
         ElementHandle value = playwrightPage.querySelector("text=" + text);
         return value.textContent().contains(text);
     }
 
     protected String clickAndReturnAlertText(String locator) {
+        if (!conditionalStep) return "";
         final String[] message = new String[1];
         playwrightPage.onDialog(dialog -> {
             message[0] = dialog.message();
@@ -151,11 +165,13 @@ public class PlaywrightActions {
     }
 
     protected boolean dismissAlertIfPresent() {
+        if (!conditionalStep) return true;
         ReportUtility.reportInfo("Playwright by default dismisses alerts. So, no action taken.");
         return true;
     }
 
     protected boolean clickAndAcceptAlertIfPresent(String locator) {
+        if (!conditionalStep) return true;
         playwrightPage.onDialog(dialog -> {
             ReportUtility.reportInfo("Alert with text \"" + dialog.message() + "\" on clicking " + locator + " is accepted.");
             dialog.accept();
@@ -165,11 +181,13 @@ public class PlaywrightActions {
     }
 
     protected boolean selectFromDropdown(String value, String locator) {
+        if (!conditionalStep) return true;
         playwrightPage.selectOption(locator, new SelectOption().setLabel(value));
         return true;
     }
 
     protected boolean selectUnselectCheckboxesWithText(String value, boolean shouldBeSelected) {
+        if (!conditionalStep) return true;
         if (shouldBeSelected)
             playwrightPage.check("text=" + value);
         else
@@ -178,6 +196,7 @@ public class PlaywrightActions {
     }
 
     protected boolean waitUntilIsGoneFor(String locator) {
+        if (!conditionalStep) return true;
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
             ElementHandle elementHandle = playwrightPage.querySelector(locator);
             if (elementHandle == null)
@@ -188,6 +207,7 @@ public class PlaywrightActions {
     }
 
     protected boolean waitUntilIsDisplayedFor(String locator) {
+        if (!conditionalStep) return true;
         return playwrightPage.waitForSelector(locator).isVisible();
     }
 
@@ -200,6 +220,7 @@ public class PlaywrightActions {
     }
 
     private boolean waitUntilOneOfTheLocators(String locator, String value) {
+        if (!conditionalStep) return true;
         String[] locators = locator.split(",,");
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
             for (String eachLocator : locators) {
@@ -229,6 +250,7 @@ public class PlaywrightActions {
     }
 
     private boolean waitUntilElementTextCheck(String locator, String text, boolean shouldContain) {
+        if (!conditionalStep) return true;
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
             if (shouldContain && playwrightPage.textContent(locator).contains(text))
                 return true;
@@ -240,10 +262,12 @@ public class PlaywrightActions {
     }
 
     protected String getTextFromLocator(String locator) {
+        if (!conditionalStep) return "";
         return playwrightPage.textContent(locator);
     }
 
     protected boolean executeJavascript(String jsCode) {
+        if (!conditionalStep) return true;
         playwrightPage.evaluate(jsCode);
         return true;
     }
@@ -262,6 +286,7 @@ public class PlaywrightActions {
     }
 
     protected Object executeOnWebAndReturnObject(Object... args) {
+        if (!conditionalStep) return null;
         if (!isPlaywrightStepPassed) {
             ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return null;

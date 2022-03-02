@@ -1,6 +1,6 @@
 package com.orrish.automation.entrypoint;
 
-import com.orrish.automation.database.DatabaseService;
+import com.orrish.automation.database.DatabaseActions;
 import com.orrish.automation.utility.report.ReportUtility;
 
 import java.util.HashMap;
@@ -59,6 +59,7 @@ public class SetUp {
 
     //General
     public static boolean showPageInfoOnFailure = false;
+    public static boolean reportEnabled = true;
 
     public static boolean isVideoRecordingEnabled() {
         return executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true");
@@ -66,6 +67,11 @@ public class SetUp {
 
     public boolean extentReportLocation(String location) {
         ReportUtility.setExtentReportLocation(location);
+        return true;
+    }
+
+    public boolean reportEnabled(boolean valuePassed) {
+        reportEnabled = valuePassed;
         return true;
     }
 
@@ -242,9 +248,9 @@ public class SetUp {
 
     public static void setUpDatabase() {
         if (databaseCheck) {
-            DatabaseService databaseService = DatabaseService.getInstance();
-            if (!databaseService.getConnectionString().contains(databaseConnectionString)) {
-                databaseService.reassignDataSource();
+            DatabaseActions databaseActions = DatabaseActions.getInstance();
+            if (!databaseActions.getConnectionString().contains(databaseConnectionString)) {
+                databaseActions.reassignDataSource();
             }
         }
     }

@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DatabaseService {
+public class DatabaseActions {
 
     private static BasicDataSource basicDataSource = new BasicDataSource();
-    private static DatabaseService databaseService;
+    private static DatabaseActions databaseActions;
 
     static {
         setBasicDataSource();
@@ -31,18 +31,18 @@ public class DatabaseService {
         return "";
     }
 
-    private DatabaseService() {
+    private DatabaseActions() {
     }
 
-    public static DatabaseService getInstance() {
-        if (databaseService == null) {
-            synchronized (DatabaseService.class) {
-                if (databaseService == null) {
-                    databaseService = new DatabaseService();
+    public static DatabaseActions getInstance() {
+        if (databaseActions == null) {
+            synchronized (DatabaseActions.class) {
+                if (databaseActions == null) {
+                    databaseActions = new DatabaseActions();
                 }
             }
         }
-        return databaseService;
+        return databaseActions;
     }
 
     public String getConnectionString() {

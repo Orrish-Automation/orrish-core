@@ -49,11 +49,11 @@ public class DatabaseWithReportUtility {
         SetUp.setUpDatabase();
         try {
             if (isCommand) {
-                int count = DatabaseService.getInstance().runCommand(queryOrCommandToRun);
+                int count = DatabaseActions.getInstance().runCommand(queryOrCommandToRun);
                 ReportUtility.reportInfo("Command : " + queryOrCommandToRun + " returned " + count);
                 valueToReturn.add(count + " row(s) affected.");
             } else {
-                valueToReturn = DatabaseService.getInstance().runQuery(queryOrCommandToRun);
+                valueToReturn = DatabaseActions.getInstance().runQuery(queryOrCommandToRun);
                 if (SetUp.printDatabaseQueryInReport) {
                     ReportUtility.reportInfo("Query : " + queryOrCommandToRun + " returned value " + valueToReturn);
                 }
@@ -69,7 +69,7 @@ public class DatabaseWithReportUtility {
         if (SetUp.mongoDbConnectionString == null)
             return null;
         try {
-            List<String> listOfDocuments = MongoDbService.getInstance().getAllDocumentsFromMongoDBWithCriteria(collectionName, criteria);
+            List<String> listOfDocuments = MongoDbActions.getInstance().getAllDocumentsFromMongoDBWithCriteria(collectionName, criteria);
             String reportWhere = (criteria == null) ? "" : " with the condition " + criteria;
             ReportUtility.reportInfo("Found " + listOfDocuments.size() + " documents in collection " + collectionName + reportWhere + ". Returned only the first document.");
             return listOfDocuments;
@@ -85,10 +85,10 @@ public class DatabaseWithReportUtility {
     }
 
     public static int updateMongoDBForCollectionSetForCriteria(String collectionName, String setValue, String criteria) {
-        return (mongoDbConnectionString == null) ? 0 : MongoDbService.getInstance().updateMongoDBForCollectionSetForCriteria(collectionName, setValue, criteria);
+        return (mongoDbConnectionString == null) ? 0 : MongoDbActions.getInstance().updateMongoDBForCollectionSetForCriteria(collectionName, setValue, criteria);
     }
 
     public static int deleteInMongoDBForCollectionWithCriteria(String collectionName, String criteria) {
-        return (mongoDbConnectionString == null) ? 0 : MongoDbService.getInstance().deleteInMongoDBForCollectionWithCriteria(collectionName, criteria);
+        return (mongoDbConnectionString == null) ? 0 : MongoDbActions.getInstance().deleteInMongoDBForCollectionWithCriteria(collectionName, criteria);
     }
 }

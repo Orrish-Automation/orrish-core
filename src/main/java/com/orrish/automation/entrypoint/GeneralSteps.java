@@ -20,6 +20,17 @@ import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
 
 public class GeneralSteps {
 
+    public static boolean conditionalStep = true;
+
+    public static boolean setConditionalValueForNextStep(boolean valuePassed) {
+        conditionalStep = valuePassed;
+        return true;
+    }
+
+    public static boolean resetConditionalValueForNextStep() {
+        return conditionalStep = true;
+    }
+
     public static String echo(String value) {
         return value;
     }
@@ -29,6 +40,7 @@ public class GeneralSteps {
     }
 
     public static String replaceStringWithIn(String valueToFind, String valueToReplace, String stringToActOn) {
+        if (!conditionalStep) return "";
         if (stringToActOn == null)
             return "Target string is null.";
         stringToActOn = stringToActOn.replace(valueToFind, valueToReplace);
@@ -36,6 +48,7 @@ public class GeneralSteps {
     }
 
     public static String getValidStringBetweenAnd(String firstString, String secondString) {
+        if (!conditionalStep) return "";
         if (firstString == null && secondString == null)
             return "";
         if (firstString == null || firstString.toLowerCase().trim().startsWith("donotmodify"))
@@ -46,12 +59,14 @@ public class GeneralSteps {
     }
 
     public static String concatenateAnd(String string1, String string2) {
+        if (!conditionalStep) return "";
         String value = string1.trim() + string2.trim();
         ReportUtility.reportInfo("Concatenated value is: " + value);
         return value;
     }
 
     public static int subtractFrom(int a, int b) {
+        if (!conditionalStep) return 0;
         int c = a - b;
         ReportUtility.reportInfo(a + "subtracted from " + b + " is: " + c);
         return c;
@@ -62,6 +77,7 @@ public class GeneralSteps {
     }
 
     public static String getSumOfIntegerValuesInList(List<String> stringValues) {
+        if (!conditionalStep) return "";
         int calculatedTotalSpend = 0;
         for (String eachValue : stringValues) {
             calculatedTotalSpend += Integer.parseInt(eachValue);
@@ -70,6 +86,7 @@ public class GeneralSteps {
     }
 
     public static String getSumOfDecimalValuesInList(List<String> stringValues) {
+        if (!conditionalStep) return "";
         double calculatedTotalSpend = 0.00;
         for (String eachValue : stringValues) {
             calculatedTotalSpend += Double.parseDouble(eachValue);
@@ -80,6 +97,7 @@ public class GeneralSteps {
     }
 
     public static boolean evaluateMultiConditionFromString(String value) {
+        if (!conditionalStep) return true;
         try {
             List<String> values = new ArrayList(Arrays.asList(value.trim().split(" ")));
             values.removeIf(a -> a.trim().length() == 0);
@@ -100,14 +118,17 @@ public class GeneralSteps {
     }
 
     public static String[] splitWithDelimiter(String text, String delimiter) {
+        if (!conditionalStep) return new String[]{};
         return text.split(delimiter);
     }
 
     public static String getIndexFromArray(int index, String[] array) {
+        if (!conditionalStep) return "";
         return array[index - 1];
     }
 
     public static String splitWithDelimiterAndReturnLastString(String text, String delimiter) {
+        if (!conditionalStep) return "";
         String[] array = splitWithDelimiter(text, delimiter);
         return array[array.length - 1];
     }
@@ -129,6 +150,7 @@ public class GeneralSteps {
     }
 
     public static boolean isEqual(String string1, String string2) {
+        if (!conditionalStep) return true;
         return isValueEqual(null, string1, string2);
     }
 
@@ -169,6 +191,7 @@ public class GeneralSteps {
     }
 
     private static boolean executeShell(String command, boolean shouldReport, boolean shouldWait) {
+        if (!conditionalStep) return true;
         try {
             Process process = Runtime.getRuntime().exec(command);
             if (shouldWait) {
@@ -198,10 +221,12 @@ public class GeneralSteps {
 
     //If you want to get sensitive information etc. from environment variable. Example: cloud provider API key etc.
     public static String getFromSystemEnvironmentVariable(String environmentVariableName) {
+        if (!conditionalStep) return "";
         return System.getenv(environmentVariableName);
     }
 
     public static boolean verifyValues(String responseToVerify) {
+        if (!conditionalStep) return true;
         VerificationResultModel verificationResultModel = VerifyUtility.verifyValues(responseToVerify);
         Map<Integer, VerificationResultModel> multiStepResult = verificationResultModel.getMultiStepResult();
         Set<Integer> keysOfSteps = multiStepResult.keySet();
@@ -226,6 +251,7 @@ public class GeneralSteps {
     }
 
     private static boolean verifyResponseFor(Response response, String responseString, String responseToVerify) {
+        if (!conditionalStep) return true;
         Map<String, String> valueToVerify = getMapFromString(responseToVerify, "=");
         Set<String> keys = valueToVerify.keySet();
         for (String key : keys) {
@@ -261,16 +287,19 @@ public class GeneralSteps {
     }
 
     private static boolean executeAndReport(VerificationResultModel verificationResultModel) {
+        if (!conditionalStep) return true;
         ReportUtility.REPORT_STATUS status = verificationResultModel.getOverallResult() ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
         ReportUtility.report(status, verificationResultModel.getVerificationResultString());
         return verificationResultModel.getOverallResult();
     }
 
     public static String getCharacterRandomAlphaNumericString(int howManyCharacter) {
+        if (!conditionalStep) return "";
         return RandomStringUtils.random(howManyCharacter, true, true);
     }
 
     public static boolean waitSeconds(int seconds) {
+        if (!conditionalStep) return true;
         try {
             Thread.sleep(seconds * 1000L);
         } catch (InterruptedException e) {
@@ -279,16 +308,19 @@ public class GeneralSteps {
     }
 
     public static String getCurrentTimeInTheFormat(String format) {
+        if (!conditionalStep) return "";
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(new Date());
     }
 
     public static String getTimeInTheFormatPlusDaysFromToday(String format, int days) {
+        if (!conditionalStep) return "";
         Date date = Date.from(ZonedDateTime.now().plusDays(days).toInstant());
         return getTimeInTheFormatForDate(format, date);
     }
 
     private static String getTimeInTheFormatForDate(String format, Date date) {
+        if (!conditionalStep) return "";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         return simpleDateFormat.format(date);
     }
@@ -308,16 +340,19 @@ public class GeneralSteps {
     }
 
     private static String getGMTTimeInTheFormatForDate(String format, Date date) {
+        if (!conditionalStep) return "";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return simpleDateFormat.format(date);
     }
 
     public static String getDigitRandomNumericValue(int howManyDigits) {
+        if (!conditionalStep) return "";
         return RandomStringUtils.random(howManyDigits, false, true);
     }
 
     public static long getCurrentEpochTime() {
+        if (!conditionalStep) return 0;
         Instant instant = Instant.now();
         return instant.getEpochSecond();
     }
@@ -327,27 +362,33 @@ public class GeneralSteps {
     }
 
     public static String readFile(String fileName) {
+        if (!conditionalStep) return "";
         return GeneralUtility.readFile(fileName);
     }
 
     public static File createFileWithContent(String fileName, String string) {
+        if (!conditionalStep) return null;
         return GeneralUtility.createFile(fileName, string);
     }
 
     public static File appendFileWithContent(String fileName, String string) {
+        if (!conditionalStep) return null;
         return GeneralUtility.appendFile(fileName, string);
     }
 
     public static boolean replaceTextWithInFile(String textToFind, String replacingText, String filePath) {
+        if (!conditionalStep) return true;
         return GeneralUtility.replaceTextWithInFile(textToFind, replacingText, filePath);
     }
 
     public static boolean deleteLineWithTextInFile(String textToFind, String filePath) {
+        if (!conditionalStep) return true;
         return GeneralUtility.deleteLineWithTextInFile(textToFind, filePath);
     }
 
 
     public static Map<String, Integer> secondsConvertedToHHmmss(int seconds) {
+        if (!conditionalStep) return null;
         return GeneralUtility.secondsConvertedToHHmmss(seconds);
     }
 

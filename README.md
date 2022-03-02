@@ -41,7 +41,7 @@ SDET (Software development engineer in test) or automation engineers spend a lot
 ## Setting up the framework on a central server
 * The easiest way to set up is via docker with below command. Access the automation server on the port you specified in below command.
 
-  ```docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.2```
+  ```docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.1```
 * It is also possible to build components individually. If you plan to modify code and build on your own, follow below process
   - Clone/download this repo.
   - Download [FitNesse Jar](http://fitnesse.org) and place it in the location where you cloned this repo.
@@ -64,3 +64,4 @@ SDET (Software development engineer in test) or automation engineers spend a lot
 ## Screenshots
 ![Test Case Execution](https://github.com/Orrish-Automation/orrish-core/blob/main/TestCase.png?raw=true)
 ![Test Report](https://github.com/Orrish-Automation/orrish-core/blob/main/TestReport.png?raw=true)
+![Available Steps](https://github.com/Orrish-Automation/orrish-core/blob/main/AvailableSteps.png?raw=true)

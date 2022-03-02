@@ -9,6 +9,57 @@
 |General Steps|
 |Report Steps |
 |API Steps    |
+
+!define SCHEMA {!-{
+	"definitions": {},
+	"$schema": "http://json-schema.org/draft-07/schema#", 
+	"$id": "https://example.com/object1646173832.json", 
+	"title": "Root", 
+	"type": "array",
+	"default": [],
+	"items":{
+		"$id": "#root/items", 
+		"title": "Items", 
+		"type": "object",
+		"required": [
+			"id",
+			"step",
+			"help"
+		],
+		"properties": {
+			"id": {
+				"$id": "#root/items/id", 
+				"title": "Id", 
+				"type": "integer",
+				"examples": [
+					1
+				],
+				"default": 0
+			},
+			"step": {
+				"$id": "#root/items/step", 
+				"title": "Step", 
+				"type": "string",
+				"default": "",
+				"examples": [
+					"|Launch app on device|"
+				],
+				"pattern": "^.*$"
+			},
+			"help": {
+				"$id": "#root/items/help", 
+				"title": "Help", 
+				"type": "string",
+				"default": "",
+				"examples": [
+					""
+				],
+				"pattern": "^.*$"
+			}
+		}
+	}
+
+}-!}
 *!
 |script                     |
 |Set suite name|Sample suite|

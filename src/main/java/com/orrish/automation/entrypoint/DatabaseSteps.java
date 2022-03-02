@@ -13,7 +13,7 @@ import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 public class DatabaseSteps {
 
     private boolean shouldDBStepBeExecuted() {
-        if (SetUp.databaseCheck) {
+        if (SetUp.databaseCheck && GeneralSteps.conditionalStep) {
             return true;
         }
         ReportUtility.reportInfo("Database check was disabled in SetUp page. So, it was not checked.");

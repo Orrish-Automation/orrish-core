@@ -23,9 +23,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class MongoDbService {
+public class MongoDbActions {
 
-    private static MongoDbService mongoDbService;
+    private static MongoDbActions mongoDbActions;
     private static MongoDatabase mongoDatabase;
     private static Exception exception;
 
@@ -43,14 +43,14 @@ public class MongoDbService {
         }
     }
 
-    private MongoDbService() {
+    private MongoDbActions() {
     }
 
-    public static MongoDbService getInstance() {
-        if (mongoDbService == null) {
-            synchronized (MongoDbService.class) {
+    public static MongoDbActions getInstance() {
+        if (mongoDbActions == null) {
+            synchronized (MongoDbActions.class) {
                 if (mongoDatabase == null) {
-                    mongoDbService = new MongoDbService();
+                    mongoDbActions = new MongoDbActions();
                     if (exception != null) {
                         ReportUtility.reportInfo("Could not connect to mongodb.");
                         ReportUtility.reportExceptionDebug(exception);
@@ -58,7 +58,7 @@ public class MongoDbService {
                 }
             }
         }
-        return mongoDbService;
+        return mongoDbActions;
     }
 
     public List<String> getAllDocumentsFromMongoDBWithCriteria(String collectionName, String criteria) {

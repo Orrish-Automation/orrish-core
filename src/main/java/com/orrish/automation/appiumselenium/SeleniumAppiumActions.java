@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
+import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
 import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
 public class SeleniumAppiumActions {
@@ -74,6 +75,7 @@ public class SeleniumAppiumActions {
     }
 
     protected Object executeOnMobileAndReturnObject(Object... args) {
+        if (!conditionalStep) return null;
         if (!isMobileStepPassed) {
             ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return null;
@@ -143,6 +145,7 @@ public class SeleniumAppiumActions {
     }
 
     protected Object executeOnWebAndReturnObject(Object... args) {
+        if (!conditionalStep) return null;
         if (!isWebStepPassed) {
             ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return null;

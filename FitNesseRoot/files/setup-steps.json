@@ -153,6 +153,11 @@
     "id": 31,
     "step": "|Show page info on failure|true|",
     "help": "Page dump is shown in report if enabled."
+  },
+  {
+    "id": 32,
+    "step": "|Report Enabled|false|",
+    "help": "If set to false, this will not generate any report."
   }
 ]
 
