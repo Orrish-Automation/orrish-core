@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static com.orrish.automation.utility.GeneralUtility.deleteLineWithTextInFile;
 import static com.orrish.automation.utility.GeneralUtility.replaceTextWithInFile;
 
 public class Administration {
@@ -21,6 +22,22 @@ public class Administration {
     public static void main(String[] args) {
         if (args.length == 0) {
             printInputError();
+        } else if (args[0].contentEquals("findMethod")) {
+            String textFindFolderLocation = args[1];
+            String methodName = args[2];
+            getAllFileNames(allFileNameList, Paths.get(textFindFolderLocation));
+            Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
+            allFileNameList.removeIf(stringPredicate);
+            findFilesWithMethod(textFindFolderLocation, methodName);
+        } else if (args[0].contentEquals("deleteExact")) {
+            String textFindFolderLocation = args[1];
+            String textToFind = args[2];
+            getAllFileNames(allFileNameList, Paths.get(textFindFolderLocation));
+            Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
+            allFileNameList.removeIf(stringPredicate);
+            for (String fileName : allFileNameList) {
+                deleteLineWithTextInFile(textToFind, fileName);
+            }
         } else if (args[0].contentEquals("replaceExact")) {
             String textFindReplaceFolderLocation = args[1];
             String textToFind = args[2];
@@ -34,43 +51,46 @@ public class Administration {
 
         } else if (args[0].contentEquals("replaceMethod")) {
             String methodName = args[2].trim();
-            methodName = methodName.startsWith("|") ? getMethodNameFromStep(methodName) : methodName;
-            String replacingString = args[3].trim();
-
             String textFindReplaceFolderLocation = args[1];
-            getAllFileNames(allFileNameList, Paths.get(textFindReplaceFolderLocation));
-            Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
-            allFileNameList.removeIf(stringPredicate);
-
-            for (String fileName : allFileNameList) {
-                File file = new File(fileName);
-                int lineNum = 0;
-                try {
-                    Scanner scanner = new Scanner(file);
-                    while (scanner.hasNextLine()) {
-                        String line = scanner.nextLine();
-                        ++lineNum;
-                        if (getMethodNameFromStep(line).equals(methodName)) {
-                            //Found line with the desired method
-                            ArrayList<Integer> lines = foundFileNameList.get(fileName);
-                            if (lines == null)
-                                lines = new ArrayList<>();
-                            lines.add(lineNum);
-                            foundFileNameList.put(fileName, lines);
-                            textToAppend += fileName + " Line " + lineNum + "\n";
-                        }
-                    }
-
-                } catch (Exception e) {
-                }
-            }
-            System.out.println("Files found : " + foundFileNameList.size());
-            System.out.println(textToAppend);
-
+            findFilesWithMethod(textFindReplaceFolderLocation, methodName);
+            String replacingString = args[3].trim();
             replaceMethodInFiles(replacingString);
         } else {
             printInputError();
         }
+    }
+
+    private static void findFilesWithMethod(String textFindReplaceFolderLocation, String methodName) {
+        methodName = methodName.startsWith("|") ? getMethodNameFromStep(methodName) : methodName;
+
+        getAllFileNames(allFileNameList, Paths.get(textFindReplaceFolderLocation));
+        Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
+        allFileNameList.removeIf(stringPredicate);
+
+        for (String fileName : allFileNameList) {
+            File file = new File(fileName);
+            int lineNum = 0;
+            try {
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    ++lineNum;
+                    if (getMethodNameFromStep(line).equals(methodName)) {
+                        //Found line with the desired method
+                        ArrayList<Integer> lines = foundFileNameList.get(fileName);
+                        if (lines == null)
+                            lines = new ArrayList<>();
+                        lines.add(lineNum);
+                        foundFileNameList.put(fileName, lines);
+                        textToAppend += fileName + " Line " + lineNum + "\n";
+                    }
+                }
+
+            } catch (Exception e) {
+            }
+        }
+        System.out.println("Files found : " + foundFileNameList.size());
+        System.out.println(textToAppend);
     }
 
     private static void printInputError() {
@@ -82,11 +102,14 @@ public class Administration {
         final String BOLD_TEXT = "\033[0;1m";
 
         System.out.println(BOLD_TEXT + ANSI_PURPLE + "Pass argument in one of the formats below. Use proper jar file name." + ANSI_RESET + System.lineSeparator() +
-                ANSI_YELLOW + "To delete last result files : " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar clearResult" + ANSI_RESET + System.lineSeparator() +
-                ANSI_YELLOW + "To Replace method in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar replaceMethod directoryToWorkOn textToFind textToReplace" + ANSI_RESET + System.lineSeparator() +
+                ANSI_YELLOW + "To find method in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar findMethod directoryToWorkOn methodToFind" + ANSI_RESET + System.lineSeparator() +
+                BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar findMethod '/Users/user/FitNesseRoot' '|ensure|Verify response for|status=SUCCESS|' " + ANSI_RESET + System.lineSeparator() +
+                ANSI_YELLOW + "To delete lines with exact text in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar deleteExact directoryToWorkOn textToDelete" + ANSI_RESET + System.lineSeparator() +
+                BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar deleteExact '/Users/user/FitNesseRoot' 'hello' " + ANSI_RESET + System.lineSeparator() +
+                ANSI_YELLOW + "To replace method in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar replaceMethod directoryToWorkOn textToFind textToReplace" + ANSI_RESET + System.lineSeparator() +
                 BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar replaceMethod '/Users/user/FitNesseRoot' '|ensure|Verify response for|status=SUCCESS|' '|ensure|Verify responses|status=SUCCESS|'" + ANSI_RESET + System.lineSeparator() +
                 ANSI_YELLOW + "To replace exact text in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_file>.jar replaceExact directoryToWorkOn textToFind textToReplace" + ANSI_RESET + System.lineSeparator() +
-                BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar replaceExact '/Users/user/FitNesseRoot'  textToFind textToReplace" + ANSI_RESET);
+                BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar replaceExact '/Users/user/FitNesseRoot' textToFind textToReplace" + ANSI_RESET);
     }
 
     private static String getMethodNameFromStep(String textPassed) {
@@ -119,8 +142,8 @@ public class Administration {
 
         String eachLineOfFile = "";
 
-        Set<String> keys = foundFileNameList.keySet();
-        for (String fileName : keys) {
+        Set<String> foundFileNames = foundFileNameList.keySet();
+        for (String fileName : foundFileNames) {
             String totalLines = "";
             try (FileReader fileReader = new FileReader(fileName);
                  BufferedReader bufferedReader = new BufferedReader(fileReader)) {
@@ -152,8 +175,10 @@ public class Administration {
                             } catch (ArrayIndexOutOfBoundsException ex) {
                             }
                         }
-                        if (eachLineOfFile.split("\\|").length != newLine.split("\\|").length)
-                            newLine += eachLineOfFile.substring(eachLineOfFile.lastIndexOf("|"));
+                        if (toReplaceValues.length - toFindEntrySet.size() == 1) {
+                            newLine += toReplaceValues[toReplaceValues.length - 1] + "|";
+                        }
+                        newLine += (!newLine.endsWith("|")) ? "|" : "";
                         eachLineOfFile = newLine;
                     }
                     totalLines += eachLineOfFile + System.lineSeparator();
@@ -164,9 +189,8 @@ public class Administration {
                 fileOut.write(totalLines.getBytes());
                 fileOut.flush();
                 fileOut.close();
-
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println(fileName);
             }
         }
     }
@@ -175,19 +199,21 @@ public class Administration {
         String[] allColumnsOfCurrentLine = currentLine.split("\\|");
         int counter = 0;
         int index = 0;
-        for (String eachValue : allColumnsOfCurrentLine) {
-            if (!(eachValue.trim().isEmpty() || eachValue.trim().startsWith("ensure") || eachValue.trim().startsWith("$"))) {
-                break;
-            }
-            index += (eachValue.length() + 1);
-            ++counter;
-        }
         TreeMap<Integer, String> valueToReturn = new TreeMap<>();
-        for (int i = counter; i < allColumnsOfCurrentLine.length; i++) {
-            if ((i - counter) % 2 == 0)
-                valueToReturn.put(index, allColumnsOfCurrentLine[i]);
-            index += allColumnsOfCurrentLine[i].length();
-        }
+        do {
+            for (String eachValue : allColumnsOfCurrentLine) {
+                if (!(eachValue.trim().isEmpty() || eachValue.trim().startsWith("ensure") || eachValue.trim().startsWith("$"))) {
+                    break;
+                }
+                index += (eachValue.length() + 1);
+                ++counter;
+            }
+            for (int i = counter; i < allColumnsOfCurrentLine.length; i++) {
+                if ((i - counter) % 2 == 0)
+                    valueToReturn.put(index, allColumnsOfCurrentLine[i]);
+                index += allColumnsOfCurrentLine[i].length();
+            }
+        } while (++counter < allColumnsOfCurrentLine.length);
         return valueToReturn;
     }
 

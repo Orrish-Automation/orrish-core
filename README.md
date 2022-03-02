@@ -1,67 +1,113 @@
-[![Build Status](https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml/badge.svg)](https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml)
+<p align="center">
+    <a href="https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml">
+      <img alt="Build Status" src="https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml/badge.svg" />
+    </a>
+    <a href="https://codecov.io/gh/Orrish-Automation/orrish-core">
+      <img alt="Code Coverage" src="https://codecov.io/gh/Orrish-Automation/orrish-core/branch/main/graph/badge.svg" />
+    </a>
+  </p>
+
 ## Why another automation tool?
-With currently available open source automation tools, we have to setup our computer and learn a few things before we are ready to write a test. 
+With currently available open source automation tools, we have to set up our computer and have some coding knowledge before we are ready to write/execute a test. Consider below challenges of Java based unit test framework. 
 
-Let's take example of Java based selenium test writing. We need to install (have admin rights?) Java (which Java version?), maven on our computer. Next, we have to know a unit test or BDD framework well enough. Once we are ready with tests, we have to know a version control (ever faced git conflict resolution?) to push the tests. We also have to organize tests, get them in sync with manual tests in various files (Java or BDD). These tests are visible and executable only to people who know coding creating barrier to automation adoption.
+| Install & build framework | Automation adoption | Version Control System | Organize test | Documentation / collaboration |
+| --- | --- |  --- | --- | --- |
+| Version or access issues. Compile errors. | Cannot use automation if you cannot build/code. Barrier to entry creating silos. | Well versed including Git conflict resolution? | Challenge in organizing tests in various files (Java or BDD). | Issues with sharing information, automation progress tracking, reviewing with non-coders. |
 
-These aspects can be taken care by a handful automation engineers, and the rest of the team should write automated test without going through above steps. Read on to learn more...
+##### :gem: Solution : Write and execute tests similar to TestNG/JUnit/BDD but on a web page (FitNesse) accessible to all without any local setup.  
+![Unit Test To FitNesse](https://github.com/Orrish-Automation/orrish-core/blob/main/UnitTestToFitNesseTestCase.png?raw=true)
 
-## Orrish Automation Principles
-In order to be successful in automation, it is important that product experts (QA, Business users) are able to write, manage and execute automated tests themselves without spending time setting up their machines for automation.
-###### QA
-QA is the product expert spending more time in
-* Understanding the product features
-* Clarifying, documenting, writing and executing automated tests, and analyzing the failures.
-* Exploratory test and manual execution of not automated tests.
-* Test data and test environment management with help from various other teams.
-###### Automation Engineer
-SDET (Software development engineer in test) or automation engineers spend a lot of time coding, scripting and DevOps skills. They perform below tasks 
-* Implement good coding principles and design patterns, R&D on the evolving automation tech stack.
-* Setup automation server centrally.
-* Train QA members to write/execute their own automated tests, train in analyzing test failure root cause.
-* Extend automation if required - good coding knowledge needed.
-* Maintain automation infrastructure and CI integration - good DevOps skill needed.
-* Create tools for task automation, process automation, data generation, data cleanup, mock servers etc.
+:bulb: If you do not want to transition to using FitNesse, you can use this repo as dependency to Java based frameworks (TestNG/JUnit/BDD) to leverage core automation logic. Please refer to [examples](https://github.com/Orrish-Automation/examples) project in this GitHub organization.
 
-## Features of this tool
-* Can be installed via docker or manually on a central server.
-* No need to setup individual machine and no prior coding knowledge is needed to write/execute tests.
-* Supports API, Relational database, MongoDB, Web and Mobile steps.
-* Supports keyword driven and data driven tests. See examples at [data driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable) and [keyword driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.ScriptTable) in FitNesse website.
-* Mix and match steps to create desired executable tests.
-* Because it is a wiki server, use this tool as documentation for all.
-* By default, it generates [Extent Report](https://github.com/extent-framework/extentreports-java). It can also be configured to publish report to [Report Portal](https://reportportal.io/).
-* It can be run from Jenkins via Jenkins FitNesse plugin.
+## QA vis-à-vis automation engineer(SDET)
+
+<details>
+<summary>Automation is effective when dedicated automation engineers take care of core framework while QA writes and executes automated tests. Expand to learn more</summary>
+<br>To implement successful test automation, it is important that product experts (QA, Business users) are able to write, manage and execute automated tests themselves without setting up their machines. An automation engineer will spend more time on framework and other development activities.
+
+| QA / Business users | SDET / Automation Engineer | 
+| --- | --- |
+| Product expert, understand product features well | Implement good coding principles/design patterns, R&D on evolving automation tech stack. Extend and maintain automation framework code - good coding knowledge needed. |
+| Clarify, document, write and execute automated tests, analyze failures | Train team members to write/execute their own automated tests, train in analyzing test failure root cause. |  
+| Exploratory test and manual execution of not automated tests |  Setup and maintain automation infrastructure and CI integration - good scripting/DevOps skill needed. |
+| Manage test data and test environment with help from various other teams. | Develop tools for task automation, process automation, data generation, data cleanup, mock servers etc. |
+</details>
 
 ## Architecture
-* It uses [FitNesse](http://fitnesse.org) to write, manage and execute test cases. Because FitNesse runs as a wiki server, there is no need for QA/BA to install anything on their machines. 
-* It is a Java framework using open source libraries like rest-assured (API), JDBC for relational database, Mongo driver for MongoDB, Appium, Selenium, Playwright etc.
-* The code that FitNesse uses to run automated tests is in this repository. This code is fed into FitNesse as a fat jar file.
+* It uses [FitNesse](http://fitnesse.org) to write, manage and execute test cases. FitNesse runs as a wiki server, so tests are accessed via web and there is no need for QA/BA to install anything on their machines. 
+* It is a Java based framework using open source libraries like `rest-assured` for API, `JDBC` for relational database, `mongodb-driver-sync` for MongoDB, `Appium` (mobile), `Selenium`, `Playwright` (web), `extentreports` for reporting etc.
+* To run automated tests, FitNesse drives the code in this repo which is fed to it as a fat jar file.
+
+## Features
+
+* Can be installed via docker or manually on a central server.
+* Supports API, Relational database, MongoDB, Web and Mobile steps.
+* Mix and match steps to create desired executable tests.
+* By default, it generates [Extent Report](https://github.com/extent-framework/extentreports-java). It can also be configured to publish report to [Report Portal](https://reportportal.io/).
+
+Below is comparison table of unit test framework vs FitNesse
+
+| Feature | FitNesse | Unit Test | Comment |
+|   ---   |  :---:   |   :---:   |   ---   |
+| Need to setup individual machine | :tada: | :o: |  Access via FitNesse web eliminates individual setup |
+| Possible to write/execute test without coding knowledge | :white_check_mark: | :x: | Basic coding, assertion knowledge is required for unit tests. | 
+| Keyword driven and data driven tests | :white_check_mark:  | :dart: | It is much easier to achieve in FitNesse even by non-coders. See FitNesse [data driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable) and [keyword driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.ScriptTable). |
+| Use as documentation and collaboration tool |:white_check_mark: | :x: |
+| Reporting |:white_check_mark: | :white_check_mark: |
+| CI Integration | :white_check_mark: | :white_check_mark: | FitNesse Has Jenkins plugin. |
+| Locate and organize test easily | :white_check_mark: |:dart: | FitNesse tests are organized like folder which is much easier to manage than unit test classes/xml. |
+| Easy test readability | :white_check_mark: | :dart: | FitNesse tests will be more readable for all. Unit tests are difficult to read by non-coders. |
 
 ## Setting up the framework on a central server
-* The easiest way to set up is via docker with below command. Access the automation server on the port you specified in below command.
 
-  ```docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.1```
-* It is also possible to build components individually. If you plan to modify code and build on your own, follow below process
+<details>
+<summary><b>With docker:</b></summary>
+
+- The easiest way to set up is via docker with below command. Access the automation server on the port you specified in below command.
+
+  `docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.3`
+</details>
+
+<details>
+<summary><b>Manual Setup:</b></summary>
+
+If you don't have docker installed or if you want to setup manually, follow below process
   - Clone/download this repo.
-  - Download [FitNesse Jar](http://fitnesse.org) and place it in the location where you cloned this repo.
-  - Run command ```java -jar fitnesse-standalone.jar -p <desired_port>``` and access the server on the port you specified in this command. This will create a FitNesseRoot folder.
-  - Create a fat jar from this repo with the command ```mvn compile assembly:single```. Rename the created jar to orrish-core.jar and move it under FitNesseRoot/target folder in above step.
+  - Run `pushJarAndStartFitnesse.sh` If the port 80 is already in use or if you want to start manually, refer the help section.
+</details>
+  
+## FitNesse specific tasks
 
-## A typical workflow with this tool
-#### QA/BA
-* Learn FitNesse and be aware of the methods available. Using those methods, create executable test cases in a folder like structure.
-* If you use web tests, you may want to know how to find DOM locator to be included in the test case.
-* Execute tests, analyze report.
-* Use this tool as documentation and collaboration.
-#### Automation engineer
-* Maintain automation server set up centrally.
-* All tests written by QA members will be stored as plain text file in folder like structure. If you use docker to run automation server, you may want to use ```docker cp <container_id>:/app/FitNesseRoot .``` command to transfer tests from the container to your host machine and commit them periodically to your version control system.
-* If existing methods are not sufficient, feel free to raise a pull request. You can also modify code to be fed to automation server. You create a jar file with command ```mvn compile assembly:single``` and place it in the container using command ```docker cp target/*.jar <container_id>:/app/target```
-* Integrate tests in continuous integration environment (There is Jenkins plugin for FitNesse).
-* You may want to set up multiple servers based on needs. 
+<details>
+<summary>Expand to see QA and automaton engineer collaboration steps in regards to FitNesse.</summary>
+
+| QA / Business users | SDET / Automation Engineer | 
+| --- | --- |
+| Be aware of the methods available through FitNesse web UI. Using those methods, write executable test cases in a folder like structure in FitNesse. | Setup automation server for all teams. Set up multiple servers based on needs. Train QA member to write FitNesse tests. |
+| For web/mobile tests, learn to find DOM locator to be included in the test case. | Periodic commit of test cases in version control. Check help section for details. |
+| Execute tests, analyze report. | Modify code based on team specific requirement. Check help section for details. |
+| Use this tool as documentation and collaboration. | Integrate tests in continuous integration environment (There is Jenkins plugin for FitNesse). |
+</details>
+
+## Help
+
+<details>
+<summary>Expand for help and troubleshoot</summary>
+
+* All tests will be stored as plain text file under FitNesseRoot folder. If you use docker to run automation server, you may want to use `docker cp <container_id>:/app/FitNesseRoot .` command to transfer tests from the container to your host machine. Commit them periodically to your version control system.
+* If existing methods are not sufficient, feel free to raise a pull request. You can also modify code, create a jar file with command `mvn compile assembly:single`, rename the jar to `orrish-core.jar` and place it under `target` folder. If using docker container, use command `docker cp target/*.jar <container_id>:/app/target` 
+* Update code and start FitNesse manually : 
+    - Download [FitNesse Jar](http://fitnesse.org) and place it in the location where you cloned this repo.
+    - Create a fat jar from this repo with the command `mvn compile assembly:single`. Rename the created jar to orrish-core.jar and move it under ```target``` folder in the cloned location.
+    - Run command `java -jar fitnesse-standalone.jar -p <desired_port>` and access the server on the port you specified in this command.
+* Add new area in available steps : Navigate to FitNesseRoot/files/all-steps.json and add the areas here. Remember to update steps described here. 
+* Update steps in available steps : In FitNesse homepage, you will find a link to update/add steps. 
+</details>
 
 ## Screenshots
+#### Test Case Execution Along With Documentation
 ![Test Case Execution](https://github.com/Orrish-Automation/orrish-core/blob/main/TestCase.png?raw=true)
+#### Test Report
 ![Test Report](https://github.com/Orrish-Automation/orrish-core/blob/main/TestReport.png?raw=true)
+#### Available Steps
 ![Available Steps](https://github.com/Orrish-Automation/orrish-core/blob/main/AvailableSteps.png?raw=true)

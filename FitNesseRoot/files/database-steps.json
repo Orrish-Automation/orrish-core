@@ -51,7 +51,7 @@
   },
   {
     "id": 11,
-    "step": "|$value=|Update mongo DB for collection|terminalCluster|set|country=US|for criteria|{city:\"Value\"}|",
+    "step": "|$value=|Update mongo DB for collection|terminalCluster|set|country=Country code|for criteria|{city:\"Value\"}|",
     "help": ""
   },
   {

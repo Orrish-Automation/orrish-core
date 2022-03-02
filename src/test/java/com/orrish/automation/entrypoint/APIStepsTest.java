@@ -93,19 +93,19 @@ public class APIStepsTest {
         assertTrue(apiSteps.callGETForEndpoint("https://jsonplaceholder.typicode.com/users/1"));
 
         assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
-        assertTrue(apiSteps.doesResponseHave("name"));
+        assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
-        assertTrue(GeneralSteps.isEqual(name, "Leanne Graha"), name + " is not equal to Leanne Graha");
+        assertEquals(name, "Leanne Graha");
 
         apiSteps.apiActions.requestSpecification = mock(RequestSpecification.class);
-        Cookie cookie = new Cookie.Builder("cookie","cookieValue").setComment("comment").build();
+        Cookie cookie = new Cookie.Builder("cookie", "cookieValue").setComment("comment").build();
         when(apiSteps.apiActions.requestSpecification.get()).thenReturn(new ResponseBuilder().setStatusCode(400).setBody("{\"error\":\"Some error\"}").setCookies(new Cookies(cookie)).build());
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callGETWithRequest("https://jsonplaceholder.typicode.com/users/1"));
         assertTrue(apiSteps.verifyHTTPStatusCodeIs(400));
-        assertTrue(apiSteps.doesResponseHave("error"));
+        assertTrue(apiSteps.getExistenceOfNodeInResponse("error"));
         name = apiSteps.getFromResponse("error");
-        assertTrue(GeneralSteps.isEqual(name, "Some error"), name + " is not equal to Some error");
+        assertEquals(name, "Some error");
         assertEquals(apiSteps.getResponseBody(), "{\"error\":\"Some error\"}");
         assertEquals(apiSteps.getFromResponseCookie("cookie"), "cookieValue");
 
@@ -127,9 +127,9 @@ public class APIStepsTest {
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callPOSTWithRequest("{}"));
         assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
-        assertTrue(apiSteps.doesResponseHave("name"));
+        assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
-        assertTrue(GeneralSteps.isEqual(name, "Some name"), name + " is not equal to Some error");
+        assertEquals(name, "Some name");
 
     }
 
@@ -147,9 +147,9 @@ public class APIStepsTest {
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callDELETEWithRequest("{}"));
         assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
-        assertTrue(apiSteps.doesResponseHave("name"));
+        assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
-        assertTrue(GeneralSteps.isEqual(name, "Some name"), name + " is not equal to Some error");
+        assertEquals(name, "Some name");
         assertEquals(apiSteps.getFromJsonString("name", apiSteps.getResponseBody()), "Some name");
     }
 
@@ -168,9 +168,9 @@ public class APIStepsTest {
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callPUTWithRequest("{}"));
         assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
-        assertTrue(apiSteps.doesResponseHave("name"));
+        assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
-        assertTrue(GeneralSteps.isEqual(name, "Some name"), name + " is not equal to Some error");
+        assertEquals(name, "Some name");
 
     }
 

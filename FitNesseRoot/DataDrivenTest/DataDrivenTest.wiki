@@ -1,0 +1,25 @@
+'''Test Objective''': Data driven test : To call a scenario with different set of data.
+'''Status''':
+'''Test case id''': <some id>
+
+Let's define a scenario to be called by tests.
+
+!|scenario                          |Verify if present _ _ _ _ _|testName,endpoint,nodeToVerify,expectedNodeValue,expectedName|
+|Set test name                      |@testName                                                                                |
+|Call GET for endpoint              |@endpoint                                                                                |
+|$optionalNode=                     |Get existence of node      |@nodeToVerify               |in response                     |
+|                                   |Start of conditional step                                                                |
+|Set conditional value for next step|$optionalNode                                                                            |
+|$valueOfOptionalNode=              |Get                        |@nodeToVerify               |from response                   |
+|Does                               |$valueOfOptionalNode       |contain                     |@expectedNodeValue              |
+|Reset conditional value for next step                                                                                        |
+|                                   |End of conditional step                                                                  |
+|$name=                             |Get                        |name                        |from response                   |
+|Does                               |$name                      |contain                     |@expectedName                   |
+
+!style_blue('''Below test calls the above scenario when node user is not present in first case but is present in the second.''')
+
+!|Verify if present                                                                                   |
+|testName   |endpoint                                    |nodeToVerify|expectedNodeValue|expectedName |
+|Test case 1|https://jsonplaceholder.typicode.com/users/1|user        |                 |Leanne Graham|
+|Test case 2|https://jsonplaceholder.typicode.com/users/2|website     |anastasia.net    |Ervin Howell |

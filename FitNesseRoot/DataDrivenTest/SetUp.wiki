@@ -1,0 +1,21 @@
+This is Set up page containing basic configuration. Set up is called before each test. 
+!style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.
+-----
+!***< library
+
+|import                          |
+|com.orrish.automation.entrypoint|
+
+|library                |
+|Set Up                 |
+|Tear Down              |
+|General Steps          |
+|Report Steps           |
+|API Steps              |
+|Playwright Appium Steps|
+*!
+|script                                   |
+|Set suite name              |Sample suite|
+|Take screenshot at each step|true        |
+|Playwright headless         |true        |
+|Browser                     |chrome      |

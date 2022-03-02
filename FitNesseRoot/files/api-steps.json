@@ -107,17 +107,17 @@
   {
     "id": 22,
     "step": "|Verify values|$valueFromResponse=$valueFromDB, $firstName=$nameFromDB|",
-    "help": ""
+    "help": "Comma separated multiple values."
   },
   {
     "id": 23,
-    "step": "|Verify response for |user.name=test, user.status=active, id=not null, middleName=null,title=doNotVerify, school=exists, university=doesNotExist, address=empty object|",
-    "help": ""
+    "step": "|Verify response for |user.name=test_user, user.status=active, id=not null, middleName=null,title=doNotVerify, school=exists, university=doesNotExist, address=empty object|",
+    "help": "Comma separated multiple values. You can use special text like null, not null, exists, doNotVerify, doesNotExist etc. to control the verification type."
   },
   {
     "id": 24,
-    "step": "|$value=|Does response have |user.name|",
-    "help": ""
+    "step": "|$optionalNode=|Get existence of node |@nodeToVerify|in response|",
+    "help": "Will not fail the step if not found."
   },
   {
     "id": 25,

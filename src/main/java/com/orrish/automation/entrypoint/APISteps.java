@@ -35,6 +35,8 @@ public class APISteps {
     public Map<String, String> apiRequestFormValues;
     public Map<String, String> apiRequestHeaders = new HashMap<>();
 
+    GeneralSteps generalSteps = new GeneralSteps();
+
     public APIActions apiActions;
 
     public boolean setServerEndpoint(String serverEndpoint) {
@@ -71,7 +73,7 @@ public class APISteps {
 
     //This is a plain Java replace functionality to manipulate data for data driven testing
     public String replaceStringInJsonTemplateWith(String valueToFind, String valueToReplace) {
-        return GeneralSteps.replaceStringWithIn(valueToFind, valueToReplace, jsonRequestTemplate);
+        return generalSteps.replaceStringWithIn(valueToFind, valueToReplace, jsonRequestTemplate);
     }
 
     private String getModifiedAPIRequest(Map<String, Object> keyValues, String requestAsString) {
@@ -273,23 +275,23 @@ public class APISteps {
     }
 
     public boolean isResponseJsonEqualTo(String expectedResponseString) {
-        return GeneralSteps.verifyJsons(apiResponse, expectedResponseString);
+        return generalSteps.verifyJsons(apiResponse, expectedResponseString);
     }
 
     public boolean verifyValues(String responseToVerify) {
-        return GeneralSteps.verifyValues(responseToVerify);
+        return generalSteps.verifyValues(responseToVerify);
     }
 
     public boolean verifyResponseFor(String responseToVerify) {
-        return GeneralSteps.verifyResponseFor(apiResponse, responseToVerify);
+        return generalSteps.verifyResponseFor(apiResponse, responseToVerify);
     }
 
     public boolean verifyForInJsonString(String responseToVerify, String json) {
-        return GeneralSteps.verifyResponseStringFor(json, responseToVerify);
+        return generalSteps.verifyResponseStringFor(json, responseToVerify);
     }
 
     public boolean verifyObjectNodeCount(String node, String count) {
-        return GeneralSteps.verifyObjectNodeCount(apiResponse, node, count.trim());
+        return generalSteps.verifyObjectNodeCount(apiResponse, node, count.trim());
     }
 
     public List getAllValuesOfInList(String exactNode, String parentNode) {
@@ -326,10 +328,13 @@ public class APISteps {
         return valueToReturn;
     }
 
-    public boolean doesResponseHave(String jsonPath) {
+    public boolean getExistenceOfNodeInResponse(String jsonPath) {
         if (!conditionalStep) return true;
         try {
-            getFromResponseWithoutReporting(jsonPath);
+            String text = getFromResponseWithoutReporting(jsonPath);
+            if (text.contains("Last API response was null."))
+                throw new Exception("Response is null");
+            ReportUtility.reportInfo(jsonPath + " is present.");
             return true;
         } catch (Exception ex) {
             ReportUtility.reportInfo(jsonPath + " node not found.");

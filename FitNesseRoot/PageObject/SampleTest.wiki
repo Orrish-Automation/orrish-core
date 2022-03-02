@@ -1,0 +1,9 @@
+'''Test Objective''': To show that scenario/method can be created in pages just like page object pattern and can be used here. These scenario are defined in !-PageObject->Pages->LandingPage-! and are included in all tests via SetUp
+'''Status''':
+'''Test case id''': <some id>
+
+!|script                                         |
+|Set test name                 |Sample test      |
+|Launch browser and navigate to|http://github.com|
+|Search for                    |Orrish core      |
+|Click on search suggestion box                  |

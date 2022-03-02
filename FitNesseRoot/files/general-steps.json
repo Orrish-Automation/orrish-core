@@ -166,12 +166,17 @@
   },
   {
     "id": 33,
-    "step": "|Set conditional value for next step|$matchesSchema|",
-    "help": "Useful if you want to conditionally execute some set of tests. Very useful in data driven tests."
+    "step": "|Set conditional value for next step|name=test|",
+    "help": "Useful if you want to conditionally execute some set of tests. Very useful in data driven tests. Pass either boolean or equality check."
   },
   {
     "id": 34,
     "step": "|Reset conditional value for next step |",
     "help": "This marks the end of conditional step execution."
+  },
+  {
+    "id": 35,
+    "step": "|$value=|Is|string1|equal|string2|without validation|",
+    "help": "Returns boolean value which can be used to conditionally execute steps."
   }
 ]

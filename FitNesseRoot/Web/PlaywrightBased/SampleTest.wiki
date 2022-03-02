@@ -1,14 +1,12 @@
-After you execute, click the link at the bottom of the page to see report.
+After you execute, click the link at the bottom of the page to see report. Ensure that the variables in SetUp is defined correctly.
 !style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.
-'''Test Objective''': Runs a web and API test in the same test case. '''First time, the test will fail because of time out since playwright downloads chromium. Run it again to see the result.'''
+!style_blue(To use page object model, refer to the example in home page.)
+'''Test Objective''': Runs a web test using playwright. '''First time, the test will fail because of time out since playwright downloads chromium. Run it again to see the result.'''
 '''Status''': Automated.
 '''Test case id''': <some id>
------
+
 !|script                                                                                                 |
 |Set test name                 |Sample test                                                              |
-|Call GET for endpoint         |https://jsonplaceholder.typicode.com/users/1                             |
-|$name=                        |Get                              |name         |from response            |
-|Does                          |$name                            |contain      |Leanne Graham            |
 |Launch browser and navigate to|http://github.com                                                        |
 |Enter                         |Orrish core                      |in text field|input|for|search text box|
 |Click                         |#jump-to-suggestion-search-global|for          |suggestion box           |

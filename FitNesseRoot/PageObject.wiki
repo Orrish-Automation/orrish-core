@@ -1,0 +1,7 @@
+---
+Suite
+---
+!***< library
+!path target/orrish-core.jar
+*!
+!contents -R1 -g -p -f -h

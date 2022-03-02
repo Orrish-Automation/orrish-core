@@ -16,10 +16,10 @@ Test
 -!}
 
 
-!|script                                                                                                |
-|Set test name                      |Sample test                                                        |
-|$matchesSchema=                    |Does                           |${CONTENT}  |match schema|${SCHEMA}|
-|Is                                 |$matchesSchema                 |equal       |true                  |
-|Set conditional value for next step|$matchesSchema                                                     |
-|Create file                        |FitNesseRoot/files/${FILE_NAME}|with content|${CONTENT}            |
-|Reset conditional value for next step                                                                  |
+!|script                                                                                                     |
+|Set test name                      |Sample test                                                             |
+|$matchesSchema=                    |Does                           |${CONTENT}  |match schema|${JSON_SCHEMA}|
+|Is                                 |$matchesSchema                 |equal       |true                       |
+|Set conditional value for next step|$matchesSchema                                                          |
+|Create file                        |FitNesseRoot/files/${FILE_NAME}|with content|${CONTENT}                 |
+|Reset conditional value for next step                                                                       |

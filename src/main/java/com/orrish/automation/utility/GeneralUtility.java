@@ -126,6 +126,10 @@ public class GeneralUtility {
         return actionOnTextFile("Delete", fileName, textToFind, null);
     }
 
+    public static boolean findLineWithTextInFile(String textToFind, String fileName) {
+        return actionOnTextFile("Find", fileName, textToFind, null);
+    }
+
     public static boolean replaceTextWithInFile(String textToFind, String replacingText, String fileName) {
         return actionOnTextFile("Replace", fileName, textToFind, replacingText);
     }
@@ -145,6 +149,10 @@ public class GeneralUtility {
         try (FileReader fileReader = new FileReader(fileName);
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
             while ((eachLineOfFile = bufferedReader.readLine()) != null) {
+                if (action.contains("Find")) {
+                    System.out.println("Found in file: " + fileName);
+                    return true;
+                }
                 if (action.contains("Replace"))
                     totalLines += eachLineOfFile.replace(textToFind, replacingText) + System.lineSeparator();
                 else if (action.contains("Delete")) {
@@ -153,14 +161,15 @@ public class GeneralUtility {
             }
             bufferedReader.close();
             if (!originalContent[0].trim().contentEquals(totalLines.trim())) {
-                System.out.println(action + "d in file: " + fileName);
                 // Write the new String with the replaced line OVER the same file
                 FileOutputStream fileOut = new FileOutputStream(fileName);
                 fileOut.write(totalLines.getBytes());
                 fileOut.flush();
                 fileOut.close();
+                System.out.println(action + "d in file: " + fileName);
+                return true;
             }
-            return true;
+            return false;
         } catch (Exception e) {
             System.out.println(e);
             return false;

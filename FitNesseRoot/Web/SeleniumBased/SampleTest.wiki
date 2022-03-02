@@ -1,6 +1,7 @@
-After you execute, click the link at the bottom of the page to see report.
+After you execute, click the link at the bottom of the page to see report. !style_red('''Ensure that the variables in SetUp is defined correctly.''')
 !style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.
-'''Test Objective''': Runs a web test using playwright. '''First time, the test will fail because of time out since playwright downloads chromium. Run it again to see the result.'''
+!style_blue(To use page object model, refer to the example in home page.)
+'''Test Objective''': Runs a web test using Selenium.
 '''Status''': Automated.
 '''Test case id''': <some id>
 

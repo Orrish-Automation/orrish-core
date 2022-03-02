@@ -1,0 +1,26 @@
+---
+Static
+---
+'''When to select what type of pages'''
+Select static page for !-SetUp-!, !-TearDown-!, pages in page object. They are not executable by itself.
+Suite Page is like a folder which can be executed. All tests inside it will be executed if you click 'Suite' button on a Suite page.
+Test page is a executable test.
+
+'''Organize your own folder'''
+There are examples in the home page that you can follow to organize your own folder.
+
+'''Variable'''
+A static variable can be defined in any page which can be used by current or child pages.
+''!define DATABASE_IP {123.123.12.12}''
+Assign and use a variable dynamically during test execution.
+''|$valueFromResponse= |Get from response |country.name|''
+
+'''Commenting'''
+If you want to comment one line, add one extra pipe in the front.   e.g.    | |$valueFromResponse= |Get from response |name|
+If you want to comment the whole table, add pipe followed by comment.
+
+'''Escaping'''
+To prevent converting text into a link, you have to escape special text like url, email, telephone number, new line character, !-WikiWord-! then escape it per [[Guide][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide#CharacterFORMATTING]]
+----
+'''Use of locator in test for Selenium/Appium'''
+You can use id (id=someId) or class (class=someClass) or xpath (xpath=somexpath) by name (name=submit) by text (text=Log In) or by css selector (input[value='hello']).

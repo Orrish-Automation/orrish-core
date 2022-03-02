@@ -10,7 +10,7 @@
 |Report Steps |
 |API Steps    |
 
-!define SCHEMA {!-{
+!define JSON_SCHEMA {!-{
 	"definitions": {},
 	"$schema": "http://json-schema.org/draft-07/schema#", 
 	"$id": "https://example.com/object1646173832.json", 

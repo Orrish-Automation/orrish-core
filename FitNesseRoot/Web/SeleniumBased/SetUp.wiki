@@ -1,0 +1,23 @@
+This is Set up page containing basic configuration. Set up is called before each test.
+This uses Playwright Appium Steps. If you use Selenium based grid, please use the class Selenium Appium Steps and add set up variables accordingly. 
+!style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.
+
+!***< library
+
+|import                          |
+|com.orrish.automation.entrypoint|
+
+|library              |
+|Set Up               |
+|Tear Down            |
+|General Steps        |
+|Report Steps         |
+|API Steps            |
+|Selenium Appium Steps|
+*!
+
+!|script                                                  |
+|Set suite name              |Sample suite                |
+|Take screenshot at each step|true                        |
+|Selenium grid URL           |http://localhost:4444/wd/hub|
+|Browser                     |chrome                      |
