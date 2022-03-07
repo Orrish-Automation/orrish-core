@@ -1,3 +1,4 @@
+<h1 align="center">Orrish Automation</h1>
 <p align="center">
     <a href="https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml">
       <img alt="Build Status" src="https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml/badge.svg" />
@@ -5,31 +6,31 @@
     <a href="https://codecov.io/gh/Orrish-Automation/orrish-core">
       <img alt="Code Coverage" src="https://codecov.io/gh/Orrish-Automation/orrish-core/branch/main/graph/badge.svg" />
     </a>
-  </p>
+</p>
+<h2 align="center">Web based end to end automation and collaboration for the whole team.</h2>
 
-## Why another automation tool?
-With currently available open source automation tools, we have to set up our computer and have some coding knowledge before we are ready to write/execute a test. Consider below challenges of Java based unit test framework. 
+With currently available open source automation tools, we have to set up our computer and have some coding knowledge before we are ready to write/execute a test. Consider below challenges of unit test based automation framework. 
 
 | Install & build framework | Automation adoption | Version Control System | Organize test | Documentation / collaboration |
 | --- | --- |  --- | --- | --- |
-| Version or access issues. Compile errors. | Cannot use automation if you cannot build/code. Barrier to entry creating silos. | Well versed including Git conflict resolution? | Challenge in organizing tests in various files (Java or BDD). | Issues with sharing information, automation progress tracking, reviewing with non-coders. |
+| Version, access, dependency, compile issues. | Creates silos. Use automation only if you can build/code. Barrier to entry. | Well-versed including Git conflict resolution? | Organizing tests in class/BDD/xml files not effective. Review takes time. | Issues with sharing information, automation progress tracking, reviewing with non-coders. |
 
-##### :gem: Solution : Write and execute tests similar to TestNG/JUnit/BDD but on a web page (FitNesse) accessible to all without any local setup.  
+##### :key: Solution : Write and execute tests similar to Unit test/BDD but on a web page (FitNesse) accessible to all without any local setup.  
 ![Unit Test To FitNesse](https://github.com/Orrish-Automation/orrish-core/blob/main/UnitTestToFitNesseTestCase.png?raw=true)
 
 :bulb: If you do not want to transition to using FitNesse, you can use this repo as dependency to Java based frameworks (TestNG/JUnit/BDD) to leverage core automation logic. Please refer to [examples](https://github.com/Orrish-Automation/examples) project in this GitHub organization.
 
-## QA vis-à-vis automation engineer(SDET)
+## Automation engineer(SDET) can help whole team contribute to automation
 
 <details>
-<summary>Automation is effective when dedicated automation engineers take care of core framework while QA writes and executes automated tests. Expand to learn more</summary>
-<br>To implement successful test automation, it is important that product experts (QA, Business users) are able to write, manage and execute automated tests themselves without setting up their machines. An automation engineer will spend more time on framework and other development activities.
+<summary>Automation is effective when dedicated automation engineers take care of core framework while product experts writes and executes automated tests. Expand to learn more</summary>
+<br>To implement successful test automation, it is important that product experts (QA, business users, non-coders, customer support etc.) are able to write, manage and execute automated tests themselves without setting up their machines. This will help automation engineers to spend most of the time on automation framework and other development activities realizing automation goals for all teams in quickest possible way.
 
-| QA / Business users | SDET / Automation Engineer | 
+| QA / Business users / Non-coder | SDET / Automation Engineer | 
 | --- | --- |
-| Product expert, understand product features well | Implement good coding principles/design patterns, R&D on evolving automation tech stack. Extend and maintain automation framework code - good coding knowledge needed. |
+| Product expert, understand product features well. | Implement good coding principles/design patterns, R&D on evolving automation tech stack. Extend and maintain automation framework code - good coding knowledge needed. |
 | Clarify, document, write and execute automated tests, analyze failures | Train team members to write/execute their own automated tests, train in analyzing test failure root cause. |  
-| Exploratory test and manual execution of not automated tests |  Setup and maintain automation infrastructure and CI integration - good scripting/DevOps skill needed. |
+| Exploratory test and manual execution of not automated tests. |  Setup and maintain automation infrastructure and CI integration - good scripting/DevOps skill needed. |
 | Manage test data and test environment with help from various other teams. | Develop tools for task automation, process automation, data generation, data cleanup, mock servers etc. |
 </details>
 
@@ -49,14 +50,15 @@ Below is comparison table of unit test framework vs FitNesse
 
 | Feature | FitNesse | Unit Test | Comment |
 |   ---   |  :---:   |   :---:   |   ---   |
-| Need to setup individual machine | :tada: | :o: |  Access via FitNesse web eliminates individual setup |
+| Need to setup individual machine | :tada: | :o: |  Access via FitNesse web eliminates individual setup. |
 | Possible to write/execute test without coding knowledge | :white_check_mark: | :x: | Basic coding, assertion knowledge is required for unit tests. | 
 | Keyword driven and data driven tests | :white_check_mark:  | :dart: | It is much easier to achieve in FitNesse even by non-coders. See FitNesse [data driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable) and [keyword driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.ScriptTable). |
-| Use as documentation and collaboration tool |:white_check_mark: | :x: |
+| Use as documentation and collaboration tool |:white_check_mark: | :x: | FitNesse is a collaboration wiki + automation tool for non-coders.
 | Reporting |:white_check_mark: | :white_check_mark: |
 | CI Integration | :white_check_mark: | :white_check_mark: | FitNesse Has Jenkins plugin. |
-| Locate and organize test easily | :white_check_mark: |:dart: | FitNesse tests are organized like folder which is much easier to manage than unit test classes/xml. |
+| Locate and organize test easily | :white_check_mark: |:dart: | FitNesse tests are organized like folder; much easier to manage than unit test classes/xml. |
 | Easy test readability | :white_check_mark: | :dart: | FitNesse tests will be more readable for all. Unit tests are difficult to read by non-coders. |
+| Easy version control | :white_check_mark: | 🎯 | FitNesse tests are visible in real time via wiki server, no VCS conflict across team.
 
 ## Setting up the framework on a central server
 
@@ -79,7 +81,7 @@ If you don't have docker installed or if you want to setup manually, follow belo
 ## FitNesse specific tasks
 
 <details>
-<summary>Expand to see QA and automaton engineer collaboration steps in regards to FitNesse.</summary>
+<summary>Expand to see suggested collaboration steps in regards to FitNesse.</summary>
 
 | QA / Business users | SDET / Automation Engineer | 
 | --- | --- |
