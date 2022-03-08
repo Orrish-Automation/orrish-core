@@ -124,8 +124,11 @@ public class SeleniumAppiumActions {
                 case "inMobileWaitUntilIsDisplayedFor":
                     isMobileStepPassed = appiumPageMethods.waitUntilIsDisplayedFor(args[1].toString());
                     break;
-                case "inMobileWaitUntilOneOfTheLocatorsIsEnabled":
-                    isMobileStepPassed = appiumPageMethods.waitUntilOneOfTheLocatorsIsEnabled(args[1].toString());
+                case "waitUntilOneOfTheElementsIsDisplayed":
+                    isMobileStepPassed = appiumPageMethods.waitUntilOneOfTheElementsIsDisplayed(args[1].toString());
+                    break;
+                case "waitUntilOneOfTheElementsIsEnabled":
+                    isMobileStepPassed = appiumPageMethods.waitUntilOneOfTheElementsIsEnabled(args[1].toString());
                     break;
                 case "inMobileWaitUntilElementTextContains":
                     isMobileStepPassed = appiumPageMethods.waitUntilElementTextContains(args[1].toString(), args[2].toString());
@@ -136,17 +139,18 @@ public class SeleniumAppiumActions {
                 case "inMobileEnterInTextFieldFor":
                     isMobileStepPassed = appiumPageMethods.enterInTextFieldFor(args[1].toString(), args[2].toString());
                     break;
-                case "inMobileGetTextFromLocator":
-                    return appiumPageMethods.getTextFromLocator(args[1].toString());
+                case "inMobileGetTextFromElement":
+                    return appiumPageMethods.getTextFromElement(args[1].toString());
                 default:
                     throw new Exception(args[0].toString() + " method not implemented yet.");
             }
         } catch (Exception ex) {
             isMobileStepPassed = false;
-            appiumPageMethods.reportException(args, ex);
+            Exception exception = (ex instanceof InvocationTargetException) ? (Exception) ((InvocationTargetException) ex).getTargetException() : ex;
+            appiumPageMethods.reportExecutionStatusWithScreenshotAndException(false, args, exception);
             return null;
         }
-        appiumPageMethods.reportExecutionStatus(isMobileStepPassed, args);
+        appiumPageMethods.reportExecutionStatusWithScreenshotAndException(isMobileStepPassed, args, null);
         return isMobileStepPassed;
     }
 
@@ -240,11 +244,11 @@ public class SeleniumAppiumActions {
                 case "waitUntilIsDisplayedFor":
                     isWebStepPassed = seleniumPageMethods.waitUntilIsDisplayed(args[1].toString());
                     break;
-                case "waitUntilOneOfTheLocatorsIsDisplayed":
-                    isWebStepPassed = (seleniumPageMethods.waitUntilOneOfTheLocatorsIsDisplayed(args[1].toString()) != null);
+                case "waitUntilOneOfTheElementsIsDisplayed":
+                    isWebStepPassed = (seleniumPageMethods.waitUntilOneOfTheElementsIsDisplayed(args[1].toString()) != null);
                     break;
-                case "waitUntilOneOfTheLocatorsIsEnabled":
-                    isWebStepPassed = (seleniumPageMethods.waitUntilOneOfTheLocatorsIsEnabled(args[1].toString()) != null);
+                case "waitUntilOneOfTheElementsIsEnabled":
+                    isWebStepPassed = (seleniumPageMethods.waitUntilOneOfTheElementsIsEnabled(args[1].toString()) != null);
                     break;
                 case "waitUntilElementTextContains":
                     isWebStepPassed = seleniumPageMethods.waitUntilElementTextContains(args[1].toString(), args[2].toString());
@@ -281,16 +285,13 @@ public class SeleniumAppiumActions {
                 case "selectDropdownByText":
                     isWebStepPassed = seleniumPageMethods.selectDropdownByText(args[1].toString());
                     break;
-                case "getTextFromLocator":
-                    return seleniumPageMethods.getTextFromLocator(args[1].toString());
+                case "getTextFromElement":
+                    return seleniumPageMethods.getTextFromElement(args[1].toString());
                 case "executeJavascript":
                     isWebStepPassed = seleniumPageMethods.executeJavascript(args[1].toString());
                     break;
-                case "scrollTo":
-                    isWebStepPassed = seleniumPageMethods.scrollTo(args[1].toString());
-                    break;
-                case "scrollToBottom":
-                    isWebStepPassed = seleniumPageMethods.scrollToBottom();
+                case "executeJavascriptOnElement":
+                    isWebStepPassed = seleniumPageMethods.executeJavascriptOnElement(args[1].toString(), args[2].toString());
                     break;
                 case "getCurrentWindowId":
                     return seleniumPageMethods.getCurrentWindowId();
@@ -303,12 +304,11 @@ public class SeleniumAppiumActions {
             //*/
         } catch (Exception ex) {
             isWebStepPassed = false;
-            seleniumPageMethods.reportExecutionStatus(false, args);
             Exception exception = (ex instanceof InvocationTargetException) ? (Exception) ((InvocationTargetException) ex).getTargetException() : ex;
-            seleniumPageMethods.reportException(args, exception);
+            seleniumPageMethods.reportExecutionStatusWithScreenshotAndException(false, args, exception);
             return null;
         }
-        seleniumPageMethods.reportExecutionStatus(isWebStepPassed, args);
+        seleniumPageMethods.reportExecutionStatusWithScreenshotAndException(isWebStepPassed, args, null);
         return isWebStepPassed;
     }
 

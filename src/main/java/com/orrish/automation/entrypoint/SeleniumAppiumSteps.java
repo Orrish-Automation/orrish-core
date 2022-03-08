@@ -26,11 +26,11 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("takeWebScreenshotWithText", text);
     }
 
-    public boolean closeBrowser(){
+    public boolean closeBrowser() {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("closeBrowser");
     }
 
-    public boolean quitBrowser(){
+    public boolean quitBrowser() {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("quitBrowser");
     }
 
@@ -89,8 +89,12 @@ public class SeleniumAppiumSteps extends AppiumSteps {
     }
 
     //Double comma separated values, single comma may be present in xpath, hence double comma
-    public boolean waitUntilOneOfTheLocatorsIsEnabled(String locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheLocatorsIsEnabled", locator);
+    public boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsDisplayed", locator);
+    }
+
+    public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsEnabled", locator);
     }
 
     public boolean enterInTextFieldFor(String inputText, String locator, String description) {
@@ -121,20 +125,16 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("selectFromDropdown", inputString, locator);
     }
 
-    public String getTextFromLocator(String locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnString("getTextFromLocator", locator);
+    public String getTextFromElement(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnString("getTextFromElement", locator);
     }
 
     public boolean executeJavascript(String scriptToExecute) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("executeJavascript", scriptToExecute);
     }
 
-    public boolean scrollTo(String locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("scrollTo", locator);
-    }
-
-    public boolean scrollToBottom() {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("scrollToBottom");
+    public boolean executeJavascriptOnElement(String scriptToExecute, String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("executeJavascriptOnElement", scriptToExecute, locator);
     }
 
     public String getCurrentWindowId() {

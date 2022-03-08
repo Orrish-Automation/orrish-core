@@ -71,12 +71,12 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
     }
 
     //Double comma separated values, single comma may be present in xpath, hence double comma
-    public boolean waitUntilOneOfTheLocatorsIsDisplayed(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheLocatorsIsDisplayed", locator);
+    public boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsDisplayed", locator);
     }
 
-    public boolean waitUntilOneOfTheLocatorsIsEnabled(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheLocatorsIsEnabled", locator);
+    public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsEnabled", locator);
     }
 
     public boolean enterInTextFieldFor(String inputText, String locator, String description) {
@@ -107,8 +107,8 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("selectFromDropdown", inputString, locator);
     }
 
-    public String getTextFromLocator(String locator) {
-        return playwrightActions.executeOnWebAndReturnString("getTextFromLocator", locator);
+    public String getTextFromElement(String locator) {
+        return playwrightActions.executeOnWebAndReturnString("getTextFromElement", locator);
     }
 
     public boolean executeJavascript(String scriptToExecute) {

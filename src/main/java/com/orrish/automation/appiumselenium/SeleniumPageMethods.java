@@ -149,13 +149,9 @@ public class SeleniumPageMethods {
         webDriver.executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
-    public boolean scrollTo(String locator) {
-        webDriver.executeScript("arguments[0].scrollIntoView(true);", webDriver.findElement(getElementBy(locator)));
+    public boolean executeJavascriptOnElement(String scriptToExecute, String locator) {
+        webDriver.executeScript(scriptToExecute, webDriver.findElement(getElementBy(locator)));
         return true;
-    }
-
-    public boolean scrollToBottom() {
-        return executeJavascript("window.scrollTo(0, document.body.scrollHeight)");
     }
 
     public boolean waitUntilIsDisplayed(String locator) {
@@ -166,12 +162,12 @@ public class SeleniumPageMethods {
         return CommonPageMethod.waitForElementSync(webDriver, webDriverWait, locator, false);
     }
 
-    public WebElement waitUntilOneOfTheLocatorsIsDisplayed(String locator) {
-        return CommonPageMethod.waitUntilOneOfTheLocatorsIs(webDriver, locator, false);
+    public WebElement waitUntilOneOfTheElementsIsDisplayed(String locator) {
+        return CommonPageMethod.waitUntilOneOfTheElementsIs(webDriver, locator, false);
     }
 
-    public WebElement waitUntilOneOfTheLocatorsIsEnabled(String locator) {
-        return CommonPageMethod.waitUntilOneOfTheLocatorsIs(webDriver, locator, true);
+    public WebElement waitUntilOneOfTheElementsIsEnabled(String locator) {
+        return CommonPageMethod.waitUntilOneOfTheElementsIs(webDriver, locator, true);
     }
 
     public boolean waitUntilElementTextContains(String locator, String text) {
@@ -294,7 +290,7 @@ public class SeleniumPageMethods {
         return CommonPageMethod.enterInTextField(webDriver, webDriverWait, input, locator);
     }
 
-    public String getTextFromLocator(String locator) {
+    public String getTextFromElement(String locator) {
         return waitForAndGetElement(getElementBy(locator)).getText();
     }
 
@@ -394,12 +390,8 @@ public class SeleniumPageMethods {
         return true;
     }
 
-    public void reportExecutionStatus(boolean isStepPassed, Object[] args) {
-        CommonPageMethod.reportExecutionStatus(isStepPassed, args, webDriver);
-    }
-
-    public void reportException(Object[] args, Exception ex) {
-        CommonPageMethod.reportException(webDriver, args, ex);
+    public void reportExecutionStatusWithScreenshotAndException(boolean isStepPassed, Object[] args, Throwable ex) {
+        CommonPageMethod.reportExecutionStatusWithScreenshotAndException(isStepPassed, args, webDriver, ex);
     }
 
 }

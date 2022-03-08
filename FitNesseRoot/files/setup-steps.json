@@ -57,7 +57,7 @@
   {
     "id": 12,
     "step": "|Browser |CHROME|",
-    "help": ""
+    "help": "Default is CHROME."
   },
   {
     "id": 13,
@@ -71,8 +71,8 @@
   },
   {
     "id": 15,
-    "step": "|Default wait time in seconds|10|",
-    "help": ""
+    "step": "|Default wait time in seconds|5|",
+    "help": "Default is 10."
   },
   {
     "id": 16,
@@ -152,12 +152,12 @@
   {
     "id": 31,
     "step": "|Show page info on failure|true|",
-    "help": "Page dump is shown in report if enabled."
+    "help": "Page dump is shown in report if enabled. Default is false."
   },
   {
     "id": 32,
     "step": "|Report Enabled|false|",
-    "help": "If set to false, this will not generate any report."
+    "help": "If set to false, this will not generate any report. Default is true."
   }
 ]
 

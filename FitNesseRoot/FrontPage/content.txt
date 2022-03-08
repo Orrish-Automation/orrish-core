@@ -7,7 +7,6 @@
 |[[API][.API]]              |Test cases for Backend team |
 |[[Web][.Web]]              |Test cases for Frontend team|
 |[[Web and API][.WebAndAPI]]|Test cases for UAT team     |
-----
 '''Specific examples'''
 |[[Page Object Model][.PageObject]]                              |Example of page object model in FitNesse. Define scenario and locator in pages, not in code.|
 |[[Data Driven + Conditional Step][.DataDrivenTest]]             |Example of step execution based on a conditon. Uses data driven test.                       |

@@ -25,6 +25,7 @@ public class TearDown {
     }
 
     private void appendSuiteTestResult() {
+        if (testList.size() == 0 || testList.get(0) == null) return;
         testList.forEach(individualTest -> {
             String testNameFromModel = individualTest.getModel().getName().replaceAll("[^A-Za-z0-9 ]", "");
             String result = individualTest.getModel().getStatus().toString();

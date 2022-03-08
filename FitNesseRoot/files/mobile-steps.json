@@ -71,17 +71,22 @@
   },
   {
     "id": 15,
-    "step": "|In mobile wait until one of the locators |#successButton,,#errorButton|is enabled|",
+    "step": "|In mobile wait until one of the elements |#successButton,,#errorButton|is displayed|",
     "help": ""
   },
   {
     "id": 16,
-    "step": "|In mobile enter|john.doe| in text field|#txt_un| for|username textfield|",
+    "step": "|In mobile wait until one of the elements |#successButton,,#errorButton|is enabled|",
     "help": ""
   },
   {
     "id": 17,
-    "step": "|$value=|In mobile get text from locator|#button|",
+    "step": "|In mobile enter|john.doe|in text field|#txt_un| for|username textfield|",
+    "help": ""
+  },
+  {
+    "id": 18,
+    "step": "|$value=|In mobile get text from element|#button|",
     "help": ""
   }
 ]

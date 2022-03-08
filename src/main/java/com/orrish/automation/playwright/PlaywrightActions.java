@@ -211,15 +211,15 @@ public class PlaywrightActions {
         return playwrightPage.waitForSelector(locator).isVisible();
     }
 
-    protected boolean waitUntilOneOfTheLocatorsIsDisplayed(String locator) {
-        return waitUntilOneOfTheLocators(locator, "visible");
+    protected boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
+        return waitUntilOneOfTheElements(locator, "visible");
     }
 
-    protected boolean waitUntilOneOfTheElementIsEnabled(String locator) {
-        return waitUntilOneOfTheLocators(locator, "enabled");
+    protected boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
+        return waitUntilOneOfTheElements(locator, "enabled");
     }
 
-    private boolean waitUntilOneOfTheLocators(String locator, String value) {
+    private boolean waitUntilOneOfTheElements(String locator, String value) {
         if (!conditionalStep) return true;
         String[] locators = locator.split(",,");
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
@@ -333,11 +333,11 @@ public class PlaywrightActions {
                 case "waitUntilIsDisplayedFor":
                     isPlaywrightStepPassed = waitUntilIsDisplayedFor(args[1].toString());
                     break;
-                case "waitUntilOneOfTheLocatorsIsDisplayed":
-                    isPlaywrightStepPassed = waitUntilOneOfTheLocatorsIsDisplayed(args[1].toString());
+                case "waitUntilOneOfTheElementsIsDisplayed":
+                    isPlaywrightStepPassed = waitUntilOneOfTheElementsIsDisplayed(args[1].toString());
                     break;
-                case "waitUntilOneOfTheLocatorsIsEnabled":
-                    isPlaywrightStepPassed = waitUntilOneOfTheElementIsEnabled(args[1].toString());
+                case "waitUntilOneOfTheElementsIsEnabled":
+                    isPlaywrightStepPassed = waitUntilOneOfTheElementsIsEnabled(args[1].toString());
                     break;
                 case "enterInTextFieldFor":
                     isPlaywrightStepPassed = enterInTextFieldFor(args[1].toString(), args[2].toString());
@@ -359,7 +359,7 @@ public class PlaywrightActions {
                 case "selectFromDropdown":
                     isPlaywrightStepPassed = selectFromDropdown(args[1].toString(), args[2].toString());
                     break;
-                case "getTextFromLocator":
+                case "getTextFromElement":
                     return getTextFromLocator(args[1].toString());
                 case "executeJavascript":
                     isPlaywrightStepPassed = executeJavascript(args[1].toString());
@@ -370,7 +370,7 @@ public class PlaywrightActions {
         } catch (Exception ex) {
             isPlaywrightStepPassed = false;
             UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, ex);
-            UIStepReporter.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.FAIL, null);
+            UIStepReporter.reportStepResultWithScreenshotAndException(ReportUtility.REPORT_STATUS.FAIL, null);
             return false;
         }
         if (isPlaywrightStepPassed && !isScreenshotAtEachStepEnabled)
@@ -378,7 +378,7 @@ public class PlaywrightActions {
         else {
             ReportUtility.REPORT_STATUS status = isPlaywrightStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
             UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, null);
-            UIStepReporter.reportStepResultWithScreenshot(status, null);
+            UIStepReporter.reportStepResultWithScreenshotAndException(status, null);
         }
         return isPlaywrightStepPassed;
     }

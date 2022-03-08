@@ -22,7 +22,7 @@ public class UIStepReporter {
         stepCounter = stepCounterPassed;
     }
 
-    public void reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS status, RemoteWebDriver driver) {
+    public void reportStepResultWithScreenshotAndException(ReportUtility.REPORT_STATUS status, RemoteWebDriver driver) {
         String stepNameWithParameters = getMethodStyleStepName(stepNames);
         String reportMessage = (status == ReportUtility.REPORT_STATUS.FAIL)
                 ? stepNameWithParameters + " could not be performed."

@@ -1,4 +1,5 @@
 !**> !style_blue('''Includes pages''')
+!include .PageObject.Pages.AllPages
 !include .PageObject.Pages.LandingPage
 !include .PageObject.Pages.SearchPage
 *!
@@ -20,7 +21,7 @@ This uses Playwright Appium Steps. If you use Selenium based grid, please use th
 |Playwright Appium Steps|
 *!
 
-|script                                   |
+!|script                                  |
 |Set suite name              |Sample suite|
 |Take screenshot at each step|false       |
 |Playwright headless         |true        |
