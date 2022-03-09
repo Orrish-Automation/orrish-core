@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-public class GeneralStepsTest {
+public class GeneralStepsUnitTest {
 
     SetUp setUp;
 

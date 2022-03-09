@@ -1,7 +1,7 @@
 <h1 align="center">Orrish Automation</h1>
 <p align="center">
-    <a href="https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml">
-      <img alt="Build Status" src="https://github.com/Orrish-Automation/orrish-core/actions/workflows/workflow.yml/badge.svg" />
+    <a href="https://github.com/Orrish-Automation/orrish-core/actions/workflows/CI.yml">
+      <img alt="Build Status" src="https://github.com/Orrish-Automation/orrish-core/actions/workflows/CI.yml/badge.svg" />
     </a>
     <a href="https://codecov.io/gh/Orrish-Automation/orrish-core">
       <img alt="Code Coverage" src="https://codecov.io/gh/Orrish-Automation/orrish-core/branch/main/graph/badge.svg" />
@@ -9,20 +9,20 @@
 </p>
 <h2 align="center">Web based end-to-end automation and collaboration for the whole team.</h2>
 
-For most open source automation tools, we have to set up our local machine before we are ready to write/execute a test. We also need to know build tools and/or coding. Let's consider challenges of unit test based automation framework. 
+For most open source automation tools, we have to set up our local machine before we can write/execute a test. We need to know build tools/coding. Let's consider challenges of unit test based automation framework. 
 
-| Install & build framework | Automation adoption | Version Control System | Organize test | Documentation / collaboration |
+| Install & build framework | Automation adoption | Version Control | Organize test | Documentation / collaboration |
 | --- | --- |  --- | --- | --- |
-| Version, access, dependency, compile, build issues. | Creates silos. Use automation only if you can build/code. Barrier to entry. | Well-versed including Git conflict resolution? | Organizing tests in class/BDD/xml files not effective. Review takes time. | Issues with sharing information, automation progress tracking, reviewing with non-coders. |
+| Version, access, dependency, compile, build issues. | Creates silos. Build/coding for automation is barrier to entry. | Well-versed including Git conflict resolution? | Organizing tests in class/BDD/xml files not effective. Review takes time. | Issues with sharing information, progress tracking, reviewing with non-coders. |
 
-##### :key: Solution : Write and execute tests similar to Unit test/BDD but on a web page (FitNesse) accessible to all without any local setup.
-Below is the illustration. More examples are available when you launch FitNesse following installation instructions.
+##### :trophy: Solution : Write and execute tests similar to Unit test/BDD but on a web page (FitNesse) accessible to all without any local setup.
+Below is the illustration. More examples are available when you install it and launch the FitNesse wiki.
 
 ![Unit Test To FitNesse](https://github.com/Orrish-Automation/orrish-core/blob/main/UnitTestToFitNesseTestCase.png?raw=true)
 
 :bulb: If you do not want to transition to using FitNesse, you can use this repo as dependency to Java based frameworks (TestNG/JUnit/BDD) to leverage core automation logic. Please refer to [examples](https://github.com/Orrish-Automation/examples) project in this GitHub organization.
 
-## Automation engineer(SDET) can help whole team contribute to automation
+## :handshake: Automation engineer(SDET) can help whole team contribute to automation
 
 <details>
 <summary>Automation is effective when dedicated automation engineers take care of core framework while product experts write and execute automated tests. Expand to learn more</summary>
@@ -36,14 +36,13 @@ Below is the illustration. More examples are available when you launch FitNesse 
 | Manage test data and test environment with help from various other teams. | Develop tools for task automation, process automation, data generation, data cleanup, mock servers etc. |
 </details>
 
-## Architecture
+## :building_construction: Architecture
 * It uses [FitNesse](http://fitnesse.org) which runs as a wiki server, so tests are accessed/added/executed via web. Hence, no need for QA/BA to set up anything on local machine.
 * To run automated tests, FitNesse drives the code in this repo which is fed to it as a fat jar file.
 * This is a Java based framework using open source libraries like `rest-assured` for API, `JDBC` for relational database, `mongodb-driver-sync` for MongoDB, `Appium` (mobile), `Selenium`, `Playwright` (web), `extentreports` for reporting etc.
-* It also integrates a UI showing the available steps (mapped to methods) that can be used in adding/editing test.
+* It also has page showing the available steps (mapped to methods) that can be referred while adding/editing test.
 
-## Features
-
+## :briefcase: Features
 * Can be installed via docker or manually on a central server.
 * Supports API, Relational database, MongoDB, Web and Mobile steps. It is extensible and pull requests with more libraries are welcome.
 * Mix and match steps to create desired executable tests.
@@ -53,17 +52,17 @@ Below is comparison table of unit test framework vs FitNesse
 
 | Feature | FitNesse | Unit Test | Comment |
 |   ---   |  :---:   |   :---:   |   ---   |
-| Set up individual machine | :tada: | :o: |  Access via FitNesse web eliminates individual setup. |
-| Codeless test writing | :white_check_mark: | :x: | Basic coding, assertion knowledge is required for unit tests. | 
-| Keyword and data driven tests | :white_check_mark:  | :dart: | Easier in FitNesse even by non-coders. See FitNesse [data driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable) and [keyword driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.ScriptTable). |
+| No local machine setup | :white_check_mark: | :x: |  Access via FitNesse web eliminates individual setup. |
+| Codeless test writing | :white_check_mark: | :x: | |
+| Keyword and data driven tests | :white_check_mark:  | :ballot_box_with_check: | FitNesse [data driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable) and [keyword driven](http://fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.ScriptTable) are easier. |
 | Use as documentation and collaboration tool |:white_check_mark: | :x: | FitNesse is a collaboration wiki + automation tool for non-coders.
 | Reporting |:white_check_mark: | :white_check_mark: |
-| CI Integration | :white_check_mark: | :white_check_mark: | FitNesse Has Jenkins plugin. It can also be run from command line. |
-| Locate and organize test easily | :white_check_mark: |:dart: | Easy to manage folder like FitNesse tests compared to unit test class/xml/feature files. |
-| Easy test readability | :white_check_mark: | :dart: | FitNesse tests are more readable for all. Unit tests are difficult to read by non-coders. |
-| Easy version control | :white_check_mark: | :dart: | FitNesse tests are accessed in real time via wiki server, no VCS conflict.
+| CI Integration | :white_check_mark: | :white_check_mark: | FitNesse runs from terminal or via Jenkins plugin. |
+| Organize test easily | :white_check_mark: |:ballot_box_with_check: | Folder like FitNesse tests are easier to manage than unit test class/xml/feature files. |
+| Easy test readability | :white_check_mark: | :ballot_box_with_check: | FitNesse tests are more readable for non-coders. |
+| Easy version control | :white_check_mark: | :ballot_box_with_check: | Real time FitNesse tests access via wiki server, no VCS conflict. |
 
-## Setting up the framework on a central server
+## :hammer_and_wrench: Setting up the framework on a central server
 
 <details>
 <summary><b>With docker:</b></summary>
@@ -76,12 +75,12 @@ Below is comparison table of unit test framework vs FitNesse
 <details>
 <summary><b>Manual Setup:</b></summary>
 
-If you don't have docker installed or if you want to setup manually, follow below process
+If you don't have docker installed or if you want to set up manually, follow below process
   - Clone/download this repo.
-  - Run `pushJarAndStartFitnesse.sh` If the port 80 is already in use or if you want to start manually, refer the help section.
+  - Run `pushJarAndStartFitnesse.sh` :green_book: If the port 80 is already in use or if you want to start manually, refer the help section.
 </details>
   
-## FitNesse specific tasks
+## :book: FitNesse specific tasks
 
 <details>
 <summary>Expand to see suggested collaboration steps in regards to FitNesse.</summary>
@@ -94,7 +93,7 @@ If you don't have docker installed or if you want to setup manually, follow belo
 | Use this tool as documentation and collaboration. | Integrate tests in continuous integration environment (There is Jenkins plugin for FitNesse). |
 </details>
 
-## Help
+## :information_source: Help
 
 <details>
 <summary>Expand for help and troubleshoot</summary>
@@ -109,7 +108,7 @@ If you don't have docker installed or if you want to setup manually, follow belo
 * Update steps in available steps : In FitNesse homepage, you will find a link to update/add steps. 
 </details>
 
-## Screenshots
+## :framed_picture: Screenshots
 #### Test execution along with documentation
 ![Test Case Execution](https://github.com/Orrish-Automation/orrish-core/blob/main/TestCase.png?raw=true)
 #### Test report

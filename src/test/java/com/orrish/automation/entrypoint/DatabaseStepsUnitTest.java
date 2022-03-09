@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-public class DatabaseStepsTest {
+public class DatabaseStepsUnitTest {
 
     SetUp setUp;
 

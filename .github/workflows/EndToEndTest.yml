@@ -1,0 +1,29 @@
+name: End-to-End Test
+on:
+  workflow_dispatch
+
+jobs:
+  container-job:
+    runs-on: ubuntu-latest
+    container: maven:3.5-jdk-8
+    services:
+      hub:
+        image: selenium/standalone-firefox:4.1.2-20220217
+        ports:
+          - 4444:4444
+          - 7900:7900
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build with Maven
+        run: mvn test
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: target/surefire-reports/junitreports/*.xml
+
+      - name: Code coverage
+        uses: codecov/codecov-action@v2

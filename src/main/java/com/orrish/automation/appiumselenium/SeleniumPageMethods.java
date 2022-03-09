@@ -65,9 +65,7 @@ public class SeleniumPageMethods {
 
     public boolean launchBrowserAndNavigateTo(String url) throws MalformedURLException {
 
-        String testName = getCurrentTestName();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability("name", testName);
         desiredCapabilities.setCapability("acceptInsecureCerts", true);
 
         switch (browser.trim().toUpperCase()) {
@@ -81,11 +79,15 @@ public class SeleniumPageMethods {
                 desiredCapabilities.setBrowserName(BrowserType.SAFARI);
                 break;
         }
-        //This check is for Selenoid grid execution
-        if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
-            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
-            String videoName = testName + "_" + SetUp.browser + browserVersion;
-            desiredCapabilities.setCapability("videoName", videoName + ".mp4");
+        if (reportEnabled) {
+            String testName = getCurrentTestName();
+            desiredCapabilities.setCapability("name", testName);
+            //This check is for Selenoid grid execution
+            if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
+                String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
+                String videoName = testName + "_" + SetUp.browser + browserVersion;
+                desiredCapabilities.setCapability("videoName", videoName + ".mp4");
+            }
         }
         if (executionCapabilities.size() > 0) {
             executionCapabilities.entrySet().forEach(e -> {
