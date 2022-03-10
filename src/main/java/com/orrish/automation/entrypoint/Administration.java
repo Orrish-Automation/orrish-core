@@ -22,13 +22,20 @@ public class Administration {
     public static void main(String[] args) {
         if (args.length == 0) {
             printInputError();
+        } else if (args[0].contentEquals("findExact")) {
+            String textFindFolderLocation = args[1];
+            String stringToFind = args[2];
+            getAllFileNames(allFileNameList, Paths.get(textFindFolderLocation));
+            Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
+            allFileNameList.removeIf(stringPredicate);
+            findFilesWithMethod(textFindFolderLocation, stringToFind, false);
         } else if (args[0].contentEquals("findMethod")) {
             String textFindFolderLocation = args[1];
             String methodName = args[2];
             getAllFileNames(allFileNameList, Paths.get(textFindFolderLocation));
             Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
             allFileNameList.removeIf(stringPredicate);
-            findFilesWithMethod(textFindFolderLocation, methodName);
+            findFilesWithMethod(textFindFolderLocation, methodName, true);
         } else if (args[0].contentEquals("deleteExact")) {
             String textFindFolderLocation = args[1];
             String textToFind = args[2];
@@ -48,11 +55,10 @@ public class Administration {
             for (String fileName : allFileNameList) {
                 replaceTextWithInFile(textToFind, textToReplace, fileName);
             }
-
         } else if (args[0].contentEquals("replaceMethod")) {
             String methodName = args[2].trim();
             String textFindReplaceFolderLocation = args[1];
-            findFilesWithMethod(textFindReplaceFolderLocation, methodName);
+            findFilesWithMethod(textFindReplaceFolderLocation, methodName, true);
             String replacingString = args[3].trim();
             replaceMethodInFiles(replacingString);
         } else {
@@ -60,8 +66,7 @@ public class Administration {
         }
     }
 
-    private static void findFilesWithMethod(String textFindReplaceFolderLocation, String methodName) {
-        methodName = methodName.startsWith("|") ? getMethodNameFromStep(methodName) : methodName;
+    private static void findFilesWithMethod(String textFindReplaceFolderLocation, String methodName, boolean isMethod) {
 
         getAllFileNames(allFileNameList, Paths.get(textFindReplaceFolderLocation));
         Predicate<String> stringPredicate = p -> !p.endsWith(".wiki");
@@ -75,7 +80,8 @@ public class Administration {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     ++lineNum;
-                    if (getMethodNameFromStep(line).equals(methodName)) {
+                    boolean isFound = isMethod ? getMethodNameFromStep(line).equals(methodName.startsWith("|") ? getMethodNameFromStep(methodName) : methodName) : line.contains(methodName);
+                    if (isFound) {
                         //Found line with the desired method
                         ArrayList<Integer> lines = foundFileNameList.get(fileName);
                         if (lines == null)
@@ -89,8 +95,8 @@ public class Administration {
             } catch (Exception e) {
             }
         }
-        System.out.println("Files found : " + foundFileNameList.size());
         System.out.println(textToAppend);
+        System.out.println("Files found : " + foundFileNameList.size());
     }
 
     private static void printInputError() {
@@ -102,6 +108,7 @@ public class Administration {
         final String BOLD_TEXT = "\033[0;1m";
 
         System.out.println(BOLD_TEXT + ANSI_PURPLE + "Pass argument in one of the formats below. Use proper jar file name." + ANSI_RESET + System.lineSeparator() +
+                ANSI_YELLOW + "To find exact text in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar findExact directoryToWorkOn textToFind" + ANSI_RESET + System.lineSeparator() +
                 ANSI_YELLOW + "To find method in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar findMethod directoryToWorkOn methodToFind" + ANSI_RESET + System.lineSeparator() +
                 BOLD_TEXT + ANSI_YELLOW + "     Example: " + ANSI_BLUE + "java -jar <jar_file>.jar findMethod '/Users/user/FitNesseRoot' '|ensure|Verify response for|status=SUCCESS|' " + ANSI_RESET + System.lineSeparator() +
                 ANSI_YELLOW + "To delete lines with exact text in FitNesse pages: " + ANSI_RESET + ANSI_BLUE + "java -jar <jar_rile>.jar deleteExact directoryToWorkOn textToDelete" + ANSI_RESET + System.lineSeparator() +
@@ -153,33 +160,37 @@ public class Administration {
                 Arrays.sort(lineNumbers);
                 while ((eachLineOfFile = bufferedReader.readLine()) != null) {
                     if (lineOccurrenceCounter < lineNumbers.length && ++fileLineCounter == Integer.parseInt(lineNumbers[lineOccurrenceCounter].toString())) {
-                        ++lineOccurrenceCounter;
-                        Map<Integer, String> toFind = textToReplaceWith(eachLineOfFile);
-                        Set<Map.Entry<Integer, String>> toFindEntrySet = toFind.entrySet();
-                        Map<Integer, String> toReplaceText = textToReplaceWith(replacingText);
-                        Object[] toReplaceValues = toReplaceText.values().toArray();
-                        int lastIndex = 0;
-                        int replaceCounter = 0;
-                        String newLine = "";
-                        for (Map.Entry<Integer, String> toFindEachEntry : toFindEntrySet) {
-                            int currentIndex = toFindEachEntry.getKey();
-                            if (lastIndex != currentIndex)
-                                newLine += eachLineOfFile.substring(lastIndex, currentIndex);
-                            newLine += toReplaceValues[replaceCounter++] + "|";
-                            lastIndex = currentIndex + toFindEachEntry.getValue().length();
-                            try {
-                                //Copy the next column
-                                String currentColumnValue = eachLineOfFile.substring(lastIndex).split("\\|")[1];
-                                lastIndex += currentColumnValue.length();
-                                newLine += currentColumnValue + "|";
-                            } catch (ArrayIndexOutOfBoundsException ex) {
+                        if (replacingText.trim().length() == 0) {
+                            continue;
+                        } else {
+                            ++lineOccurrenceCounter;
+                            Map<Integer, String> toFind = textToReplaceWith(eachLineOfFile);
+                            Set<Map.Entry<Integer, String>> toFindEntrySet = toFind.entrySet();
+                            Map<Integer, String> toReplaceText = textToReplaceWith(replacingText);
+                            Object[] toReplaceValues = toReplaceText.values().toArray();
+                            int lastIndex = 0;
+                            int replaceCounter = 0;
+                            String newLine = "";
+                            for (Map.Entry<Integer, String> toFindEachEntry : toFindEntrySet) {
+                                int currentIndex = toFindEachEntry.getKey();
+                                if (lastIndex != currentIndex)
+                                    newLine += eachLineOfFile.substring(lastIndex, currentIndex);
+                                newLine += toReplaceValues[replaceCounter++] + "|";
+                                lastIndex = currentIndex + toFindEachEntry.getValue().length();
+                                try {
+                                    //Copy the next column
+                                    String currentColumnValue = eachLineOfFile.substring(lastIndex).split("\\|")[1];
+                                    lastIndex += currentColumnValue.length();
+                                    newLine += currentColumnValue + "|";
+                                } catch (ArrayIndexOutOfBoundsException ex) {
+                                }
                             }
+                            if (toReplaceValues.length - toFindEntrySet.size() == 1) {
+                                newLine += toReplaceValues[toReplaceValues.length - 1] + "|";
+                            }
+                            newLine += (!newLine.endsWith("|")) ? "|" : "";
+                            eachLineOfFile = newLine;
                         }
-                        if (toReplaceValues.length - toFindEntrySet.size() == 1) {
-                            newLine += toReplaceValues[toReplaceValues.length - 1] + "|";
-                        }
-                        newLine += (!newLine.endsWith("|")) ? "|" : "";
-                        eachLineOfFile = newLine;
                     }
                     totalLines += eachLineOfFile + System.lineSeparator();
                 }

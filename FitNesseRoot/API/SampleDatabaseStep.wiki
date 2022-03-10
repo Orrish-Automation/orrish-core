@@ -1,0 +1,13 @@
+---
+Help: Will work only if you have a working database
+Test
+---
+'''Test Objective''':
+'''Status''':
+'''Test case id''': <some id>
+
+!style_red('''Ensure you have correct database details in !-SetUp-!''')
+
+!|script                                                                     |
+|Set test name|Sample test                                                   |
+|$value=      |Run DB query|Select name from COUNTRY wherey id=1|and get cell|

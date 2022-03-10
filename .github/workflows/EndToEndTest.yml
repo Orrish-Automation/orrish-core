@@ -16,6 +16,13 @@ jobs:
         ports:
           - 4444:4444
           - 7900:7900
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
     steps:
       - name: Check out
         uses: actions/checkout@v3

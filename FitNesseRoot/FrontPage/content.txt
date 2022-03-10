@@ -4,7 +4,7 @@
 !c You can read more about !-FitNesse-! by going through [[Quick Guide][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide]] or [[Full documentation][http://fitnesse.org/FitNesse.FullReferenceGuide]]
 ----
 '''Sample structure of tests.''' (You can create pages like this by clicking on the Add->Static Page link above.)
-|[[API][.API]]              |Test cases for Backend team |
+|[[API + DB][.API]]         |Test cases for Backend team |
 |[[Web][.Web]]              |Test cases for Frontend team|
 |[[Web and API][.WebAndAPI]]|Test cases for UAT team     |
 '''Specific examples'''

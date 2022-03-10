@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertTrue;
 
-public class IntegrationTest {
+public class SeleniumIntegrationTest {
     SetUp setUp;
 
     @BeforeMethod

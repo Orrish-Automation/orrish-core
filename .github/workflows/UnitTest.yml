@@ -1,4 +1,4 @@
-name: Build Status
+name: Build + Unit Test
 
 on:
   push:
@@ -32,3 +32,6 @@ jobs:
 
     - name: Code coverage
       uses: codecov/codecov-action@v2
+      with:
+        flags: Unit Test coverage
+        name: test coverage

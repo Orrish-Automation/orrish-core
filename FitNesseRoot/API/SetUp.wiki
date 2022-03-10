@@ -12,10 +12,19 @@ This is Set up page containing basic configuration. Set up is called before each
 |General Steps          |
 |Report Steps           |
 |API Steps              |
+|Database Steps         |
 |Playwright Appium Steps|
 *!
+!define DB_USERNAME {!-username-!}
+!define DB_PASSWORD {!-password-!}
+!define MYSQL_DB {!-jdbc:mysql://<host>:<port>/<database>-!}
+!define POSTGRES_DB {!-jdbc:postgresql://<host>:<port>/<database>-!}
+!define ORACLE_DB {!-jdbc:oracle:thin:@<host>:<port>/<database>-!}
+!define SNOWFLAKE_DB {!-jdbc:snowflake://<host>:<port>-!}
+
 |script                                   |
-|Set suite name              |Sample suite|
-|Take screenshot at each step|true        |
-|Playwright headless         |true        |
-|Browser                     |chrome      |
+|Set suite name            |Sample suite  |
+|Database check            |true          |
+|Database connection string|${POSTGRES_DB}|
+|Database username         |${DB_USERNAME}|
+|Database password         |${DB_PASSWORD}|
