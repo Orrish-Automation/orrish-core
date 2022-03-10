@@ -1,10 +1,16 @@
 <h1 align="center">Orrish Automation</h1>
 <p align="center">
-    <a href="https://github.com/Orrish-Automation/orrish-core/actions/workflows/CI.yml">
-      <img alt="Build Status" src="https://github.com/Orrish-Automation/orrish-core/actions/workflows/CI.yml/badge.svg" />
+    <a href="https://github.com/Orrish-Automation/orrish-core/actions/workflows/UnitTest.yml">
+      <img alt="Build Status" src="https://github.com/Orrish-Automation/orrish-core/actions/workflows/UnitTest.yml/badge.svg?branch=main" />
     </a>
     <a href="https://codecov.io/gh/Orrish-Automation/orrish-core">
-      <img alt="Code Coverage" src="https://codecov.io/gh/Orrish-Automation/orrish-core/branch/main/graph/badge.svg" />
+      <img alt="Unit Test Coverage" src="https://codecov.io/gh/Orrish-Automation/orrish-core/branch/main/graph/badge.svg" />
+    </a>
+    <a href="https://github.com/Orrish-Automation/orrish-core/actions/workflows/EndToEndTest.yml">
+      <img alt="End To End Tests" src="https://github.com/Orrish-Automation/orrish-core/actions/workflows/EndToEndTest.yml/badge.svg?branch=integration" />
+    </a>
+    <a href="https://codecov.io/gh/Orrish-Automation/orrish-core">
+      <img alt="End-to-end Coverage" src="https://codecov.io/gh/Orrish-Automation/orrish-core/branch/integration/graph/badge.svg" />
     </a>
 </p>
 <h2 align="center">Web based end-to-end automation and collaboration for the whole team.</h2>

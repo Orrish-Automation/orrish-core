@@ -1,6 +1,10 @@
 name: End-to-End Test
 on:
-  workflow_dispatch
+  push:
+    branches: [ integration ]
+  pull_request:
+    branches: [ integration ]
+  workflow_dispatch:
 
 jobs:
   container-job:
@@ -13,10 +17,12 @@ jobs:
           - 4444:4444
           - 7900:7900
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          ref: integration
 
-      - name: Build with Maven
+      - name: Run all tests
         run: mvn test
 
       - name: Publish Unit Test Results
