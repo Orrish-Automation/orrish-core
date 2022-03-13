@@ -85,11 +85,14 @@ public class DatabaseSteps {
     public String waitTillDBQueryReturnsValueWaitingUpToSeconds(String queryToRun, int seconds) {
         if (shouldDBStepBeExecuted()) {
             do {
-                //wait a second and try again
-                String dataToBeReturned = String.valueOf(runQueryOrCommand(queryToRun, false).get(0));
-                if (!dataToBeReturned.equals("null")) {
-                    return dataToBeReturned;
+                List value = runQueryOrCommand(queryToRun, false);
+                if (value != null && value.size() > 0) {
+                    String dataToBeReturned = String.valueOf(runQueryOrCommand(queryToRun, false).get(0));
+                    if (!dataToBeReturned.equals("null")) {
+                        return dataToBeReturned;
+                    }
                 }
+                //wait a second and try again
                 waitSeconds(1);
             } while (--seconds > 0);
         }
@@ -106,6 +109,18 @@ public class DatabaseSteps {
         return shouldDBStepBeExecuted()
                 ? databaseWithReportUtility.runQueryOrCommand(query, isCommand)
                 : new ArrayList();
+    }
+
+    public boolean createCollectionInMongoDB(String collectionName) {
+        return databaseWithReportUtility.createCollectionInMongoDB(collectionName);
+    }
+
+    public boolean dropCollectionInMongoDB(String collectionName) {
+        return databaseWithReportUtility.dropCollectionInMongoDB(collectionName);
+    }
+
+    public boolean insertMongoDBDocumentInCollection(String document, String collectionName) {
+        return databaseWithReportUtility.insertMongoDBDocumentInCollection(document, collectionName);
     }
 
     public String getFirstDocumentFromMongoDBForCollectionWithCriteria(String collectionName, String criteria) {

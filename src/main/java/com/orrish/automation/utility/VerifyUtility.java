@@ -18,8 +18,8 @@ import static io.restassured.path.json.JsonPath.from;
 
 public class VerifyUtility {
 
-    public static VerificationResultModel verifyValues(String responseToVerify) {
-        Map<String, String> valueToVerify = GeneralUtility.getMapFromString(responseToVerify, "=");
+    public static VerificationResultModel verifyValues(String verificationPairs) {
+        Map<String, String> valueToVerify = GeneralUtility.getMapFromString(verificationPairs, "=");
         Map<Integer, VerificationResultModel> eachVerificationResult = new HashMap<>();
         Set<String> keys = valueToVerify.keySet();
         boolean finalVerificationResult = true;
@@ -100,7 +100,10 @@ public class VerifyUtility {
     }
 
     public static VerificationResultModel doesMatchPattern(String string1, String string2) {
-        return verifyConditionAndReturn(string1.matches(string2),
+        String regex = string2;
+        Pattern pattern = Pattern.compile(regex);
+        boolean valueToReturn = pattern.matcher(string1).matches();
+        return verifyConditionAndReturn(valueToReturn,
                 string1 + " matches pattern " + string2,
                 string1 + " does not match pattern " + string2);
     }
@@ -152,23 +155,12 @@ public class VerifyUtility {
     }
 
     public static VerificationResultModel verifyResponseFor(Response response, Map<String, String> valueToVerify) {
-        return verifyResponseForCommon(response, null, valueToVerify);
-    }
-
-    public static VerificationResultModel verifyResponseStringFor(String responseString, Map<String, String> valueToVerify) {
-        return verifyResponseForCommon(null, responseString, valueToVerify);
-    }
-
-    private static VerificationResultModel verifyResponseForCommon(Response response, String responseString, Map<String, String> valueToVerify) {
         Set<String> keys = valueToVerify.keySet();
         boolean overallResult = true;
         int counter = 0;
         Map<Integer, VerificationResultModel> verificationResultModelMap = new HashMap<>();
         for (String eachKey : keys) {
-            VerificationResultModel eachVerificationResultModel;
-            eachVerificationResultModel = response != null ?
-                    verifyInResponse(response, eachKey, valueToVerify.get(eachKey)) :
-                    verifyInResponseString(responseString, eachKey, valueToVerify.get(eachKey));
+            VerificationResultModel eachVerificationResultModel = verifyInResponse(response, eachKey, valueToVerify.get(eachKey));
             verificationResultModelMap.put(counter++, eachVerificationResultModel);
             overallResult &= eachVerificationResultModel.getOverallResult();
         }
@@ -192,11 +184,8 @@ public class VerifyUtility {
                     "Verified node " + node + " successfully. It does not exist in the actual apiResponse.",
                     "Node " + node + " was expected not to exist but it does.");
         }
-        return verifyInResponseString(response.getBody().asString(), node, expectedValue);
-    }
-
-    private static VerificationResultModel verifyInResponseString(String response, String node, String expectedValue) {
-        String actualValue = from(response).getString(node);
+        String responseBody = response.getBody().asString();
+        String actualValue = from(responseBody).getString(node);
         if (expectedValue.toLowerCase().trim().contentEquals("null")) {
             return verifyConditionAndReturn(actualValue == null,
                     "Verified node " + node + " successfully. It was null.",
@@ -226,8 +215,17 @@ public class VerifyUtility {
     }
 
     public static VerificationResultModel verifyObjectNodeCount(Response response, String node, String count) {
-        Map<String, Object> actualValue = from(response.getBody().print()).getJsonObject(node);
-        int expectedCount = Integer.parseInt(count.substring(1));
+        List<Object> actualValue = from(response.getBody().print()).getJsonObject(node);
+        if (actualValue == null) {
+            return new VerificationResultModel(false, "Could not find " + node + " in response.");
+        }
+        int expectedCount;
+        try {
+            expectedCount = Integer.parseInt(count.substring(1));
+        } catch (NumberFormatException ex) {
+            expectedCount = Integer.parseInt(count);
+            count = "=" + count;
+        }
         boolean isPassed;
         if (count.startsWith(">")) {
             isPassed = actualValue.size() > expectedCount;
@@ -243,23 +241,46 @@ public class VerifyUtility {
                 node + " items verification failed. It was " + actualValue.size() + " but expected" + count);
     }
 
-    public static boolean compareValues(String expectedCountString, String actualValueString) throws Exception {
-        int expectedCount = Integer.parseInt(expectedCountString.trim().substring(1));
-        int actualValue = Integer.parseInt(actualValueString);
-
-        boolean isPassed;
-        if (expectedCountString.startsWith(">")) {
-            isPassed = actualValue > expectedCount;
-        } else if (expectedCountString.startsWith("<")) {
-            isPassed = actualValue < expectedCount;
-        } else if (expectedCountString.startsWith("=")) {
-            isPassed = actualValue == expectedCount;
-        } else {
-            throw new Exception("Please get the condition as >1 or <2 or =3");
+    public static VerificationResultModel compareIs(String actualValueString, String expectedCountString) {
+        if (expectedCountString.contains("not null")) {
+            if (String.valueOf(actualValueString).trim().equalsIgnoreCase("null"))
+                return new VerificationResultModel(false, actualValueString + " is not null.");
+            return new VerificationResultModel(true, actualValueString + " is verified to be null.");
         }
-        if (!isPassed)
-            throw new Exception("Verification failed.");
-        return true;
+        if (expectedCountString.contains("null")) {
+            if (String.valueOf(actualValueString).trim().equalsIgnoreCase("null"))
+                return new VerificationResultModel(true, actualValueString + " is verified to be null.");
+            return new VerificationResultModel(false, actualValueString + " is not null.");
+        }
+        if (expectedCountString.trim().length() == 0 || expectedCountString.trim().equalsIgnoreCase("not empty")) {
+            if (String.valueOf(actualValueString).trim().length() == 0)
+                return new VerificationResultModel(false, actualValueString + " is verified to be not empty.");
+            return new VerificationResultModel(true, actualValueString + " is verified to be empty.");
+        }
+        if (expectedCountString.trim().length() == 0 || expectedCountString.trim().equalsIgnoreCase("empty")) {
+            if (String.valueOf(actualValueString).trim().length() == 0)
+                return new VerificationResultModel(true, actualValueString + " is verified to be empty.");
+            return new VerificationResultModel(false, actualValueString + " is verified to be not empty.");
+        }
+        try {
+            boolean isPassed;
+            expectedCountString = (expectedCountString.startsWith("length")) ? expectedCountString.split("length")[1] : expectedCountString;
+            int expectedCount = Integer.parseInt(expectedCountString.trim().substring(1));
+            int actualValue = Integer.parseInt(actualValueString);
+
+            if (expectedCountString.startsWith(">")) {
+                isPassed = actualValue > expectedCount;
+            } else if (expectedCountString.startsWith("<")) {
+                isPassed = actualValue < expectedCount;
+            } else if (expectedCountString.startsWith("=")) {
+                isPassed = actualValue == expectedCount;
+            } else {
+                throw new Exception("Please get the condition as >1 or <2 or =3");
+            }
+            return new VerificationResultModel(isPassed, "Verified " + actualValueString + " and " + expectedCountString);
+        } catch (Exception ex) {
+            return new VerificationResultModel(false, "Could not determine type of comparison");
+        }
     }
 
     private static boolean doesNodeExist(Response response, String node) {

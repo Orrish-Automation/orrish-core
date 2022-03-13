@@ -1,5 +1,6 @@
 package com.orrish.automation.utility.report;
 
+import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.playwright.PlaywrightActions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -22,7 +23,9 @@ public class UIStepReporter {
         stepCounter = stepCounterPassed;
     }
 
-    public void reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS status, RemoteWebDriver driver) {
+    public void reportStepResultWithScreenshotAndException(ReportUtility.REPORT_STATUS status, RemoteWebDriver driver) {
+        if (!SetUp.reportEnabled)
+            return;
         String stepNameWithParameters = getMethodStyleStepName(stepNames);
         String reportMessage = (status == ReportUtility.REPORT_STATUS.FAIL)
                 ? stepNameWithParameters + " could not be performed."

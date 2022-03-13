@@ -61,6 +61,23 @@ public class MongoDbActions {
         return mongoDbActions;
     }
 
+    public boolean createCollection(String collectionName) {
+        mongoDatabase.createCollection(collectionName);
+        return true;
+    }
+
+    public boolean dropCollection(String collectionName) {
+        mongoDatabase.getCollection(collectionName).drop();
+        return true;
+    }
+
+    public boolean insertDocumentInCollection(String json, String collectionName) {
+        MongoCollection<Document> collection = mongoDatabase.getCollection(collectionName);
+        Document document = Document.parse(json);
+        collection.insertOne(document);
+        return true;
+    }
+
     public List<String> getAllDocumentsFromMongoDBWithCriteria(String collectionName, String criteria) {
         MongoCollection<Document> collection = mongoDatabase.getCollection(collectionName);
         MongoIterable<Document> documents = (criteria == null) ? collection.find() : collection.find(BsonDocument.parse(criteria));

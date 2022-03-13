@@ -95,6 +95,26 @@ public class APISteps {
                     int index = Integer.parseInt(eachKey.substring(1, 2));
                     eachKey = eachKey.substring(2);
                     requestAsString = getJsonAfterReplacingValues(node, eachKey, eachMapEntry.toString(), index).toString();
+                } else if (eachKey.contains(".##")) {
+                    String nodeToBeUpdated = eachKey.split(".##")[0];
+                    String valueToFindAndReplace = eachKey.split(".##")[1];
+                    JsonNode jsonNode = getJsonAfterReplacingValues(node.get(nodeToBeUpdated), valueToFindAndReplace, eachMapEntry.toString(), -1);
+                    ((ObjectNode) node).remove(nodeToBeUpdated);
+                    String[] nodes = nodeToBeUpdated.split(".");
+                    String valueToPut = nodes.length == 0 ? nodeToBeUpdated : nodes[nodes.length - 1];
+                    ((ObjectNode) node).put(valueToPut, jsonNode);
+                    requestAsString = node.toString();
+                } else if (eachKey.contains(".#")) {
+                    String valueToFindAndReplace = eachKey.split(".#")[1];
+                    int index = Integer.parseInt(valueToFindAndReplace.substring(0, 1));
+                    String nodeToLocate = (eachKey.split(".#")[1]).substring(1);
+                    String nodeToBeUpdated = eachKey.split(".#")[0];
+                    JsonNode jsonNode = getJsonAfterReplacingValues(node.get(nodeToBeUpdated), nodeToLocate, eachMapEntry.toString(), index);
+                    ((ObjectNode) node).remove(nodeToBeUpdated);
+                    String[] nodes = nodeToBeUpdated.split(".");
+                    String valueToPut = nodes.length == 0 ? nodeToBeUpdated : nodes[nodes.length - 1];
+                    ((ObjectNode) node).put(valueToPut, jsonNode);
+                    requestAsString = node.toString();
                 } else {
                     if (eachMapEntry != null) {
                         String valueToReplaceWith = eachMapEntry.toString().trim();
@@ -169,10 +189,6 @@ public class APISteps {
         return getApiActions().callWithRequest(type.toUpperCase().trim(), requestBody, false);
     }
 
-    private APIActions getApiActions() {
-        return apiActions = (apiActions == null) ? new APIActions(this) : apiActions;
-    }
-
     public boolean callWithRequest(String type, String requestBody) {
         if (!conditionalStep) return true;
         boolean value = getApiActions().callWithRequest(type, requestBody, true);
@@ -185,7 +201,7 @@ public class APISteps {
         return apiResponse.getBody().asString();
     }
 
-    public boolean verifyHTTPStatusCodeIs(int expectedStatusCode) {
+    public boolean isHTTPStatusCode(int expectedStatusCode) {
         if (!conditionalStep) return true;
         if (apiResponse == null) {
             ReportUtility.reportFail("No API response received in previous request. So, HTTP status code could not be verified.");
@@ -198,6 +214,21 @@ public class APISteps {
         }
         ReportUtility.reportFail("Expected status code: " + expectedStatusCode + " Actual status code:" + actualStatusCode);
         return false;
+    }
+
+    public boolean isResponseJsonEqualTo(String expectedResponseString) {
+        return generalSteps.verifyJsons(apiResponse, expectedResponseString);
+    }
+
+    public boolean doesLastResponseMatchSchema(String schema) {
+        if (!conditionalStep) return true;
+        return validateAgainstSchema(apiResponse, schema);
+    }
+
+    public boolean doesMatchSchema(String json, String schema) {
+        if (!conditionalStep) return true;
+        Response response = new ResponseBuilder().setStatusCode(200).setBody(json).build();
+        return validateAgainstSchema(response, schema);
     }
 
     public String getFromResponse(String jsonPath) {
@@ -230,6 +261,20 @@ public class APISteps {
         return apiResponse.getCookie(cookieName);
     }
 
+    public String getFromResponseHeader(String headerName) {
+        if (!conditionalStep) return "";
+        if (apiResponse == null) {
+            ReportUtility.reportInfo("Last API response was null.");
+            return "Last API response was null.";
+        }
+        try {
+            return apiResponse.header(headerName);
+        } catch (Exception ex) {
+            ReportUtility.reportInfo("Header " + headerName + " not found.");
+            return "Header " + headerName + " not found.";
+        }
+    }
+
     public String getFromResponseWithoutReporting(String jsonPath) {
         if (!conditionalStep) return "";
         if (apiResponse == null) {
@@ -243,51 +288,27 @@ public class APISteps {
         return getStringFromExtractedJsonValue(actualValue);
     }
 
-    private String getStringFromExtractedJsonValue(Object actualValue) {
-        if (actualValue instanceof ArrayList) {
-            int length = ((ArrayList<?>) actualValue).size();
-            return (length == 1) ? ((ArrayList<?>) actualValue).get(0).toString() : "No unique result found. Total number of such nodes found are : " + length;
-        }
-        return actualValue.toString();
+    public boolean verifyResponseFor(String verifications) {
+        return generalSteps.verifyResponseFor(apiResponse, verifications);
     }
 
-    public boolean doesLastResponseMatchSchema(String schema) {
-        if (!conditionalStep) return true;
-        return validateAgainstSchema(apiResponse, schema);
-    }
-
-    public boolean doesMatchSchema(String json, String schema) {
-        if (!conditionalStep) return true;
+    public boolean verifyForInJsonString(String verification, String json) {
         Response response = new ResponseBuilder().setStatusCode(200).setBody(json).build();
-        return validateAgainstSchema(response, schema);
+        return generalSteps.verifyResponseFor(response, verification);
     }
 
-    private boolean validateAgainstSchema(Response response, String schema) {
+    public boolean getExistenceOfNodeInResponse(String jsonPath) {
+        if (!conditionalStep) return true;
         try {
-            response.then().assertThat().body(matchesJsonSchema(schema));
-            ReportUtility.reportPass("Body conforms to the schema provided.");
+            String text = getFromResponseWithoutReporting(jsonPath);
+            if (text.contains("Last API response was null."))
+                throw new Exception("Response is null");
+            ReportUtility.reportInfo(jsonPath + " is present.");
             return true;
-        } catch (Throwable ex) {
-            ReportUtility.report(ReportUtility.REPORT_STATUS.FAIL, "Body does not match the expected schema.");
-            ReportUtility.reportExceptionDebug(ex);
+        } catch (Exception ex) {
+            ReportUtility.reportInfo(jsonPath + " node not found.");
             return false;
         }
-    }
-
-    public boolean isResponseJsonEqualTo(String expectedResponseString) {
-        return generalSteps.verifyJsons(apiResponse, expectedResponseString);
-    }
-
-    public boolean verifyValues(String responseToVerify) {
-        return generalSteps.verifyValues(responseToVerify);
-    }
-
-    public boolean verifyResponseFor(String responseToVerify) {
-        return generalSteps.verifyResponseFor(apiResponse, responseToVerify);
-    }
-
-    public boolean verifyForInJsonString(String responseToVerify, String json) {
-        return generalSteps.verifyResponseStringFor(json, responseToVerify);
     }
 
     public boolean verifyObjectNodeCount(String node, String count) {
@@ -309,6 +330,26 @@ public class APISteps {
         return valueToReturn;
     }
 
+    private boolean validateAgainstSchema(Response response, String schema) {
+        try {
+            response.then().assertThat().body(matchesJsonSchema(schema));
+            ReportUtility.reportPass("Body conforms to the schema provided.");
+            return true;
+        } catch (Throwable ex) {
+            ReportUtility.report(ReportUtility.REPORT_STATUS.FAIL, "Body does not match the expected schema.");
+            ReportUtility.reportExceptionDebug(ex);
+            return false;
+        }
+    }
+
+    private String getStringFromExtractedJsonValue(Object actualValue) {
+        if (actualValue instanceof ArrayList) {
+            int length = ((ArrayList<?>) actualValue).size();
+            return (length == 1) ? ((ArrayList<?>) actualValue).get(0).toString() : "No unique result found. Total number of such nodes found are : " + length;
+        }
+        return actualValue.toString();
+    }
+
     private List getAllValuesOfInList(Response response, String parentNode, String jsonPath) {
 
         String responseBodyString = response.getBody().asString();
@@ -328,32 +369,8 @@ public class APISteps {
         return valueToReturn;
     }
 
-    public boolean getExistenceOfNodeInResponse(String jsonPath) {
-        if (!conditionalStep) return true;
-        try {
-            String text = getFromResponseWithoutReporting(jsonPath);
-            if (text.contains("Last API response was null."))
-                throw new Exception("Response is null");
-            ReportUtility.reportInfo(jsonPath + " is present.");
-            return true;
-        } catch (Exception ex) {
-            ReportUtility.reportInfo(jsonPath + " node not found.");
-            return false;
-        }
-    }
-
-    public String getFromResponseHeader(String headerName) {
-        if (!conditionalStep) return "";
-        if (apiResponse == null) {
-            ReportUtility.reportInfo("Last API response was null.");
-            return "Last API response was null.";
-        }
-        try {
-            return apiResponse.header(headerName);
-        } catch (Exception ex) {
-            ReportUtility.reportInfo("Header " + headerName + " not found.");
-            return "Header " + headerName + " not found.";
-        }
+    private APIActions getApiActions() {
+        return apiActions = (apiActions == null) ? new APIActions(this) : apiActions;
     }
 
     private String replaceWithCorrespondingType(DocumentContext documentContext, String eachKey, Object eachMapValue) throws

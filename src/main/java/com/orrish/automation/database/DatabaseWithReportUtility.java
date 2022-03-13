@@ -94,4 +94,45 @@ public class DatabaseWithReportUtility {
         return (mongoDbConnectionString == null) ? 0 : MongoDbActions.getInstance().deleteInMongoDBForCollectionWithCriteria(collectionName, criteria);
     }
 
+    public boolean insertMongoDBDocumentInCollection(String document, String collectionName) {
+        boolean valueToReturn = false;
+        try {
+            valueToReturn = MongoDbActions.getInstance().insertDocumentInCollection(document, collectionName);
+        } catch (Throwable ex) {
+            ReportUtility.reportExceptionFail(ex);
+        }
+        if (valueToReturn) {
+            ReportUtility.reportPass("Inserted document in MongoDB.");
+        } else {
+            ReportUtility.reportFail("Could not insert document in MongoDB");
+        }
+        return valueToReturn;
+    }
+
+    public boolean createCollectionInMongoDB(String collectionName) {
+        return actionOnMongoDBCollection(collectionName, "create");
+    }
+
+    public boolean dropCollectionInMongoDB(String collectionName) {
+        return actionOnMongoDBCollection(collectionName, "drop");
+    }
+
+    private boolean actionOnMongoDBCollection(String collectionName, String action) {
+        boolean valueToReturn = false;
+        try {
+            if (action.contains("create"))
+                valueToReturn = MongoDbActions.getInstance().createCollection(collectionName);
+            else if (action.contains("drop"))
+                valueToReturn = MongoDbActions.getInstance().dropCollection(collectionName);
+        } catch (Exception ex) {
+            ReportUtility.reportExceptionFail(ex);
+        }
+        if (valueToReturn) {
+            ReportUtility.reportPass(action + "ed collection " + collectionName + " in MongoDB.");
+        } else {
+            ReportUtility.reportFail("Could not " + action + " collection " + collectionName + " in MongoDB");
+        }
+        return valueToReturn;
+    }
+
 }

@@ -23,17 +23,17 @@ public class GeneralSteps {
     public static boolean conditionalStep = true;
 
     public boolean setConditionalValueForNextStep(String valuePassed) {
-        try {
-            conditionalStep = Boolean.parseBoolean(valuePassed);
-        } catch (Exception ex) {
+        if (valuePassed.contains("=")) {
             String[] values = valuePassed.split("=");
             if (values.length != 2) {
-                ReportUtility.reportFail("Condition that you entered is not valid. It has to be either boolean or equality check. e.g. name=test");
+                ReportUtility.reportInfo("Condition that you entered is not valid. It has to be either boolean or equality check. e.g. $value=test");
                 return false;
             }
             conditionalStep = values[0].trim().equals(values[1].trim());
+        } else {
+            conditionalStep = Boolean.parseBoolean(valuePassed);
         }
-        return true;
+        return conditionalStep;
     }
 
     public boolean resetConditionalValueForNextStep() {
@@ -45,6 +45,7 @@ public class GeneralSteps {
     }
 
     public boolean downloadFromUrlAndSaveAs(String url, String fileName) {
+        if (!conditionalStep) return true;
         return executeAndReport(VerifyUtility.downloadFromUrlAndSaveAs(url, fileName));
     }
 
@@ -158,6 +159,10 @@ public class GeneralSteps {
         return executeAndReport(VerifyUtility.doesMatchPattern(string1, string2));
     }
 
+    public boolean verifyIs(String string1, String string2) {
+        return executeAndReport(VerifyUtility.compareIs(string1, string2));
+    }
+
     public boolean isEqual(String string1, String string2) {
         if (!conditionalStep) return true;
         return isValueEqual(null, string1, string2);
@@ -236,14 +241,14 @@ public class GeneralSteps {
     }
 
     //If you want to get sensitive information etc. from environment variable. Example: cloud provider API key etc.
-    public String getFromSystemEnvironmentVariable(String environmentVariableName) {
+    public String getFromSystemEnvironmentVariables(String environmentVariableName) {
         if (!conditionalStep) return "";
         return System.getenv(environmentVariableName);
     }
 
-    public boolean verifyValues(String responseToVerify) {
+    public boolean verifyValues(String valuesToVerify) {
         if (!conditionalStep) return true;
-        VerificationResultModel verificationResultModel = VerifyUtility.verifyValues(responseToVerify);
+        VerificationResultModel verificationResultModel = VerifyUtility.verifyValues(valuesToVerify);
         Map<Integer, VerificationResultModel> multiStepResult = verificationResultModel.getMultiStepResult();
         Set<Integer> keysOfSteps = multiStepResult.keySet();
         for (Integer key : keysOfSteps) {
@@ -259,30 +264,21 @@ public class GeneralSteps {
     }
 
     public boolean verifyResponseFor(Response response, String responseToVerify) {
-        return verifyResponseFor(response, null, responseToVerify);
-    }
-
-    public boolean verifyResponseStringFor(String responseString, String responseToVerify) {
-        return verifyResponseFor(null, responseString, responseToVerify);
-    }
-
-    private boolean verifyResponseFor(Response response, String responseString, String responseToVerify) {
         if (!conditionalStep) return true;
         Map<String, String> valueToVerify = getMapFromString(responseToVerify, "=");
         Set<String> keys = valueToVerify.keySet();
+        Map<String, String> updatedValuesToVerify = new HashMap<>(valueToVerify);
         for (String key : keys) {
             if (valueToVerify.get(key).toLowerCase().trim().contains("donotverify")) {
                 ReportUtility.reportInfo("Node " + key + " is not verified as it is marked to be not verified.");
-                valueToVerify.remove(key);
+                updatedValuesToVerify.remove(key);
             }
         }
-        if (valueToVerify.size() == 0)
+        if (updatedValuesToVerify.size() == 0)
             return true;
         VerificationResultModel verificationResultModel;
         try {
-            verificationResultModel = response != null
-                    ? VerifyUtility.verifyResponseFor(response, valueToVerify)
-                    : VerifyUtility.verifyResponseStringFor(responseString, valueToVerify);
+            verificationResultModel = VerifyUtility.verifyResponseFor(response, updatedValuesToVerify);
         } catch (Exception ex) {
             ReportUtility.reportFail("Response may be invalid.");
             ReportUtility.reportExceptionDebug(ex);
@@ -307,6 +303,11 @@ public class GeneralSteps {
         ReportUtility.REPORT_STATUS status = verificationResultModel.getOverallResult() ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
         ReportUtility.report(status, verificationResultModel.getVerificationResultString());
         return verificationResultModel.getOverallResult();
+    }
+
+    public String getDigitRandomNumericValue(int howManyDigits) {
+        if (!conditionalStep) return "";
+        return RandomStringUtils.random(howManyDigits, false, true);
     }
 
     public String getCharacterRandomAlphaNumericString(int howManyCharacter) {
@@ -360,11 +361,6 @@ public class GeneralSteps {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return simpleDateFormat.format(date);
-    }
-
-    public String getDigitRandomNumericValue(int howManyDigits) {
-        if (!conditionalStep) return "";
-        return RandomStringUtils.random(howManyDigits, false, true);
     }
 
     public long getCurrentEpochTime() {

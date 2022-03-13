@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.*;
 
-public class APIStepsTest {
+public class APIUnitTest {
     SetUp setUp;
 
     @BeforeMethod
@@ -92,7 +92,7 @@ public class APIStepsTest {
 
         assertTrue(apiSteps.callGETForEndpoint("https://jsonplaceholder.typicode.com/users/1"));
 
-        assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
+        assertTrue(apiSteps.isHTTPStatusCode(200));
         assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
         assertEquals(name, "Leanne Graha");
@@ -102,7 +102,7 @@ public class APIStepsTest {
         when(apiSteps.apiActions.requestSpecification.get()).thenReturn(new ResponseBuilder().setStatusCode(400).setBody("{\"error\":\"Some error\"}").setCookies(new Cookies(cookie)).build());
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callGETWithRequest("https://jsonplaceholder.typicode.com/users/1"));
-        assertTrue(apiSteps.verifyHTTPStatusCodeIs(400));
+        assertTrue(apiSteps.isHTTPStatusCode(400));
         assertTrue(apiSteps.getExistenceOfNodeInResponse("error"));
         name = apiSteps.getFromResponse("error");
         assertEquals(name, "Some error");
@@ -119,14 +119,14 @@ public class APIStepsTest {
         when(apiSteps.apiActions.requestSpecification.post()).thenReturn(new ResponseBuilder().setStatusCode(200).setBody("{\"name\":\"Leanne Graha\"}").build());
 
         assertFalse(apiSteps.callPOST());
-        assertFalse(apiSteps.verifyHTTPStatusCodeIs(200));
+        assertFalse(apiSteps.isHTTPStatusCode(200));
         assertEquals(apiSteps.getFromResponse("name"), "Last API response was null.");
 
         apiSteps.apiActions.requestSpecification = mock(RequestSpecification.class);
         when(apiSteps.apiActions.requestSpecification.post()).thenReturn(new ResponseBuilder().setStatusCode(200).setBody("{\"name\":\"Some name\"}").build());
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callPOSTWithRequest("{}"));
-        assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
+        assertTrue(apiSteps.isHTTPStatusCode(200));
         assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
         assertEquals(name, "Some name");
@@ -146,7 +146,7 @@ public class APIStepsTest {
         when(apiSteps.apiActions.requestSpecification.delete()).thenReturn(new ResponseBuilder().setStatusCode(200).setBody("{\"name\":\"Some name\"}").build());
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callDELETEWithRequest("{}"));
-        assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
+        assertTrue(apiSteps.isHTTPStatusCode(200));
         assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
         assertEquals(name, "Some name");
@@ -167,7 +167,7 @@ public class APIStepsTest {
         when(apiSteps.apiActions.requestSpecification.put()).thenReturn(new ResponseBuilder().setStatusCode(200).setBody("{\"name\":\"Some name\"}").build());
         apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/1");
         assertTrue(apiSteps.callPUTWithRequest("{}"));
-        assertTrue(apiSteps.verifyHTTPStatusCodeIs(200));
+        assertTrue(apiSteps.isHTTPStatusCode(200));
         assertTrue(apiSteps.getExistenceOfNodeInResponse("name"));
         String name = apiSteps.getFromResponse("name");
         assertEquals(name, "Some name");

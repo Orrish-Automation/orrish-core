@@ -156,7 +156,7 @@
   },
   {
     "id": 31,
-    "step": "|Replace text |value|with|newValue|in file|SomeFolder/someFile.txt|",
+    "step": "|Replace text | value | with | newValue | in file | SomeFolder/someFile.txt |",
     "help": ""
   },
   {
@@ -166,8 +166,8 @@
   },
   {
     "id": 33,
-    "step": "|Set conditional value for next step|name=test|",
-    "help": "Useful if you want to conditionally execute some set of tests. Very useful in data driven tests. Pass either boolean or equality check."
+    "step": "|Set conditional value for next step|$value=test|",
+    "help": "Useful (e.g. in data driven tests) if you want to conditionally execute some steps. Pass either boolean or string with equality check."
   },
   {
     "id": 34,
@@ -178,5 +178,15 @@
     "id": 35,
     "step": "|$value=|Is|string1|equal|string2|without validation|",
     "help": "Returns boolean value which can be used to conditionally execute steps."
+  },
+  {
+    "id": 36,
+    "step": "|Verify values|$valueFromResponse=$valueFromDB, $firstName=$nameFromDB|",
+    "help": "Check equality of multiple values separated by comma."
+  },
+  {
+    "id": 37,
+    "step": "|Get | API_KEY | from system environment variables|",
+    "help": "If you want to get sensitive information from environment variable. Example: cloud provider API key etc."
   }
 ]

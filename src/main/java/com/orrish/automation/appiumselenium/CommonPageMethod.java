@@ -46,7 +46,7 @@ public class CommonPageMethod {
         return true;
     }
 
-    public static WebElement waitUntilOneOfTheLocatorsIs(WebDriver webDriver, String locator, boolean enabled) {
+    public static WebElement waitUntilOneOfTheElementsIs(WebDriver webDriver, String locator, boolean enabled) {
         String[] locatorList = locator.split(",,");
         for (int i = 0; i < 10; ++i) {
             waitSeconds(1);
@@ -216,25 +216,14 @@ public class CommonPageMethod {
         return false;
     }
 
-    public static void reportExecutionStatus(boolean isStepPassed, Object[] args, RemoteWebDriver remoteWebDriver) {
+    public static void reportExecutionStatusWithScreenshotAndException(boolean isStepPassed, Object[] args, RemoteWebDriver remoteWebDriver, Throwable ex) {
         if (isStepPassed && !isScreenshotAtEachStepEnabled)
             ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {
             ReportUtility.REPORT_STATUS status = isStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
-            UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, null);
-            UIStepReporter.reportStepResultWithScreenshot(status, remoteWebDriver);
+            UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, ex);
+            UIStepReporter.reportStepResultWithScreenshotAndException(status, remoteWebDriver);
         }
-    }
-
-    public static boolean reportException(RemoteWebDriver remoteWebDriver, Object[] args, Throwable ex) {
-        if (remoteWebDriver == null) {
-            ReportUtility.reportFail(getMethodStyleStepName(args) + " could not be performed.");
-            ReportUtility.reportExceptionDebug(ex);
-        } else {
-            UIStepReporter UIStepReporter = new UIStepReporter(++stepCounter, args, ex);
-            UIStepReporter.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.FAIL, remoteWebDriver);
-        }
-        return false;
     }
 
 }

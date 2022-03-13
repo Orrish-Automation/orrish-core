@@ -71,22 +71,22 @@
   },
   {
     "id": 15,
-    "step": "|Verify HTTP status code is|200 |",
+    "step": "|Is HTTP status code | 200 |",
     "help": ""
   },
   {
     "id": 16,
-    "step": "|$value= |Get from response|country.name  |",
+    "step": "|$value= |Get from response|country.name |",
     "help": ""
   },
   {
     "id": 17,
-    "step": "|$value=|Get|user.name|from json string|jsonString|",
+    "step": "|$value=|Get | user.name |from json string | jsonString |",
     "help": ""
   },
   {
     "id": 18,
-    "step": "|$value=|Get from response cookie|cookieName|",
+    "step": "|$value=|Get from response cookie| cookieName |",
     "help": ""
   },
   {
@@ -106,26 +106,21 @@
   },
   {
     "id": 22,
-    "step": "|Verify values|$valueFromResponse=$valueFromDB, $firstName=$nameFromDB|",
-    "help": "Comma separated multiple values."
-  },
-  {
-    "id": 23,
     "step": "|Verify response for |user.name=test_user, user.status=active, id=not null, middleName=null,title=doNotVerify, school=exists, university=doesNotExist, address=empty object|",
     "help": "Comma separated multiple values. You can use special text like null, not null, exists, doNotVerify, doesNotExist etc. to control the verification type."
   },
   {
-    "id": 24,
+    "id": 23,
     "step": "|$optionalNode=|Get existence of node |@nodeToVerify|in response|",
     "help": "Will not fail the step if not found."
   },
   {
-    "id": 25,
+    "id": 24,
     "step": "|$responseHeader=|Get|sessionId|from response header|",
     "help": ""
   },
   {
-    "id": 26,
+    "id": 25,
     "step": "|ensure|Verify object node|jsonPath|count|2|",
     "help": "Verifies the count of nodes with this json path."
   }

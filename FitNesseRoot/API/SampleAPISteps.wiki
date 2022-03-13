@@ -1,6 +1,7 @@
 ---
 Help: Status: Automated
 Suites: Sanity
+Test
 ---
 A test can contain formatted documentation like this. There is a help text added to it and also a tag is added to this. After you execute, click the link at the bottom of the page to see report.
 !style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.

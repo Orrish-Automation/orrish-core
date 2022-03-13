@@ -102,6 +102,12 @@ public class PlaywrightActions {
         throw new Exception("Not implemented. Track issue at https://github.com/microsoft/playwright/issues/4046");
     }
 
+    protected boolean inBrowserNavigateBack() {
+        if (!conditionalStep) return true;
+        playwrightPage.goBack();
+        return true;
+    }
+
     protected boolean takeWebScreenshotWithText(String text) {
         if (!conditionalStep) return true;
         ReportUtility.reportWithScreenshot(null, text, ReportUtility.REPORT_STATUS.INFO, text);
@@ -123,14 +129,21 @@ public class PlaywrightActions {
 
     protected boolean clickRowContainingText(String text) {
         if (!conditionalStep) return true;
-        playwrightPage.locator("tr:has-text(\"" + text + "\")").click();
+        playwrightPage.locator("tr:has-text(\"" + text + "\")").first().click();
         return true;
     }
 
     protected boolean clickWhicheverIsDisplayedIn(String locator) {
         if (!conditionalStep) return true;
-        playwrightPage.locator(locator).click();
-        return true;
+        String[] eachParts = locator.split(",,");
+        for (String eachPart : eachParts) {
+            Locator probableLocator = playwrightPage.locator(eachPart);
+            if (probableLocator.count() > 0) {
+                probableLocator.click();
+                return true;
+            }
+        }
+        return false;
     }
 
     protected boolean enterInTextFieldFor(String value, String locator) {
@@ -189,9 +202,9 @@ public class PlaywrightActions {
     protected boolean selectUnselectCheckboxesWithText(String value, boolean shouldBeSelected) {
         if (!conditionalStep) return true;
         if (shouldBeSelected)
-            playwrightPage.check("text=" + value);
+            playwrightPage.check("input:has-text(\"" + value + "\")");
         else
-            playwrightPage.uncheck("text=" + value);
+            playwrightPage.uncheck("input:has-text(\"" + value + "\")");
         return true;
     }
 
@@ -211,20 +224,20 @@ public class PlaywrightActions {
         return playwrightPage.waitForSelector(locator).isVisible();
     }
 
-    protected boolean waitUntilOneOfTheLocatorsIsDisplayed(String locator) {
-        return waitUntilOneOfTheLocators(locator, "visible");
+    protected boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
+        return waitUntilOneOfTheElements(locator, "visible");
     }
 
-    protected boolean waitUntilOneOfTheElementIsEnabled(String locator) {
-        return waitUntilOneOfTheLocators(locator, "enabled");
+    protected boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
+        return waitUntilOneOfTheElements(locator, "enabled");
     }
 
-    private boolean waitUntilOneOfTheLocators(String locator, String value) {
+    private boolean waitUntilOneOfTheElements(String locator, String value) {
         if (!conditionalStep) return true;
         String[] locators = locator.split(",,");
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
             for (String eachLocator : locators) {
-                try {
+                if (playwrightPage.locator(eachLocator).count() > 0) {
                     if (playwrightPage.isVisible(eachLocator)) {
                         if ("visible".contains(value)) {
                             return true;
@@ -233,7 +246,6 @@ public class PlaywrightActions {
                                 return true;
                         }
                     }
-                } catch (Exception ex) {
                 }
             }
             waitSeconds(1);
@@ -272,6 +284,12 @@ public class PlaywrightActions {
         return true;
     }
 
+    protected boolean executeJavascriptOnElement(String jsCode, String locator) {
+        if (!conditionalStep) return true;
+        playwrightPage.evalOnSelector(locator, jsCode);
+        return true;
+    }
+
     public String executeOnWebAndReturnString(Object... args) {
         Object valueToReturn = executeOnWebAndReturnObject(args);
         if (valueToReturn == null)
@@ -301,6 +319,9 @@ public class PlaywrightActions {
                     break;
                 case "maximizeTheWindow":
                     isPlaywrightStepPassed = maximizeTheWindow();
+                    break;
+                case "inBrowserNavigateBack":
+                    isPlaywrightStepPassed = inBrowserNavigateBack();
                     break;
                 case "takeWebScreenshotWithText":
                     return takeWebScreenshotWithText(args[1].toString());
@@ -333,11 +354,11 @@ public class PlaywrightActions {
                 case "waitUntilIsDisplayedFor":
                     isPlaywrightStepPassed = waitUntilIsDisplayedFor(args[1].toString());
                     break;
-                case "waitUntilOneOfTheLocatorsIsDisplayed":
-                    isPlaywrightStepPassed = waitUntilOneOfTheLocatorsIsDisplayed(args[1].toString());
+                case "waitUntilOneOfTheElementsIsDisplayed":
+                    isPlaywrightStepPassed = waitUntilOneOfTheElementsIsDisplayed(args[1].toString());
                     break;
-                case "waitUntilOneOfTheLocatorsIsEnabled":
-                    isPlaywrightStepPassed = waitUntilOneOfTheElementIsEnabled(args[1].toString());
+                case "waitUntilOneOfTheElementsIsEnabled":
+                    isPlaywrightStepPassed = waitUntilOneOfTheElementsIsEnabled(args[1].toString());
                     break;
                 case "enterInTextFieldFor":
                     isPlaywrightStepPassed = enterInTextFieldFor(args[1].toString(), args[2].toString());
@@ -359,10 +380,13 @@ public class PlaywrightActions {
                 case "selectFromDropdown":
                     isPlaywrightStepPassed = selectFromDropdown(args[1].toString(), args[2].toString());
                     break;
-                case "getTextFromLocator":
+                case "getTextFromElement":
                     return getTextFromLocator(args[1].toString());
                 case "executeJavascript":
                     isPlaywrightStepPassed = executeJavascript(args[1].toString());
+                    break;
+                case "executeJavascriptOnElement":
+                    isPlaywrightStepPassed = executeJavascriptOnElement(args[1].toString(), args[2].toString());
                     break;
                 default:
                     throw new Exception(args[0].toString() + " method not implemented yet.");
@@ -370,7 +394,7 @@ public class PlaywrightActions {
         } catch (Exception ex) {
             isPlaywrightStepPassed = false;
             UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, ex);
-            UIStepReporter.reportStepResultWithScreenshot(ReportUtility.REPORT_STATUS.FAIL, null);
+            UIStepReporter.reportStepResultWithScreenshotAndException(ReportUtility.REPORT_STATUS.FAIL, null);
             return false;
         }
         if (isPlaywrightStepPassed && !isScreenshotAtEachStepEnabled)
@@ -378,7 +402,7 @@ public class PlaywrightActions {
         else {
             ReportUtility.REPORT_STATUS status = isPlaywrightStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
             UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, null);
-            UIStepReporter.reportStepResultWithScreenshot(status, null);
+            UIStepReporter.reportStepResultWithScreenshotAndException(status, null);
         }
         return isPlaywrightStepPassed;
     }

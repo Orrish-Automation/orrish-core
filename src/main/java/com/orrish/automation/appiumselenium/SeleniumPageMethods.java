@@ -65,9 +65,7 @@ public class SeleniumPageMethods {
 
     public boolean launchBrowserAndNavigateTo(String url) throws MalformedURLException {
 
-        String testName = getCurrentTestName();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability("name", testName);
         desiredCapabilities.setCapability("acceptInsecureCerts", true);
 
         switch (browser.trim().toUpperCase()) {
@@ -81,11 +79,15 @@ public class SeleniumPageMethods {
                 desiredCapabilities.setBrowserName(BrowserType.SAFARI);
                 break;
         }
-        //This check is for Selenoid grid execution
-        if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
-            String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
-            String videoName = testName + "_" + SetUp.browser + browserVersion;
-            desiredCapabilities.setCapability("videoName", videoName + ".mp4");
+        if (reportEnabled) {
+            String testName = getCurrentTestName();
+            desiredCapabilities.setCapability("name", testName);
+            //This check is for Selenoid grid execution
+            if (executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true")) {
+                String browserVersion = (SetUp.browserVersion != null && SetUp.browserVersion.trim().length() > 0) ? "_" + SetUp.browserVersion : "";
+                String videoName = testName + "_" + SetUp.browser + browserVersion;
+                desiredCapabilities.setCapability("videoName", videoName + ".mp4");
+            }
         }
         if (executionCapabilities.size() > 0) {
             executionCapabilities.entrySet().forEach(e -> {
@@ -149,13 +151,9 @@ public class SeleniumPageMethods {
         webDriver.executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
-    public boolean scrollTo(String locator) {
-        webDriver.executeScript("arguments[0].scrollIntoView(true);", webDriver.findElement(getElementBy(locator)));
+    public boolean executeJavascriptOnElement(String scriptToExecute, String locator) {
+        webDriver.executeScript(scriptToExecute, webDriver.findElement(getElementBy(locator)));
         return true;
-    }
-
-    public boolean scrollToBottom() {
-        return executeJavascript("window.scrollTo(0, document.body.scrollHeight)");
     }
 
     public boolean waitUntilIsDisplayed(String locator) {
@@ -166,12 +164,12 @@ public class SeleniumPageMethods {
         return CommonPageMethod.waitForElementSync(webDriver, webDriverWait, locator, false);
     }
 
-    public WebElement waitUntilOneOfTheLocatorsIsDisplayed(String locator) {
-        return CommonPageMethod.waitUntilOneOfTheLocatorsIs(webDriver, locator, false);
+    public WebElement waitUntilOneOfTheElementsIsDisplayed(String locator) {
+        return CommonPageMethod.waitUntilOneOfTheElementsIs(webDriver, locator, false);
     }
 
-    public WebElement waitUntilOneOfTheLocatorsIsEnabled(String locator) {
-        return CommonPageMethod.waitUntilOneOfTheLocatorsIs(webDriver, locator, true);
+    public WebElement waitUntilOneOfTheElementsIsEnabled(String locator) {
+        return CommonPageMethod.waitUntilOneOfTheElementsIs(webDriver, locator, true);
     }
 
     public boolean waitUntilElementTextContains(String locator, String text) {
@@ -235,6 +233,25 @@ public class SeleniumPageMethods {
     public boolean clickRowContainingText(String value) {
         webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("table")));
         WebElement table = webDriver.findElement(By.tagName("table"));
+        List<WebElement> rows = table.findElements(By.tagName("tr"));
+        for (WebElement row : rows) {
+            if (row.getText().contains(value)) {
+                try {
+                    row.click();
+                } catch (Exception ex) {
+                    //Sometimes row click does not do anything. Click the first cell on that row instead.
+                    row.findElement(By.tagName("td")).click();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean clickRowWithHeaderContainingText(String headerText, String value) {
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("table")));
+        WebElement table = webDriver.findElement(By.tagName("table"));
+        //Click row corresponding to cell with text for header
         if (table.findElement(By.tagName("th")).isDisplayed()) {
             List<WebElement> headers = table.findElements(By.tagName("th"));
             int index = 0;
@@ -294,7 +311,7 @@ public class SeleniumPageMethods {
         return CommonPageMethod.enterInTextField(webDriver, webDriverWait, input, locator);
     }
 
-    public String getTextFromLocator(String locator) {
+    public String getTextFromElement(String locator) {
         return waitForAndGetElement(getElementBy(locator)).getText();
     }
 
@@ -305,20 +322,6 @@ public class SeleniumPageMethods {
     }
 
     public boolean selectFromDropdown(String inputString, String locator) {
-        //mat elements
-        if (locator.contains("mat-select")) {
-            webDriver.findElement(getElementBy(locator)).click();
-            List<WebElement> options = webDriver.findElements(By.tagName("mat-option"));
-            for (WebElement option : options) {
-                if (option.getText().contains(inputString)) {
-                    option.click();
-                    return true;
-                }
-            }
-        } else {
-            return false;
-        }
-        //Native select
         Select select = (Select) waitForAndGetElement(getElementBy(locator));
         select.selectByValue(inputString);
         return true;
@@ -334,22 +337,7 @@ public class SeleniumPageMethods {
 
     private boolean selectUnselectCheckboxesForText(String stringToFind, boolean shouldBeSelected) {
         List<String> textBoxesToClick = Arrays.asList(stringToFind.split(",,"));
-        //mat checkboxes
-        List<WebElement> checkboxes = webDriver.findElements(By.tagName("mat-checkbox"));
-        if (checkboxes.size() > 0) {
-            for (WebElement checkbox : checkboxes) {
-                if (textBoxesToClick.contains(checkbox.getText())) {
-                    if ((!checkbox.getAttribute("class").contains("mat-checkbox-checked") && shouldBeSelected)
-                            || (checkbox.getAttribute("class").contains("mat-checkbox-checked") && !shouldBeSelected)) {
-                        checkbox.findElement(By.className("mat-checkbox-inner-container")).click();
-                    }
-                }
-            }
-
-        } else {
-            //Regular checkboxes
-            textBoxesToClick.forEach(e -> selectCheckboxForText(e, shouldBeSelected));
-        }
+        textBoxesToClick.forEach(e -> selectCheckboxForText(e, shouldBeSelected));
         return true;
     }
 
@@ -382,24 +370,13 @@ public class SeleniumPageMethods {
         return true;
     }
 
-    public boolean selectDropdownByText(String option) {
-        WebElement element = webDriver.findElement(By.xpath("//mat-option[@role='option']/span[contains(text(),'" + option + "')]"));
-        scrollToElement(element);
-        webDriver.findElement(By.xpath("//mat-option[@role='option']/span[contains(text(),'" + option + "')]")).click();
-        return true;
-    }
-
     public boolean scrollToElement(String locator) {
         webDriver.executeScript("arguments[0].scrollIntoView(true);", webDriver.findElement(getElementBy(locator)));
         return true;
     }
 
-    public void reportExecutionStatus(boolean isStepPassed, Object[] args) {
-        CommonPageMethod.reportExecutionStatus(isStepPassed, args, webDriver);
-    }
-
-    public void reportException(Object[] args, Exception ex) {
-        CommonPageMethod.reportException(webDriver, args, ex);
+    public void reportExecutionStatusWithScreenshotAndException(boolean isStepPassed, Object[] args, Throwable ex) {
+        CommonPageMethod.reportExecutionStatusWithScreenshotAndException(isStepPassed, args, webDriver, ex);
     }
 
 }

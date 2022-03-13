@@ -106,12 +106,12 @@
   },
   {
     "id": 22,
-    "step": "|Wait until one of the locators|#success,,#error|is displayed|",
+    "step": "|Wait until one of the elements|#success,,#error|is displayed|",
     "help": ""
   },
   {
     "id": 23,
-    "step": "|Wait until one of the locators|#success,,#error|is enabled|",
+    "step": "|Wait until one of the elements|#success,,#error|is enabled|",
     "help": ""
   },
   {
@@ -151,12 +151,17 @@
   },
   {
     "id": 31,
-    "step": "|$value=|Get text from locator|#locator|",
+    "step": "|$value=|Get text from element|#locator|",
     "help": ""
   },
   {
     "id": 32,
     "step": "|Execute javascript|some script|",
+    "help": ""
+  },
+  {
+    "id": 33,
+    "step": "|Execute javascript|arguments[0].style.border='2px solid red'|on element|//*[contains(text(),'Android')]|",
     "help": ""
   }
 ]

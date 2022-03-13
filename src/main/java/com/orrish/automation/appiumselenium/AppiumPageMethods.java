@@ -157,12 +157,13 @@ public class AppiumPageMethods {
         return CommonPageMethod.waitForElementSync(appiumDriver, appiumDriverWait, locator, false);
     }
 
-    public WebElement waitUntilOneOfTheLocatorsIsDisplayed(String locator) {
-        return CommonPageMethod.waitUntilOneOfTheLocatorsIs(appiumDriver, locator, false);
+    public boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
+        WebElement element = CommonPageMethod.waitUntilOneOfTheElementsIs(appiumDriver, locator, false);
+        return element != null;
     }
 
-    public boolean waitUntilOneOfTheLocatorsIsEnabled(String locator) {
-        WebElement webElement = CommonPageMethod.waitUntilOneOfTheLocatorsIs(appiumDriver, locator, true);
+    public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
+        WebElement webElement = CommonPageMethod.waitUntilOneOfTheElementsIs(appiumDriver, locator, true);
         return webElement != null;
     }
 
@@ -195,15 +196,12 @@ public class AppiumPageMethods {
         return CommonPageMethod.enterInTextField(appiumDriver, appiumDriverWait, input, locator);
     }
 
-    public String getTextFromLocator(String locator) {
+    public String getTextFromElement(String locator) {
         return CommonPageMethod.waitForAndGetElement(appiumDriver, appiumDriverWait, getElementBy(locator)).getText();
     }
 
-    public void reportExecutionStatus(boolean isMobileStepPassed, Object[] args) {
-        CommonPageMethod.reportExecutionStatus(isMobileStepPassed, args, appiumDriver);
+    public void reportExecutionStatusWithScreenshotAndException(boolean isPassed, Object[] args, Exception ex) {
+        CommonPageMethod.reportExecutionStatusWithScreenshotAndException(isPassed, args, appiumDriver, ex);
     }
 
-    public void reportException(Object[] args, Exception ex) {
-        CommonPageMethod.reportException(appiumDriver, args, ex);
-    }
 }
