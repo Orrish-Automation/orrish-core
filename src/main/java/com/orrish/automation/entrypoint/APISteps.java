@@ -32,7 +32,8 @@ public class APISteps {
 
     public Response apiResponse;
     public String apiServerUrl = null;
-    public Map<String, String> apiRequestFormValues;
+    public Map<String, String> apiRequestFormParams;
+    public Map<String, Object> apiRequestMultipartValues;
     public Map<String, String> apiRequestHeaders = new HashMap<>();
 
     GeneralSteps generalSteps = new GeneralSteps();
@@ -54,9 +55,26 @@ public class APISteps {
         return true;
     }
 
-    public boolean setFormValues(String values) {
+    public boolean setFormParams(String values) {
         if (!conditionalStep) return true;
-        apiRequestFormValues = getMapFromString(values, ":");
+        apiRequestFormParams = getMapFromString(values, "=");
+        return true;
+    }
+
+    public boolean setMultipartValues(Map<String, String> mapPassed) {
+        if (!conditionalStep) return true;
+        apiRequestMultipartValues = new HashMap<>();
+        if (mapPassed.get("file") != null) {
+            String[] values = mapPassed.get("file").split("&");
+            Map<String, String> fileMap = new HashMap<>();
+            for (String eachValue : values) {
+                fileMap.put(eachValue.split("=")[0], eachValue.split("=")[1]);
+            }
+            apiRequestMultipartValues.put("file", fileMap);
+        }
+        mapPassed.remove("file");
+        apiRequestMultipartValues.putAll(mapPassed);
+
         return true;
     }
 

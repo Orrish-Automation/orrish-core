@@ -27,7 +27,11 @@ jobs:
       - name: Check out
         uses: actions/checkout@v3
         with:
-          ref: integration
+          ref: main
+
+      - name: create file for API test
+        shell: bash
+        run : echo hello > filename.txt
 
       - name: Run all tests
         run: mvn test

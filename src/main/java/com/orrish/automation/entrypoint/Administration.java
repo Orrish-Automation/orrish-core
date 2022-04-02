@@ -15,7 +15,7 @@ import static com.orrish.automation.utility.GeneralUtility.replaceTextWithInFile
 
 public class Administration {
 
-    static java.util.List<String> allFileNameList = new ArrayList<>();
+    static java.util.Set<String> allFileNameList = new HashSet<>();
     static Map<String, ArrayList<Integer>> foundFileNameList = new HashMap<>();
     private static String textToAppend = "";
 
@@ -229,7 +229,7 @@ public class Administration {
     }
 
 
-    private static java.util.List<String> getAllFileNames(java.util.List<String> fileNames, Path dir) {
+    private static java.util.Set<String> getAllFileNames(java.util.Set<String> fileNames, Path dir) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path path : stream) {
                 if (path.toFile().isDirectory()) {

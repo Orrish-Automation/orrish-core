@@ -3,4 +3,4 @@
 '''Test case id''': <some id>
 
 !|script                           |
-|Set test name        |Sample test |
+|Set test name        |${PAGE_NAME}|

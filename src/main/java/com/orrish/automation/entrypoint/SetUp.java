@@ -13,6 +13,7 @@ public class SetUp {
     //API
     public static Map<String, String> defaultApiRequestHeaders = new HashMap<>();
     public static String jsonRequestTemplate;//Template defined which can be replaced with different data in the test case.
+    public static boolean useRelaxedHTTPSValidation;
 
     //Database
     public static boolean databaseCheck = true;
@@ -57,7 +58,7 @@ public class SetUp {
     public static String APP_PACKAGE;
     public static String APP_ACTIVITY;
 
-    //General
+    //Report
     public static boolean showPageInfoOnFailure = false;
     public static boolean reportEnabled = true;
 
@@ -86,6 +87,11 @@ public class SetUp {
 
     public boolean setSuiteName(String suiteName) {
         return ReportSteps.setSuiteName(suiteName);
+    }
+
+    public boolean useRelaxedHTTPSValidation(boolean valuePassed) {
+        useRelaxedHTTPSValidation = valuePassed;
+        return true;
     }
 
     public boolean defaultRequestHeaders(String headers) {

@@ -7,7 +7,7 @@
       <img alt="Unit Test Coverage" src="https://codecov.io/gh/Orrish-Automation/orrish-core/branch/main/graph/badge.svg" />
     </a>
 </p>
-<h2 align="center">Web based end-to-end automation and collaboration for the whole team.</h2>
+<h2 align="center">Codeless web based automation and collaboration tool.</h2>
 
 For most open source automation tools, we have to set up our local machine before we can write/execute a test. We need to know build tools/coding. Let's consider challenges of unit test based automation framework. 
 
@@ -15,7 +15,7 @@ For most open source automation tools, we have to set up our local machine befor
 | --- | --- |  --- | --- | --- |
 | Version, access, dependency, compile, build issues. | Creates silos. Build/coding for automation is barrier to entry. | Well-versed including Git conflict resolution? | Organizing tests in class/BDD/xml files not effective. Review takes time. | Issues with sharing information, progress tracking, reviewing with non-coders. |
 
-##### :trophy: Solution : Write and execute tests similar to Unit test/BDD but on a web page (FitNesse) accessible to all without any local setup.
+##### :trophy: Solution : Write/execute tests similar to Unit test/BDD but on a web page (FitNesse) accessible to all without local setup.
 Below is the illustration. More examples are available when you install it and launch the FitNesse wiki.
 
 ![Unit Test To FitNesse](https://github.com/Orrish-Automation/orrish-core/blob/main/UnitTestToFitNesseTestCase.png?raw=true)
@@ -80,7 +80,10 @@ If you don't have docker installed or if you want to set up manually, follow bel
   - Clone/download this repo.
   - Run `pushJarAndStartFitnesse.sh` :green_book: If the port 80 is already in use or if you want to start manually, refer the help section.
 </details>
-  
+
+## :writing_hand: Write test cases
+Once you launch FitNesse home page, there is a link to `FitNesse Documentation` describing how to write and execute a test. 
+
 ## :book: FitNesse specific tasks
 
 <details>
@@ -109,7 +112,9 @@ If you don't have docker installed or if you want to set up manually, follow bel
 * Update steps in available steps : In FitNesse homepage, you will find a link to update/add steps. 
 </details>
 
-## :framed_picture: Screenshots
+## :framed_picture: Screenshots and video
+[![Short Video](https://img.youtube.com/vi/3EYJS_-Snxg/0.jpg)](https://www.youtube.com/watch?v=3EYJS_-Snxg)
+
 #### Test execution along with documentation
 ![Test Case Execution](https://github.com/Orrish-Automation/orrish-core/blob/main/TestCase.png?raw=true)
 #### Test report

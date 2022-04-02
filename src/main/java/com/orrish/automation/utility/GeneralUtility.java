@@ -87,7 +87,8 @@ public class GeneralUtility {
             actual = Files.readAllLines(Paths.get(fileName));
             final String[] value = {""};
             actual.forEach(e -> value[0] += e + "\n");
-            return value[0];
+            //Remove the extra line break added above
+            return value[0].substring(0, value[0].length() - 1);
         } catch (IOException e) {
             return "Could not read files: " + e.getMessage();
         }
@@ -150,15 +151,17 @@ public class GeneralUtility {
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
             while ((eachLineOfFile = bufferedReader.readLine()) != null) {
                 if (action.contains("Find")) {
-                    System.out.println("Found in file: " + fileName);
-                    return true;
-                }
-                if (action.contains("Replace"))
+                    if (eachLineOfFile.contains(textToFind)) {
+                        System.out.println("Found in file: " + fileName);
+                        return true;
+                    }
+                } else if (action.contains("Replace"))
                     totalLines += eachLineOfFile.replace(textToFind, replacingText) + System.lineSeparator();
                 else if (action.contains("Delete")) {
                     totalLines += eachLineOfFile.contains(textToFind) ? "" : eachLineOfFile + System.lineSeparator();
                 }
             }
+            if (action.contains("Find")) return false;
             bufferedReader.close();
             if (!originalContent[0].trim().contentEquals(totalLines.trim())) {
                 // Write the new String with the replaced line OVER the same file

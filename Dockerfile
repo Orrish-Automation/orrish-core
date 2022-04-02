@@ -14,6 +14,6 @@ RUN mkdir "FitNesseRoot"
 RUN mkdir "target"
 COPY --from=build /app/target/*.jar target
 COPY FitNesseRoot FitNesseRoot
-RUN curl -o fitnesse-standalone.jar "http://fitnesse.org/fitnesse-standalone.jar?responder=releaseDownload&release=20211030" -L
+RUN curl -o fitnesse-standalone.jar "http://fitnesse.org/fitnesse-standalone.jar?responder=releaseDownload&release=20220319" -L
 EXPOSE 80
 ENTRYPOINT ["java","-jar","fitnesse-standalone.jar","-e","0","-o"]

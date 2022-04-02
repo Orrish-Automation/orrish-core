@@ -8,6 +8,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class APIActions {
     public boolean resetHeaderAndEndpoint() {
         apiSteps.apiServerUrl = null;
         apiSteps.apiRequestHeaders = null;
-        apiSteps.apiRequestFormValues = null;
+        apiSteps.apiRequestFormParams = null;
         requestSpecification = null;
         return true;
     }
@@ -51,7 +52,7 @@ public class APIActions {
             String urlToSend = apiSteps.apiServerUrl.trim();
             String baseUrl = urlToSend.split("\\?")[0];
             if (requestSpecification == null) {
-                if (!urlToSend.startsWith("https")) {
+                if (SetUp.useRelaxedHTTPSValidation) {
                     RestAssured.useRelaxedHTTPSValidation();
                 }
                 RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder().addHeaders(headers);
@@ -70,18 +71,26 @@ public class APIActions {
                     }
                 }
                 //Form data request
-                if (contentTypeHeader != null && contentTypeHeader.contains("form-data")) {
-                    Set<Map.Entry<String, String>> entries = apiSteps.apiRequestFormValues.entrySet();
-                    for (Map.Entry eachEntry : entries) {
-                        requestSpecBuilder.addMultiPart(eachEntry.getKey().toString(), eachEntry.getValue().toString());
+                if (contentTypeHeader != null && (apiSteps.apiRequestFormParams != null || apiSteps.apiRequestMultipartValues != null)) {
+                    if (contentTypeHeader.contains("x-www-form-urlencoded")) {
+                        requestSpecBuilder.setUrlEncodingEnabled(true).addFormParams(apiSteps.apiRequestFormParams);
+                        ReportUtility.reportJsonAsInfo(shouldReport, "Request form data values are : ", apiSteps.apiRequestFormParams.entrySet().toString());
+                    } else if (contentTypeHeader.contains("multipart")) {
+                        Set<Map.Entry<String, Object>> entries = apiSteps.apiRequestMultipartValues.entrySet();
+                        for (Map.Entry eachEntry : entries) {
+                            if (eachEntry.getKey().toString().contains("file")) {
+                                Map<String, String> mapValues = (Map<String, String>) eachEntry.getValue();
+                                if (mapValues.get("name") != null) {
+                                    requestSpecBuilder.addMultiPart(mapValues.get("name"), new File(mapValues.get("path")));
+                                } else {
+                                    requestSpecBuilder.addMultiPart(new File(mapValues.get("path")));
+                                }
+                            } else {
+                                requestSpecBuilder.addMultiPart(eachEntry.getKey().toString(), eachEntry.getValue().toString());
+                            }
+                        }
+                        ReportUtility.reportJsonAsInfo(shouldReport, "Request form data values are : ", apiSteps.apiRequestMultipartValues.entrySet().toString());
                     }
-                    ReportUtility.reportJsonAsInfo(shouldReport, "Request form data values are : ", entries.toString());
-                } else if (contentTypeHeader != null && contentTypeHeader.contains("application/x-www-form-urlencoded")) {
-                    Set<Map.Entry<String, String>> entries = apiSteps.apiRequestFormValues.entrySet();
-                    for (Map.Entry eachEntry : entries) {
-                        requestSpecBuilder.addFormParam(eachEntry.getKey().toString(), eachEntry.getValue().toString());
-                    }
-                    ReportUtility.reportJsonAsInfo(shouldReport, "Request form data values are : ", entries.toString());
                 }
                 requestSpecification = given().spec(requestSpecBuilder.build()).when();
             }

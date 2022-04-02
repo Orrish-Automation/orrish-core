@@ -4,6 +4,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.HashMap;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -65,8 +67,17 @@ public class APIIntegrationTest {
         assertTrue(apiSteps.callWithRequestWithoutReporting("DELETE", "{}"));
 
         assertTrue(apiSteps.setServerEndpoint("https://postman-echo.com/post"));
-        assertTrue(apiSteps.setRequestHeaders("Content-Type=multipart/form-data,Accept=application/json"));
-        assertTrue(apiSteps.setFormValues("a:b"));
+        assertTrue(apiSteps.setRequestHeaders("Content-Type=application/x-www-form-urlencoded;charset=UTF-8"));
+        assertTrue(apiSteps.setFormParams("a=b"));
+        assertTrue(apiSteps.callPOST());
+
+        assertTrue(setUp.useRelaxedHTTPSValidation(true));
+        assertTrue(apiSteps.setServerEndpoint("https://postman-echo.com/post"));
+        assertTrue(apiSteps.setRequestHeaders("Content-Type=multipart/form-data"));
+        HashMap<String, String> map = new HashMap();
+        map.put("someKey", "someValue");
+        map.put("file", "name=filename&path=filename.txt");
+        assertTrue(apiSteps.setMultipartValues(map));
         assertTrue(apiSteps.callPOST());
 
         assertTrue(apiSteps.doesMatchSchema("[{\"id\":1,\"step\":\"|Set suite name|Some name|\",\"help\":\"\"}]", getJsonSchema()));

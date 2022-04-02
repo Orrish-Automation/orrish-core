@@ -78,8 +78,8 @@ public class APIUnitTest {
 
         expectedHeaders.clear();
         expectedHeaders.put("key1", "value1");
-        assertTrue(apiSteps.setFormValues("key1:value1"));
-        assertEquals(expectedHeaders, apiSteps.apiRequestFormValues);
+        assertTrue(apiSteps.setFormParams("key1=value1"));
+        assertEquals(expectedHeaders, apiSteps.apiRequestFormParams);
     }
 
     @Test

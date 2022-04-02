@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "step": "|Set suite name|${PAGE_NAME}|",
+    "step": "|Set suite name |${PAGE_NAME}|",
     "help": ""
   },
   {
     "id": 2,
-    "step": "|Database check|true|",
+    "step": "|Database check |true|",
     "help": "If false, database steps will be skipped in tests."
   },
   {
@@ -16,148 +16,152 @@
   },
   {
     "id": 4,
-    "step": "|Mongodb database name|databaseName|",
+    "step": "|Mongodb database name |databaseName|",
     "help": ""
   },
   {
     "id": 5,
-    "step": "|Database connection string|jdbc:oracle:thin:@111.111.111.111:1521/schema|",
+    "step": "|Database connection string |jdbc:oracle:thin:@111.111.111.111:1521/schema|",
     "help": ""
   },
   {
     "id": 6,
-    "step": "|Database username|sys as sysdba|",
+    "step": "|Database username |sys as sysdba|",
     "help": ""
   },
   {
     "id": 7,
-    "step": "|Database password|Test1234|",
+    "step": "|Database password |Test1234|",
     "help": ""
   },
   {
     "id": 8,
+    "step": "|Use relaxed HTTPS validation |true|",
+    "help": "Set to true if you want to ignore errors due to HTTPS for API calls."
+  },
+  {
+    "id": 9,
     "step": "|Default request headers |Content-Type=application/json,Accept=application/json|",
     "help": ""
   },
   {
-    "id": 9,
-    "step": "|Json request template  |{}|",
+    "id": 10,
+    "step": "|Json request template  | {}|",
     "help": "A template can be defined in Set up which then can be used in tests to modify data."
   },
   {
-    "id": 10,
-    "step": "|$baseServer=|Base server|http://ip:port|",
-    "help": ""
-  },
-  {
     "id": 11,
-    "step": "|Selenium grid URL|http://ip:4444/wd/hub|",
+    "step": "|$baseServer=|Base server |http://ip:port|",
     "help": ""
   },
   {
     "id": 12,
+    "step": "|Selenium grid URL |http://ip:4444/wd/hub|",
+    "help": ""
+  },
+  {
+    "id": 13,
     "step": "|Browser |CHROME|",
     "help": "Default is CHROME."
   },
   {
-    "id": 13,
+    "id": 14,
     "step": "|Browser version  |74.0|",
     "help": ""
   },
   {
-    "id": 14,
-    "step": "|Browser dimension|1200x1600|",
-    "help": ""
-  },
-  {
     "id": 15,
-    "step": "|Default wait time in seconds|5|",
-    "help": "Default is 10."
+    "step": "|Browser dimension |1200x1600|",
+    "help": ""
   },
   {
     "id": 16,
-    "step": "|Take screenshot at each step|true|",
-    "help": ""
+    "step": "|Default wait time in seconds |5|",
+    "help": "Default is 10."
   },
   {
     "id": 17,
-    "step": "|Execution capabilities|enableVideo=true,enableVNC=true|",
-    "help": "Any capability in key-value format that you want to add in selenium and appium capability."
-  },
-  {
-    "id": 18,
-    "step": "|Screenshot delay in seconds|5|",
-    "help": "May be useful if you want to take stable screenshot for image comparison later."
-  },
-  {
-    "id": 19,
-    "step": "|Playwright headless|true|",
+    "step": "|Take screenshot at each step |true|",
     "help": ""
   },
   {
+    "id": 18,
+    "step": "|Execution capabilities |enableVideo=true,enableVNC=true|",
+    "help": "Any capability in key-value format that you want to add in selenium and appium capability."
+  },
+  {
+    "id": 19,
+    "step": "|Screenshot delay in seconds |5|",
+    "help": "May be useful if you want to take stable screenshot for image comparison later."
+  },
+  {
     "id": 20,
-    "step": "|Appium server URL |http://ip:4723/wd/hub|",
+    "step": "|Playwright headless |true|",
     "help": ""
   },
   {
     "id": 21,
-    "step": "|Platform name  |Android|",
+    "step": "|Appium server URL |http://ip:4723/wd/hub|",
     "help": ""
   },
   {
     "id": 22,
-    "step": "|Platform version|11|",
+    "step": "|Platform name |Android|",
     "help": ""
   },
   {
     "id": 23,
-    "step": "|Device name |emulator-5554|",
+    "step": "|Platform version |11|",
     "help": ""
   },
   {
     "id": 24,
-    "step": "|Automation name|Uiautomator2|",
+    "step": "|Device name |emulator-5554|",
     "help": ""
   },
   {
     "id": 25,
-    "step": "|App|/Users/test/AndroidApp.apk|",
+    "step": "|Automation name |Uiautomator2|",
     "help": ""
   },
   {
     "id": 26,
-    "step": "|App package |com.orrish|",
+    "step": "|App |/Users/test/AndroidApp.apk|",
     "help": ""
   },
   {
     "id": 27,
-    "step": "|App activity|com.orrish.HomeActivity|",
+    "step": "|App package |com.orrish|",
     "help": ""
   },
   {
     "id": 28,
-    "step": "|udid|value|",
+    "step": "|App activity |com.orrish.HomeActivity|",
     "help": ""
   },
   {
     "id": 29,
-    "step": "|xcodeOrgId|value|",
+    "step": "|udid |value|",
     "help": ""
   },
   {
     "id": 30,
-    "step": "|xcodeSigningId|value|",
+    "step": "|xcodeOrgId |value|",
     "help": ""
   },
   {
     "id": 31,
-    "step": "|Show page info on failure|true|",
-    "help": "Page dump is shown in report if enabled. Default is false."
+    "step": "|xcodeSigningId |value|",
+    "help": ""
   },
   {
     "id": 32,
-    "step": "|Report Enabled|false|",
+    "step": "|Show page info on failure |true|",
+    "help": "Page dump is shown in report if enabled. Default is false."
+  },
+  {
+    "id": 33,
+    "step": "|Report Enabled |false|",
     "help": "If set to false, this will not generate any report. Default is true."
   }
 ]
-

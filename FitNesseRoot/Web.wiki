@@ -4,6 +4,7 @@ Suite
 !***< library
 !path target/orrish-core.jar
 *!
+You can create suites like below. Click on '''Add->Suite''' to add suite and '''Add->Test''' to add test. You can create folder like structure by creating suite inside a suite.
 After you execute a test, you can check the report by clicking on the link at the bottom or each page. If you want to follow page object model, please refer to specific examples in the home page.
 ------
 !contents -R2 -g -p -f -h
