@@ -7,7 +7,7 @@ Suite Page is like a folder which can be executed. All tests inside it will be e
 Test page is a executable test.
 
 '''Organize your own folder'''
-In the home page, you can follow '''Web'' example to organize your own folder.
+In the home page, you can follow '''Web''' example to organize your own folder.
 
 '''Writing a test'''
 There are sample test cases that you can refer when you launch FitNesse page. Test case writing involves following steps.

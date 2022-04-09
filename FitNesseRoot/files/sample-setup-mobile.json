@@ -1,0 +1,77 @@
+[
+  {
+    "id": 16,
+    "step": "|Default wait time in seconds |5|",
+    "help": "Default is 10."
+  },
+  {
+    "id": 17,
+    "step": "|Take screenshot at each step |true|",
+    "help": ""
+  },
+  {
+    "id": 18,
+    "step": "|Execution capabilities |enableVideo=true,enableVNC=true|",
+    "help": "Any capability in key-value format that you want to add in selenium and appium capability."
+  },
+  {
+    "id": 19,
+    "step": "|Screenshot delay in seconds |5|",
+    "help": "May be useful if you want to take stable screenshot for image comparison later."
+  },
+  {
+    "id": 21,
+    "step": "|Appium server URL |http://ip:4723/wd/hub|",
+    "help": ""
+  },
+  {
+    "id": 22,
+    "step": "|Platform name |Android|",
+    "help": ""
+  },
+  {
+    "id": 23,
+    "step": "|Platform version |11|",
+    "help": ""
+  },
+  {
+    "id": 24,
+    "step": "|Device name |emulator-5554|",
+    "help": ""
+  },
+  {
+    "id": 25,
+    "step": "|Automation name |Uiautomator2|",
+    "help": ""
+  },
+  {
+    "id": 26,
+    "step": "|App |/Users/test/AndroidApp.apk|",
+    "help": ""
+  },
+  {
+    "id": 27,
+    "step": "|App package |com.orrish|",
+    "help": ""
+  },
+  {
+    "id": 28,
+    "step": "|App activity |com.orrish.HomeActivity|",
+    "help": ""
+  },
+  {
+    "id": 29,
+    "step": "|udid |value|",
+    "help": ""
+  },
+  {
+    "id": 30,
+    "step": "|xcodeOrgId |value|",
+    "help": ""
+  },
+  {
+    "id": 31,
+    "step": "|xcodeSigningId |value|",
+    "help": ""
+  }
+]

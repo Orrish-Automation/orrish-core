@@ -1,0 +1,22 @@
+[
+  {
+    "id": 8,
+    "step": "|Use relaxed HTTPS validation |true|",
+    "help": "Set to true if you want to ignore errors due to HTTPS for API calls."
+  },
+  {
+    "id": 9,
+    "step": "|Default request headers |Content-Type=application/json,Accept=application/json|",
+    "help": ""
+  },
+  {
+    "id": 10,
+    "step": "|Json request template  | {}|",
+    "help": "A template can be defined in Set up which then can be used in tests to modify data."
+  },
+  {
+    "id": 11,
+    "step": "|$baseServer= |Base server |http://ip:port|",
+    "help": ""
+  }
+]

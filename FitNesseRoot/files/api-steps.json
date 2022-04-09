@@ -31,7 +31,7 @@
   },
   {
     "id": 7,
-    "step": "|Call GET for endpoint |${API_URL}                 |",
+    "step": "|Call GET for endpoint |${API_URL}  |",
     "help": ""
   },
   {
@@ -66,22 +66,22 @@
   },
   {
     "id": 14,
-    "step": "|Call|POST|with request |$request|",
+    "step": "|Call |POST |with request |$request|",
     "help": ""
   },
   {
     "id": 15,
-    "step": "|Call|POST|with request |$request|without reporting|",
+    "step": "|Call |POST |with request |$request |without reporting|",
     "help": ""
   },
   {
     "id": 16,
-    "step": "|$value=|Get response body|",
+    "step": "|$value= |Get response body|",
     "help": ""
   },
   {
     "id": 17,
-    "step": "|Is HTTP status code | 200 |",
+    "step": "|Is HTTP status code |200|",
     "help": ""
   },
   {
@@ -91,12 +91,12 @@
   },
   {
     "id": 19,
-    "step": "|$value=|Get | user.name |from json string | jsonString |",
+    "step": "|$value= |Get |user.name |from json string | jsonString |",
     "help": ""
   },
   {
     "id": 20,
-    "step": "|$value=|Get from response cookie |cookieName |",
+    "step": "|$value= |Get from response cookie |cookieName |",
     "help": ""
   },
   {
@@ -131,7 +131,7 @@
   },
   {
     "id": 27,
-    "step": "|ensure|Verify object node |jsonPath| count |2|",
+    "step": "|Verify object node |jsonPath| count |2|",
     "help": "Verifies the count of nodes with this json path."
   }
 ]

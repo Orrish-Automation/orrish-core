@@ -1,0 +1,47 @@
+[
+  {
+    "id": 12,
+    "step": "|Selenium grid URL |http://ip:4444/wd/hub|",
+    "help": ""
+  },
+  {
+    "id": 13,
+    "step": "|Browser |CHROME|",
+    "help": "Default is CHROME."
+  },
+  {
+    "id": 14,
+    "step": "|Browser version |74.0|",
+    "help": ""
+  },
+  {
+    "id": 15,
+    "step": "|Browser dimension |1200x1600|",
+    "help": ""
+  },
+  {
+    "id": 16,
+    "step": "|Default wait time in seconds |5|",
+    "help": "Default is 10."
+  },
+  {
+    "id": 17,
+    "step": "|Take screenshot at each step |true|",
+    "help": ""
+  },
+  {
+    "id": 18,
+    "step": "|Execution capabilities |enableVideo=true,enableVNC=true|",
+    "help": "Any capability in key-value format that you want to add in selenium and appium capability."
+  },
+  {
+    "id": 19,
+    "step": "|Screenshot delay in seconds |5|",
+    "help": "May be useful if you want to take stable screenshot for image comparison later."
+  },
+  {
+    "id": 20,
+    "step": "|Playwright headless |true|",
+    "help": ""
+  }
+]

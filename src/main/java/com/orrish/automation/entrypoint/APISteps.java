@@ -135,24 +135,19 @@ public class APISteps {
                     requestAsString = node.toString();
                 } else {
                     if (eachMapEntry != null) {
+                        Configuration configuration = Configuration.builder()
+                                .jsonProvider(new JacksonJsonNodeJsonProvider())
+                                .mappingProvider(new JacksonMappingProvider())
+                                .build();
+                        DocumentContext documentContext = JsonPath.using(configuration).parse(node);
                         String valueToReplaceWith = eachMapEntry.toString().trim();
                         if (!valueToReplaceWith.equalsIgnoreCase("doNotPass")) {
-                            Configuration configuration = Configuration.builder()
-                                    .jsonProvider(new JacksonJsonNodeJsonProvider())
-                                    .mappingProvider(new JacksonMappingProvider())
-                                    .build();
-                            DocumentContext documentContext = JsonPath.using(configuration).parse(node);
                             if (eachMapEntry.toString().trim().toLowerCase().contains("null")) {
                                 documentContext.set(eachKey, null);
                                 requestAsString = documentContext.jsonString();
                             } else
                                 requestAsString = replaceWithCorrespondingType(documentContext, eachKey, eachMapEntry);
                         } else {
-                            Configuration configuration = Configuration.builder()
-                                    .jsonProvider(new JacksonJsonNodeJsonProvider())
-                                    .mappingProvider(new JacksonMappingProvider())
-                                    .build();
-                            DocumentContext documentContext = JsonPath.using(configuration).parse(node);
                             documentContext.delete(eachKey);
                             requestAsString = documentContext.jsonString();
                         }
@@ -407,12 +402,14 @@ public class APISteps {
             documentContext.set(eachKey, Double.parseDouble(eachMapValue.toString()));
         else if (nodeType.contains("ArrayNode")) {
             JsonNodeType nodeSubType = ((ArrayNode) documentContext.read(eachKey)).get(0).getNodeType();
-            if (nodeSubType == JsonNodeType.STRING)
-                documentContext.add(eachKey, eachMapValue.toString());
+            ArrayNode arrayNode = documentContext.read(eachKey);
+            arrayNode.removeAll();
             if (nodeSubType == JsonNodeType.BOOLEAN)
-                documentContext.add(eachKey, Boolean.getBoolean(eachMapValue.toString()));
-            if (nodeSubType == JsonNodeType.NUMBER)
-                documentContext.add(eachKey, Integer.getInteger(eachMapValue.toString()));
+                arrayNode.add(Boolean.getBoolean(eachMapValue.toString()));
+            else if (nodeSubType == JsonNodeType.NUMBER)
+                arrayNode.add(Integer.getInteger(eachMapValue.toString()));
+            else if (nodeSubType == JsonNodeType.STRING)
+                arrayNode.add(eachMapValue.toString());
         } else
             documentContext.set(eachKey, eachMapValue);
         return documentContext.jsonString();

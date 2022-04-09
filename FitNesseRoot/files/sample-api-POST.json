@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "step": "|Set server endpoint |http://ip:port|",
+    "help": ""
+  },
+  {
+    "id": 2,
+    "step": "|Set request headers |Content-Type=application/x-www-form-urlencoded;charset=UTF-8,first_name=FirstName|",
+    "help": "Use comma separated key-value pair. Key value are delimited by colon. If you do not want to use a key, use doNotPass as the value."
+  },
+  {
+    "id": 9,
+    "step": "|Call POST with request |{}  |",
+    "help": ""
+  }
+]

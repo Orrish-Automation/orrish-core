@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "step": "|Launch app on device|",
+    "help": ""
+  },
+  {
+    "id": 2,
+    "step": "|Take mobile screenshot with text |some text|",
+    "help": ""
+  },
+  {
+    "id": 8,
+    "step": "|Tap|#button1 |for |login button|",
+    "help": ""
+  }
+]

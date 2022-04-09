@@ -6,8 +6,7 @@ import org.testng.annotations.Test;
 
 import java.util.HashMap;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 public class APIIntegrationTest {
 
@@ -63,6 +62,10 @@ public class APIIntegrationTest {
         assertTrue(apiSteps.setRequestHeaders("Content-Type=application/json,Accept=application/json"));
         assertTrue(apiSteps.callDELETEWithRequest(getSampleRequestBody()));
 
+        assertTrue(apiSteps.setRequestHeaders("Content-Type=application/json,Accept=application/json"));
+        assertTrue(apiSteps.callDELETEForEndpoint("https://postman-echo.com/delete"));
+        assertFalse((apiSteps.getExistenceOfNodeInResponse("notPresent")));
+
         assertTrue(apiSteps.setServerEndpoint("https://postman-echo.com/delete"));
         assertTrue(apiSteps.callWithRequestWithoutReporting("DELETE", "{}"));
 
@@ -81,9 +84,17 @@ public class APIIntegrationTest {
         assertTrue(apiSteps.callPOST());
 
         assertTrue(apiSteps.doesMatchSchema("[{\"id\":1,\"step\":\"|Set suite name|Some name|\",\"help\":\"\"}]", getJsonSchema()));
+    }
 
+    @Test
+    public void replaceRequestTemplate() {
         setUp.jsonRequestTemplate(getSampleRequestBody());
-        String modifiedRequestValue = apiSteps.replaceDataInJsonTemplateWith("contacts.##street=Xyz Street");
+        APISteps apiSteps = new APISteps();
+        String modifiedRequestValue = apiSteps.replaceDataInJsonTemplateWith("user=hello,boolean=false,number=123,stringArray=123");
+        assertEquals(modifiedRequestValue.replaceAll("\\s+", ""), getSampleRequestBody().replaceFirst("test", "hello").replaceAll("\\s+", ""));
+        modifiedRequestValue = apiSteps.replaceDataInJsonTemplateWith("user=null");
+        assertEquals(modifiedRequestValue.replaceAll("\\s+", ""), getSampleRequestBody().replaceFirst("\"test\"", "null").replaceAll("\\s+", ""));
+        modifiedRequestValue = apiSteps.replaceDataInJsonTemplateWith("contacts.##street=Xyz Street");
         assertEquals(modifiedRequestValue.replaceAll("\\s+", ""), getSampleRequestBody().replaceAll("Abc Street", "Xyz Street").replaceAll("\\s+", ""));
         modifiedRequestValue = apiSteps.replaceDataInJsonTemplateWith("contacts.#1street=Xyz Street");
         assertEquals(modifiedRequestValue.replaceAll("\\s+", ""), getSampleRequestBody().replaceFirst("Abc Street", "Xyz Street").replaceAll("\\s+", ""));
@@ -93,13 +104,17 @@ public class APIIntegrationTest {
         modifiedRequestValue = modifiedRequestValue.replaceAll("\\s+", "");
         String expected = getSampleRequestBody().replaceAll("Abc", "Xyz").replaceAll("\\s+", "");
         assertEquals(modifiedRequestValue, expected);
-
     }
 
     private static String getSampleRequestBody() {
         return "\n" +
                 "{\n" +
                 "    \"user\":\"test\",\n" +
+                "    \"boolean\":false,\n" +
+                "    \"number\":123,\n" +
+                "    \"numberArray\":[123],\n" +
+                "    \"booleanArray\":[false],\n" +
+                "    \"stringArray\":[\"123\"],\n" +
                 "    \"contacts\": [\n" +
                 "      {\n" +
                 "          \"type\":\"home\",\n" +

@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "step": "|Set suite name |${PAGE_NAME}|",
+    "help": ""
+  },
+  {
+    "id": 32,
+    "step": "|Show page info on failure |true|",
+    "help": "Page dump is shown in report if enabled. Default is false."
+  },
+  {
+    "id": 33,
+    "step": "|Report Enabled |false|",
+    "help": "If set to false, this will not generate any report. Default is true."
+  }
+]

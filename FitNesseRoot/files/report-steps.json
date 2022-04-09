@@ -1,17 +1,17 @@
 [
   {
     "id": 1,
-    "step": "|Set suite name|Some name|",
+    "step": "|Set suite name |Some name|",
     "help": "Creates the node on the left in the extent report. Use it just once in a central location, ideally in SetUp."
   },
   {
     "id": 2,
-    "step": "|Set child node|some name|",
+    "step": "|Set child node |some name|",
     "help": "This will set one child node in the extent report right panel which is ideal for data driven tests."
   },
   {
     "id": 3,
-    "step": "|Set test name|${PAGE_NAME} |",
+    "step": "|Set test name |${PAGE_NAME} |",
     "help": "Creates a node in the test report or a sub-node if you defined a scenario/child node already. If you want both a suite and test in this single step, use suite_name::test_name"
   },
   {
@@ -21,12 +21,12 @@
   },
   {
     "id": 5,
-    "step": "|Write in report|Some content|",
+    "step": "|Write in report |Some content|",
     "help": "Prints in the report as information."
   },
   {
     "id": 6,
-    "step": "|Show image|http://someurl.png|with message|Some message |",
+    "step": "|Show image |http://someurl.png |with message |Some message |",
     "help": "Shows image in the report."
   }
 ]

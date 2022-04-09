@@ -1,0 +1,32 @@
+[
+  {
+    "id": 2,
+    "step": "|Database check |true|",
+    "help": "If false, database steps will be skipped in tests."
+  },
+  {
+    "id": 3,
+    "step": "|Mongodb connection string |mongodb://username:password@serverAddress|",
+    "help": ""
+  },
+  {
+    "id": 4,
+    "step": "|Mongodb database name |databaseName|",
+    "help": ""
+  },
+  {
+    "id": 5,
+    "step": "|Database connection string |jdbc:oracle:thin:@111.111.111.111:1521/schema|",
+    "help": ""
+  },
+  {
+    "id": 6,
+    "step": "|Database username |sys as sysdba|",
+    "help": ""
+  },
+  {
+    "id": 7,
+    "step": "|Database password |Test1234|",
+    "help": ""
+  }
+]

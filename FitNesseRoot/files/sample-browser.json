@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "step": "|Launch browser and navigate to |http://someurl|",
+    "help": ""
+  },
+  {
+    "id": 5,
+    "step": "|Maximize the window|",
+    "help": ""
+  },
+  {
+    "id": 8,
+    "step": "|Take web screenshot with text |some text|",
+    "help": ""
+  },
+  {
+    "id": 12,
+    "step": "|Click |#btn-sample |for |Next button|",
+    "help": ""
+  }
+]
