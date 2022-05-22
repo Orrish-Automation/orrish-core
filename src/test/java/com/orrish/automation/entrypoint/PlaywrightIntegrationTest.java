@@ -4,8 +4,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertEquals;
 
 public class PlaywrightIntegrationTest {
 
@@ -15,9 +16,10 @@ public class PlaywrightIntegrationTest {
     public void beforeMethod() {
         setUp = new SetUp();
         setUp.playwrightHeadless(true);
-        setUp.browser("CHROME");
+        setUp.browser("chrome");
         setUp.takeScreenshotAtEachStep(false);
         setUp.reportEnabled(false);
+        setUp.useMock(true);
     }
 
     @AfterMethod
@@ -28,7 +30,21 @@ public class PlaywrightIntegrationTest {
     @Test
     public void playwrightTest() {
         PlaywrightAppiumSteps playwrightAppiumSteps = new PlaywrightAppiumSteps();
-        assertTrue(playwrightAppiumSteps.launchBrowserAndNavigateTo("https://the-internet.herokuapp.com"));
+        assertTrue(playwrightAppiumSteps.launchBrowserAndNavigateTo("https://jsonplaceholder.typicode.com/users/1"));
+        playwrightAppiumSteps.forRequestUseMockStatusAndResponse("**/users/2", 200, "{\n" +
+                "  \"id\": 1,\n" +
+                "  \"name\": \"Orrish Automation\",\n" +
+                "  \"username\": \"Orrish\",\n" +
+                "  \"email\": \"Sincere@april.biz\",\n" +
+                "  \"phone\": \"1-770-736-8031 x56442\",\n" +
+                "  \"website\": \"hildegard.org\"\n" +
+                "}"
+        );
+        assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://jsonplaceholder.typicode.com/users/2"));
+        assertTrue(playwrightAppiumSteps.isTextPresentInWebpage("Orrish"));
+        assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com"));
+        assertFalse(playwrightAppiumSteps.checkAccessibilityForPage(playwrightAppiumSteps.getPageTitle()));
+        assertTrue(playwrightAppiumSteps.refreshWebPage());
         assertTrue(playwrightAppiumSteps.isTextPresentInWebpage("Inputs"));
         assertEquals("Inputs", playwrightAppiumSteps.getTextFromElement("//a[contains(text(), 'Inputs')]"));
         assertTrue(playwrightAppiumSteps.clickFor("//a[contains(text(), 'Inputs')]", ""));

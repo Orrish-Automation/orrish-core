@@ -29,6 +29,11 @@ public class APIIntegrationTest {
         APISteps apiSteps = new APISteps();
         GeneralSteps generalSteps = new GeneralSteps();
 
+        HashMap<String, String> map = new HashMap();
+        map.put("From", "from");
+        map.put("To", "to");
+        assertEquals("from", generalSteps.getFromKeyValue("From", map));
+        assertEquals("3", generalSteps.forTextExtractValueBetweenAnd("You have 3 notifications.", "You have ", "notifications"));
         assertTrue(apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/2"));
         assertTrue(apiSteps.callGETWithRequest(getSampleRequestBody()));
         assertTrue(apiSteps.verifyResponseFor("name=Ervin Howell,website=anastasia.net,aaa=doNotVerify"));
@@ -77,7 +82,7 @@ public class APIIntegrationTest {
         assertTrue(setUp.useRelaxedHTTPSValidation(true));
         assertTrue(apiSteps.setServerEndpoint("https://postman-echo.com/post"));
         assertTrue(apiSteps.setRequestHeaders("Content-Type=multipart/form-data"));
-        HashMap<String, String> map = new HashMap();
+        map.clear();
         map.put("someKey", "someValue");
         map.put("file", "name=filename&path=filename.txt");
         assertTrue(apiSteps.setMultipartValues(map));
@@ -104,6 +109,7 @@ public class APIIntegrationTest {
         modifiedRequestValue = modifiedRequestValue.replaceAll("\\s+", "");
         String expected = getSampleRequestBody().replaceAll("Abc", "Xyz").replaceAll("\\s+", "");
         assertEquals(modifiedRequestValue, expected);
+
     }
 
     private static String getSampleRequestBody() {

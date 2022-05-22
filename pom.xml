@@ -27,7 +27,13 @@
             <artifactId>extentreports</artifactId>
             <version>3.1.5</version>
         </dependency>
-        <!-- UI dependencies - Appium, Selenium (included in Appium), Playwright-->
+        <!-- Email -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <!-- UI - Appium, Selenium (included in Appium), Playwright -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
@@ -38,7 +44,7 @@
             <artifactId>playwright</artifactId>
             <version>1.19.0</version>
         </dependency>
-        <!-- Database dependencies-->
+        <!-- Database -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
@@ -52,7 +58,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.20</version>
+            <version>8.0.29</version>
         </dependency>
         <dependency>
             <groupId>net.snowflake</groupId>
@@ -64,7 +70,7 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.5</version>
         </dependency>
-        <!-- API dependencies -->
+        <!-- API -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>json-schema-validator</artifactId>
@@ -91,7 +97,7 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.4.3</version>
         </dependency>
-        <!--- Common dependencies -->
+        <!--- Common -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

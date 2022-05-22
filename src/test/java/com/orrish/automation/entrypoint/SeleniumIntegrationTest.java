@@ -4,6 +4,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class SeleniumIntegrationTest {
@@ -27,6 +28,7 @@ public class SeleniumIntegrationTest {
     public void sampleTest() {
         SeleniumAppiumSteps seleniumAppiumSteps = new SeleniumAppiumSteps();
         assertTrue(seleniumAppiumSteps.launchBrowserAndNavigateTo("https://the-internet.herokuapp.com/"));
+        assertFalse(seleniumAppiumSteps.checkAccessibilityForPage(seleniumAppiumSteps.getPageTitle()));
         assertTrue(seleniumAppiumSteps.refreshWebPage());
         assertTrue(seleniumAppiumSteps.maximizeTheWindow());
         assertTrue(seleniumAppiumSteps.executeJavascript("a=2"));
@@ -48,6 +50,7 @@ public class SeleniumIntegrationTest {
         assertTrue(seleniumAppiumSteps.dismissAlertIfPresent());
         assertTrue(seleniumAppiumSteps.closeBrowser());
         assertTrue(seleniumAppiumSteps.quitBrowser());
+
     }
 
 }

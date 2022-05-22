@@ -44,7 +44,8 @@ Below is the illustration. More examples are available when you install it and l
 
 ## :briefcase: Features
 * Can be installed via docker or manually on a central server.
-* Supports API, Relational database, MongoDB, Web and Mobile steps. It is extensible and pull requests with more libraries are welcome.
+* Supports **API**, Relational **database**, **MongoDB**, **Web** and **Mobile** steps. It is extensible and pull requests with more libraries are welcome.
+* Supports **accessibility tests** and use of **mock API responses** to test negative/complex data set, **read email** via API.
 * Mix and match steps to create desired executable tests.
 * By default, it generates [Extent Report](https://github.com/extent-framework/extentreports-java). It can also be configured to publish report to [Report Portal](https://reportportal.io/).
 
@@ -109,7 +110,8 @@ Once you launch FitNesse home page, there is a link to `FitNesse Documentation` 
     - Create a jar from this repo with the command `mvn compile assembly:single`. Rename the created jar to orrish-core.jar and move it under ```target``` folder in the cloned location.
     - Run command `java -jar fitnesse-standalone.jar -p <desired_port>` and access the server on the port you specified in this command.
 * Add new area in available steps : Navigate to FitNesseRoot/files/all-steps.json and add the areas here. Remember to update steps described here. 
-* Update steps in available steps : In FitNesse homepage, you will find a link to update/add steps. 
+* Update steps in available steps : In FitNesse homepage, you will find a link to update/add steps.
+* If you are trying to read email from Gmail, please ensure you have the permission enabled in Google Accounts. For details on how to enable Gmail access from third party, please refer to Google site.
 </details>
 
 ## :framed_picture: Screenshots and video

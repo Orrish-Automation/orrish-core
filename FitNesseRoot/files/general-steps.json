@@ -186,7 +186,22 @@
   },
   {
     "id": 37,
-    "step": "|Get |API_KEY |from system environment variables|",
+    "step": "|$API_KEY= |Get |API_KEY |from system environment variables|",
     "help": "If you want to get sensitive information from environment variable. Example: cloud provider API key etc."
+  },
+  {
+    "id": 38,
+    "step": "|$countOfUnreadMessage= |For text |You have 5 unread message. |extract value between |You have |and |unread |",
+    "help": "Useful if you want to extract value like Auth code, PIN, OTP, amount, count etc."
+  },
+  {
+    "id": 39,
+    "step": "|$emailDetails= |Get first unread gmail for username |userid |and password |pw |",
+    "help": "Enable low security in Gmail account."
+  },
+  {
+    "id": 40,
+    "step": "|$emailSubject= |Get |Subject |from key value |$emailDetails |",
+    "help": "Getting a specific value from key-value pairs like HashMap."
   }
 ]

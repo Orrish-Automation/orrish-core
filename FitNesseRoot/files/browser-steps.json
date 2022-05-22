@@ -41,127 +41,142 @@
   },
   {
     "id": 9,
-    "step": "|Is element |#next |displayed for |next|",
+    "step": "|Get page title|",
     "help": ""
   },
   {
     "id": 10,
-    "step": "|Is element |#next-button |enabled for |next|",
-    "help": ""
+    "step": "|Check accessibility for page|Page name|",
+    "help": "Checks the page against accessibility guidelines."
   },
   {
     "id": 11,
-    "step": "|Is element |#checkbox |selected for |next|",
+    "step": "|Is element |#next |displayed for |next|",
     "help": ""
   },
   {
     "id": 12,
-    "step": "|Click |#btn-sample |for |Next button|",
+    "step": "|Is element |#next-button |enabled for |next|",
     "help": ""
   },
   {
     "id": 13,
-    "step": "|Click |#btn-sample |with text |Continue|",
+    "step": "|Is element |#checkbox |selected for |next|",
     "help": ""
   },
   {
     "id": 14,
-    "step": "|Click whichever is displayed in |#success,,#error|",
+    "step": "|Click |#btn-sample |for |Next button|",
     "help": ""
   },
   {
     "id": 15,
-    "step": "|Click row containing text |text|",
+    "step": "|Click |#btn-sample |with text |Continue|",
     "help": ""
   },
   {
     "id": 16,
-    "step": "|Select checkbox for text |some text|",
+    "step": "|Click whichever is displayed in |#success,,#error|",
     "help": ""
   },
   {
     "id": 17,
-    "step": "|Unselect checkbox for text |some text|",
+    "step": "|Click row containing text |text|",
     "help": ""
   },
   {
     "id": 18,
-    "step": "|Wait until element |#button |text contains |some value|",
+    "step": "|Select checkbox for text |some text|",
     "help": ""
   },
   {
     "id": 19,
-    "step": "|Wait until element |#button |text does not contain |some value|",
+    "step": "|Unselect checkbox for text |some text|",
     "help": ""
   },
   {
     "id": 20,
-    "step": "|Wait until |#progressbar,,#error |is gone for |error pop up|",
+    "step": "|Wait until element |#button |text contains |some value|",
     "help": ""
   },
   {
     "id": 21,
-    "step": "|Wait until |#progressbar,,#someValue |is displayed for |success message|",
+    "step": "|Wait until element |#button |text does not contain |some value|",
     "help": ""
   },
   {
     "id": 22,
-    "step": "|Wait until one of the elements |#success,,#error |is displayed|",
+    "step": "|Wait until |#progressbar,,#error |is gone for |error pop up|",
     "help": ""
   },
   {
     "id": 23,
-    "step": "|Wait until one of the elements |#success,,#error |is enabled|",
+    "step": "|Wait until |#progressbar,,#someValue |is displayed for |success message|",
     "help": ""
   },
   {
     "id": 24,
-    "step": "|Enter|some value|in text field |#locator |for |textFieldName|",
+    "step": "|Wait until one of the elements |#success,,#error |is displayed|",
     "help": ""
   },
   {
     "id": 25,
-    "step": "|Enter in text field number |2|",
+    "step": "|Wait until one of the elements |#success,,#error |is enabled|",
     "help": ""
   },
   {
     "id": 26,
-    "step": "|Is text |some text |present in webpage|",
+    "step": "|Enter|some value|in text field |#locator |for |textFieldName|",
     "help": ""
   },
   {
     "id": 27,
-    "step": "|Dismiss alert if present|",
+    "step": "|Enter in text field number |2|",
     "help": ""
   },
   {
     "id": 28,
-    "step": "|Click |#button |and accept alert if present|",
+    "step": "|Is text |some text |present in webpage|",
     "help": ""
   },
   {
     "id": 29,
-    "step": "|$value= |Click |#button |and get alert text|",
+    "step": "|Dismiss alert if present|",
     "help": ""
   },
   {
     "id": 30,
-    "step": "|Select |text |from dropdown |#locator|",
+    "step": "|Click |#button |and accept alert if present|",
     "help": ""
   },
   {
     "id": 31,
-    "step": "|$value= |Get text from element| #locator|",
+    "step": "|$value= |Click |#button |and get alert text|",
     "help": ""
   },
   {
     "id": 32,
-    "step": "|Execute javascript |some script|",
+    "step": "|Select |text |from dropdown |#locator|",
     "help": ""
   },
   {
     "id": 33,
+    "step": "|$value= |Get text from element| #locator|",
+    "help": ""
+  },
+  {
+    "id": 34,
+    "step": "|Execute javascript |some script|",
+    "help": ""
+  },
+  {
+    "id": 35,
     "step": "|Execute javascript |arguments[0].style.border='2px solid red'|on element |//*[contains(text(),'Android')]|",
     "help": ""
+  },
+  {
+    "id": 36,
+    "step": "|For request |**/users/2 |use mock status |200 |and response |{}|",
+    "help": "Ensure \"use mock\" is enabled in setup. Works only with playwright. Will use the mock response for the requests matching url pattern."
   }
 ]

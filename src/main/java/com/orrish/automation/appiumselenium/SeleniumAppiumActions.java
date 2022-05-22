@@ -1,8 +1,10 @@
 package com.orrish.automation.appiumselenium;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.orrish.automation.utility.report.ReportUtility;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -221,6 +223,21 @@ public class SeleniumAppiumActions {
                     break;
                 case "takeWebScreenshotWithText":
                     return seleniumPageMethods.takeWebScreenshotWithText(args[1].toString());
+                case "getPageTitle":
+                    return seleniumPageMethods.getPageTitle();
+                case "checkAccessibilityForPage":
+                    ArrayNode violations = seleniumPageMethods.checkAccessibilityForPage();
+                    if (violations.size() == 0) {
+                        ReportUtility.reportPass(args[1].toString() + " page accessibility check passed.");
+                    } else {
+                        final String[] failureMessage = {""};
+                        violations.forEach(e -> failureMessage[0] += e.toString());
+                        List<String> violationsCategory = new ArrayList<>();
+                        violations.forEach(e -> violationsCategory.add(e.get("id").textValue()));
+                        ReportUtility.reportFail("\"" + args[1].toString() + "\" page accessibility check failed with " + violations.size() + " violations: " + violationsCategory);
+                        ReportUtility.reportJsonAsInfo("Violations:", failureMessage[0]);
+                    }
+                    return violations.size() == 0;
                 case "clickFor":
                     isWebStepPassed = seleniumPageMethods.click(args[1].toString());
                     break;

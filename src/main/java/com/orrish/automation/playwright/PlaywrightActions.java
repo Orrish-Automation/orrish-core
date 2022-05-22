@@ -1,5 +1,7 @@
 package com.orrish.automation.playwright;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.SelectOption;
@@ -8,9 +10,16 @@ import com.orrish.automation.utility.report.ReportUtility;
 import com.orrish.automation.utility.report.UIStepReporter;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
@@ -108,10 +117,30 @@ public class PlaywrightActions {
         return true;
     }
 
+    protected boolean refreshWebPage() {
+        if (!conditionalStep) return true;
+        playwrightPage.reload();
+        return true;
+    }
+
     protected boolean takeWebScreenshotWithText(String text) {
         if (!conditionalStep) return true;
         ReportUtility.reportWithScreenshot(null, text, ReportUtility.REPORT_STATUS.INFO, text);
         return true;
+    }
+
+    protected ArrayNode checkAccessibilityForPage() throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        URL url = new URL("https://cdnjs.cloudflare.com/ajax/libs/axe-core/3.5.5/axe.min.js");
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            String line;
+            while ((line = in.readLine()) != null)
+                stringBuilder.append(line);
+        }
+        executeJavascript(stringBuilder.toString());
+        String results = String.valueOf(playwrightPage.evaluate("var callback = e => e; axe.run().then(results => callback(JSON.stringify(results.violations)));"));
+        ArrayNode arrayNode = new ObjectMapper().readValue(results, ArrayNode.class);
+        return arrayNode;
     }
 
     protected boolean clickFor(String locator) {
@@ -323,8 +352,28 @@ public class PlaywrightActions {
                 case "inBrowserNavigateBack":
                     isPlaywrightStepPassed = inBrowserNavigateBack();
                     break;
+                case "refreshWebPage":
+                    isPlaywrightStepPassed = refreshWebPage();
+                    break;
                 case "takeWebScreenshotWithText":
                     return takeWebScreenshotWithText(args[1].toString());
+                case "getPageTitle":
+                    return playwrightPage.title();
+                case "forRequestUseMockStatusAndResponse":
+                    return forRequestUseMockStatusAndResponse(args[1].toString(), Integer.parseInt(args[2].toString()), args[3].toString());
+                case "checkAccessibilityForPage":
+                    ArrayNode violations = checkAccessibilityForPage();
+                    if (violations.size() == 0) {
+                        ReportUtility.reportPass(args[1].toString() + " page accessibility check passed.");
+                    } else {
+                        final String[] failureMessage = {""};
+                        violations.forEach(e -> failureMessage[0] += e.toString());
+                        List<String> violationsCategory = new ArrayList<>();
+                        violations.forEach(e -> violationsCategory.add(e.get("id").textValue()));
+                        ReportUtility.reportFail("\"" + args[1].toString() + "\" page accessibility check failed with " + violations.size() + " violations: " + violationsCategory);
+                        ReportUtility.reportJsonAsInfo("Violations:", failureMessage[0]);
+                    }
+                    return violations.size() == 0;
                 case "clickFor":
                     isPlaywrightStepPassed = clickFor(args[1].toString());
                     break;
@@ -405,6 +454,18 @@ public class PlaywrightActions {
             UIStepReporter.reportStepResultWithScreenshotAndException(status, null);
         }
         return isPlaywrightStepPassed;
+    }
+
+    private boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatus, String mockResponse) {
+        playwrightPage.route(requestPattern, route -> {
+            Map<String, String> headers = new HashMap<>(route.request().headers());
+            headers.put("Access-Control-Allow-Origin", "*");
+            route.fulfill(new Route.FulfillOptions()
+                    .setHeaders(headers)
+                    .setStatus(mockHttpStatus)
+                    .setBody(mockResponse));
+        });
+        return true;
     }
 
     private void savePlaywrightVideoIfEnabled() {

@@ -19,3 +19,4 @@ This is Set up page containing basic configuration. Set up is called before each
 |Take screenshot at each step|true        |
 |Playwright headless         |true        |
 |Browser                     |chrome      |
+|Use mock                    |true        |

@@ -1,0 +1,8 @@
+'''Test Objective''': This test shows the accessibility test for a specific page. The accessibility violations are shown in the extent report.
+'''Status''':
+'''Test case id''': <some id>
+
+!|script                                                                    |
+|Set test name                 |${PAGE_NAME}                                |
+|Launch browser and navigate to|https://jsonplaceholder.typicode.com/users/1|
+|Check accessibility for page  |Sample Page                                 |

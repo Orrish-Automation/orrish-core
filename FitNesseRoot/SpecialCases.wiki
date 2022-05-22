@@ -1,6 +1,5 @@
 ---
 Suite
-Test: no
 ---
 !***< library
 !path target/orrish-core.jar

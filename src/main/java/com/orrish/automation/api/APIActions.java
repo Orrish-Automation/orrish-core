@@ -9,7 +9,6 @@ import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,21 +24,14 @@ public class APIActions {
     }
 
     public Map getApiRequestHeaders() {
-        Map<String, String> headerToReturn = new HashMap<>();
-        if (SetUp.defaultApiRequestHeaders != null)
-            headerToReturn.putAll(SetUp.defaultApiRequestHeaders);
-        if (apiSteps.apiRequestHeaders != null) {
-            headerToReturn.putAll(apiSteps.apiRequestHeaders);
-        }
-        if (!headerToReturn.containsKey("Content-Type")) {
-            headerToReturn.put("Content-Type", "application/json");
-        }
-        return headerToReturn;
+        return (apiSteps.apiRequestHeaders == null || apiSteps.apiRequestHeaders.size() == 0)
+                ? SetUp.defaultApiRequestHeaders
+                : apiSteps.apiRequestHeaders;
     }
 
-    public boolean resetHeaderAndEndpoint() {
+    public boolean resetRequestHeaderAndEndpoint() {
         apiSteps.apiServerUrl = null;
-        apiSteps.apiRequestHeaders = null;
+        apiSteps.apiRequestHeaders.clear();
         apiSteps.apiRequestFormParams = null;
         requestSpecification = null;
         return true;
@@ -104,7 +96,7 @@ public class APIActions {
                 apiSteps.apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.get() : requestSpecification.get(urlToSend);
             else if (type.contentEquals("DELETE"))
                 apiSteps.apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.delete() : requestSpecification.delete(urlToSend);
-            resetHeaderAndEndpoint();
+            resetRequestHeaderAndEndpoint();
             if (apiSteps.apiResponse == null || apiSteps.apiResponse.getBody() == null) {
                 ReportUtility.reportFail(shouldReport, "Did not get a valid apiResponse or valid apiResponse body.");
                 return false;

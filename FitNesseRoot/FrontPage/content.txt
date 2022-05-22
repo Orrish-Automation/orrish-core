@@ -1,4 +1,3 @@
-----
 !c Welcome to [[Orrish automation][https://github.com/Orrish-Automation/orrish-core]] powered by FitNesse.
 !c You can execute tests as well as use it as documentation. You can format ''italic'' or '''bold''' or any other !style_red(text color.) More details on [[!-FitNesse Page-!][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide#CharacterFORMATTING]] 
 !c You can read more about !-FitNesse-! by going through [[Quick Guide][http://fitnesse.org/FitNesse.UserGuide.QuickReferenceGuide]] or [[Full documentation][http://fitnesse.org/FitNesse.FullReferenceGuide]]
@@ -9,7 +8,10 @@
 |[[Web and API][.WebAndAPI]]|Test cases for UAT team     |
 '''Specific examples'''
 |[[Page Object Model][.PageObject]]                              |Example of page object model in FitNesse. Define scenario and locator in pages, not in code.|
-|[[Data Driven + Conditional Step][.DataDrivenTest]]             |Example of step execution based on a conditon. Uses data driven test.                       |
+|[[Data Driven + Conditional Step][.SpecialCases]]               |Example of step execution based on a conditon. Uses data driven test.                       |
+|[[Mock Response][.SpecialCases]]                                |Use of mock API response in browser test using Playwright.                                  |
+|[[Accessibility Test][.SpecialCases]]                           |Verify page for accessibility in browser.                                                   |
+|[[Reading Gmail][.SpecialCases]]                                |Exaple of how to read Gmail. Useful to read OTP, PIN etc.                                   |
 |[[Report Portal Integration][.ReportPortal]]                    |Example of report portal integration                                                        |
 |[[Fit Nesse Documentation][.Documentation]]                     |Tips on FitNesse                                                                            |
 |[[Update Available Steps][.Administration.UpdateAvailableSteps]]|''If you want to modify existing available steps seen under footer link, run this page.''   |

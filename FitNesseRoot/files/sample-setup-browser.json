@@ -43,5 +43,10 @@
     "id": 20,
     "step": "|Playwright headless |true|",
     "help": ""
+  },
+  {
+    "id": 21,
+    "step": "|Use mock |true|",
+    "help": "Currently it is supported for playwright alone."
   }
 ]

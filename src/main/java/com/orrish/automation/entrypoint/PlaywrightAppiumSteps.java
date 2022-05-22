@@ -18,7 +18,7 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("inBrowserNavigateTo", url);
     }
 
-    public boolean inBrowserNavigateBack(){
+    public boolean inBrowserNavigateBack() {
         return playwrightActions.executeOnWebAndReturnBoolean("inBrowserNavigateBack");
     }
 
@@ -26,8 +26,24 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("maximizeTheWindow");
     }
 
+    public boolean refreshWebPage() {
+        return playwrightActions.executeOnWebAndReturnBoolean("refreshWebPage");
+    }
+
     public boolean takeWebScreenshotWithText(String step) {
         return playwrightActions.executeOnWebAndReturnBoolean("takeWebScreenshotWithText", step);
+    }
+
+    public String getPageTitle() {
+        return playwrightActions.executeOnWebAndReturnString("getPageTitle");
+    }
+
+    public boolean checkAccessibilityForPage(String pageName) {
+        return playwrightActions.executeOnWebAndReturnBoolean("checkAccessibilityForPage", pageName);
+    }
+
+    public boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatusCode, String mockResponse) {
+        return SetUp.useMock ? playwrightActions.executeOnWebAndReturnBoolean("forRequestUseMockStatusAndResponse", requestPattern, mockHttpStatusCode, mockResponse) : true;
     }
 
     //

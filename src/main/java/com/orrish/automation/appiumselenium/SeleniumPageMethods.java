@@ -1,5 +1,7 @@
 package com.orrish.automation.appiumselenium;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.orrish.automation.entrypoint.GeneralSteps;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.utility.report.ReportUtility;
@@ -12,6 +14,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -116,6 +121,11 @@ public class SeleniumPageMethods {
         return true;
     }
 
+    protected boolean navigateTo(String url) {
+        webDriver.navigate().to(url);
+        webDriver.manage().window().maximize();
+        return true;
+    }
     public boolean navigateBack() {
         webDriver.navigate().back();
         return true;
@@ -123,12 +133,6 @@ public class SeleniumPageMethods {
 
     public boolean refreshWebPage() {
         webDriver.navigate().refresh();
-        return true;
-    }
-
-    protected boolean navigateTo(String url) {
-        webDriver.navigate().to(url);
-        webDriver.manage().window().maximize();
         return true;
     }
 
@@ -145,6 +149,24 @@ public class SeleniumPageMethods {
     public boolean executeJavascript(String scriptToExecute) {
         webDriver.executeScript(scriptToExecute);
         return true;
+    }
+
+    public ArrayNode checkAccessibilityForPage() throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        URL url = new URL("https://cdnjs.cloudflare.com/ajax/libs/axe-core/3.5.5/axe.min.js");
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            String line;
+            while ((line = in.readLine()) != null)
+                stringBuilder.append(line);
+        }
+        executeJavascript(stringBuilder.toString());
+        String results = String.valueOf(webDriver.executeAsyncScript("var callback = arguments[arguments.length - 1]; axe.run().then(results => callback(JSON.stringify(results.violations)));"));
+        ArrayNode arrayNode = new ObjectMapper().readValue(results, ArrayNode.class);
+        return arrayNode;
+    }
+
+    public Object getPageTitle() {
+        return webDriver.getTitle();
     }
 
     public void scrollToElement(WebElement element) {
@@ -275,8 +297,23 @@ public class SeleniumPageMethods {
     }
 
     public boolean click(String locator) {
-        waitForAndGetElement(getElementBy(locator)).click();
-        return true;
+        try {
+            waitForAndGetElement(getElementBy(locator)).click();
+            return true;
+        } catch (Exception ex) {
+            //If there are multiple elements with this locator, click the first possible element.
+            List<WebElement> elementList = webDriver.findElements(getElementBy(locator));
+            if (elementList.size() > 1) {
+                for (WebElement webElement : elementList) {
+                    try {
+                        webElement.click();
+                        return true;
+                    } catch (Exception ex1) {
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public boolean clickWhicheverIsDisplayedIn(String locator) throws Exception {

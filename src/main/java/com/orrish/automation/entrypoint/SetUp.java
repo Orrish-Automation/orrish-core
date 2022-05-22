@@ -25,11 +25,17 @@ public class SetUp {
     public static String mongoDbConnectionString;
     public static String mongoDatabaseName;
 
+    //Email read specific
+    public static String newEmailWaitCondition = "";
+    public static int newEmailWaitTimeoutInSeconds = 10;
+    public static String emailPostReadAction = "NONE";
+
     //Mobile and Web
     public static boolean isScreenshotAtEachStepEnabled;
     public static int stepCounter = 0;
     public static Map<String, String> executionCapabilities = new HashMap<>();
     public static int screenshotDelayInSeconds = 0;
+    public static boolean useMock;
 
     //Web only - common
     public static String browser = "CHROME";
@@ -141,6 +147,22 @@ public class SetUp {
         return true;
     }
 
+    //Email Settings
+    public boolean newEmailWaitCondition(String condition) {
+        newEmailWaitCondition = condition;
+        return true;
+    }
+
+    public boolean newEmailWaitTimeoutInSeconds(int timeout) {
+        newEmailWaitTimeoutInSeconds = timeout;
+        return true;
+    }
+
+    public boolean emailPostReadAction(String action) {
+        emailPostReadAction = action;
+        return true;
+    }
+
     //Common to web and mobile
     public boolean executionCapabilities(String values) {
         executionCapabilities.putAll(getMapFromString(values, "="));
@@ -159,6 +181,11 @@ public class SetUp {
 
     public boolean screenshotDelayInSeconds(int valuePassed) {
         screenshotDelayInSeconds = valuePassed;
+        return true;
+    }
+
+    public boolean useMock(boolean valuePassed) {
+        useMock = valuePassed;
         return true;
     }
 

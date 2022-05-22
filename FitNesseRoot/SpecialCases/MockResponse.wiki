@@ -1,0 +1,18 @@
+---
+Test
+---
+'''Test Objective''': This test show that the response can be modified to be displayed in browser. This mocking can be useful to test negative scenario or for cases where data generation is complex/time-consuing.
+'''Status''':
+'''Test case id''': <some id>
+
+!|script                                                                    |
+|Set test name                 |${PAGE_NAME}                                |
+|Launch browser and navigate to|https://jsonplaceholder.typicode.com/users/1|
+|For request                   |**/users/2 |use mock status|200|and response|!-
+{
+  "id": 1,
+  "name": "Orrish Automation",
+  "username": "Orrish"
+ }-!|
+|In browser navigate to|https://jsonplaceholder.typicode.com/users/2|
+|Is text               |Orrish          |present in webpage         |

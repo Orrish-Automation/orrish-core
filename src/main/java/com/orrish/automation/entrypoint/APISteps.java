@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
+import static com.orrish.automation.entrypoint.SetUp.defaultApiRequestHeaders;
 import static com.orrish.automation.entrypoint.SetUp.jsonRequestTemplate;
 import static com.orrish.automation.utility.GeneralUtility.getMapFromString;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
@@ -48,10 +49,10 @@ public class APISteps {
 
     public boolean setRequestHeaders(String headers) {
         if (!conditionalStep) return true;
-        this.apiRequestHeaders = getMapFromString(headers, "=");
-        this.apiRequestHeaders.entrySet().removeIf(e -> e.getValue().trim().equalsIgnoreCase("doNotPass"));
-        if (SetUp.defaultApiRequestHeaders != null)
-            this.apiRequestHeaders.putAll(SetUp.defaultApiRequestHeaders);
+        apiRequestHeaders.clear();
+        apiRequestHeaders.putAll(defaultApiRequestHeaders);
+        apiRequestHeaders.putAll(getMapFromString(headers, "="));
+        apiRequestHeaders.entrySet().removeIf(eachValue -> eachValue.getValue().trim().equalsIgnoreCase("doNotPass"));
         return true;
     }
 

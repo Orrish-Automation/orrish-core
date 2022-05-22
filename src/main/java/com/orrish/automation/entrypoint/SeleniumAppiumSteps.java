@@ -34,6 +34,14 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("quitBrowser");
     }
 
+    public String getPageTitle(){
+        return seleniumAppiumActions.executeOnWebAndReturnString("getPageTitle");
+    }
+
+    public boolean checkAccessibilityForPage(String pageName){
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("checkAccessibilityForPage", pageName);
+    }
+
     public boolean clickFor(String locator, String description) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickFor", locator, description);
     }

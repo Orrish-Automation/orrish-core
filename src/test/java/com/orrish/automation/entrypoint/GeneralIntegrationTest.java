@@ -30,7 +30,7 @@ public class GeneralIntegrationTest {
         GeneralSteps generalSteps = new GeneralSteps();
 
         String value = "test";
-        assertFalse(generalSteps.setConditionalValueForNextStep(value + "=invalid"));
+        assertTrue(generalSteps.setConditionalValueForNextStep(value + "=invalid"));
         assertTrue(generalSteps.downloadFromUrlAndSaveAs("invalidUrl", ""));
         assertTrue(generalSteps.setConditionalValueForNextStep(value + "=test"));
         assertTrue(generalSteps.setConditionalValueForNextStep("true"));

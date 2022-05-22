@@ -1,6 +1,7 @@
 package com.orrish.automation.entrypoint;
 
 import com.orrish.automation.model.VerificationResultModel;
+import com.orrish.automation.utility.EMailUtility;
 import com.orrish.automation.utility.GeneralUtility;
 import com.orrish.automation.utility.VerifyUtility;
 import com.orrish.automation.utility.report.ReportUtility;
@@ -33,7 +34,7 @@ public class GeneralSteps {
         } else {
             conditionalStep = Boolean.parseBoolean(valuePassed);
         }
-        return conditionalStep;
+        return true;
     }
 
     public boolean resetConditionalValueForNextStep() {
@@ -197,6 +198,10 @@ public class GeneralSteps {
 
     public boolean isValueInIsNot(String value, Map values, String expectedValue) {
         return executeAndReport(VerifyUtility.isValueInIsNot(value, values, expectedValue));
+    }
+
+    public String getFromKeyValue(String key, Map<String, String> map) {
+        return map.get(key);
     }
 
     public boolean executeShell(String cmd) {
@@ -406,6 +411,19 @@ public class GeneralSteps {
     public Map<String, Integer> secondsConvertedToHHmmss(int seconds) {
         if (!conditionalStep) return null;
         return GeneralUtility.secondsConvertedToHHmmss(seconds);
+    }
+
+    public Map getFirstUnreadGmailForUsernameAndPassword(String username, String password) {
+        return EMailUtility.getFirstUnreadGmailForUsernameAndPassword(username, password);
+    }
+
+    public boolean deleteAllEmailsForUsernameAndPassword(String username, String password) {
+        return EMailUtility.deleteAllEmailsForUsernameAndPassword(username, password);
+    }
+
+    public String forTextExtractValueBetweenAnd(String originalValue, String firstValue, String secondValue) {
+        originalValue = originalValue.split(firstValue)[1].trim();
+        return originalValue.split(secondValue)[0].trim();
     }
 
 }
