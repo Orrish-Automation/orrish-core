@@ -33,7 +33,8 @@ public class APIIntegrationTest {
         map.put("From", "from");
         map.put("To", "to");
         assertEquals("from", generalSteps.getFromKeyValue("From", map));
-        assertEquals("3", generalSteps.forTextExtractValueBetweenAnd("You have 3 notifications.", "You have ", "notifications"));
+        assertEquals("3", generalSteps.forTextGetValueBetweenAnd("You have 3 notifications.", "You have ", "notifications"));
+        assertEquals("3", generalSteps.forTextGetSingleWordAfterText("You have 3 notifications.", "You have "));
         assertTrue(apiSteps.setServerEndpoint("https://jsonplaceholder.typicode.com/users/2"));
         assertTrue(apiSteps.callGETWithRequest(getSampleRequestBody()));
         assertTrue(apiSteps.verifyResponseFor("name=Ervin Howell,website=anastasia.net,aaa=doNotVerify"));
@@ -89,6 +90,8 @@ public class APIIntegrationTest {
         assertTrue(apiSteps.callPOST());
 
         assertTrue(apiSteps.doesMatchSchema("[{\"id\":1,\"step\":\"|Set suite name|Some name|\",\"help\":\"\"}]", getJsonSchema()));
+
+        //*/
     }
 
     @Test

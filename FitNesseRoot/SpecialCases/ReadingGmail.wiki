@@ -1,12 +1,15 @@
 ---
 Test
 ---
-'''Test Objective''': Shows how to extract number of notifications email from Facebook. A sample Email subject from facebook reads like "You have 87 notifications about XXX and others"
+'''Test Objective''': Shows how to extract number of notifications email from Facebook. A sample Email subject from facebook reads like "You have 87 notifications about XXX and others".
 '''Status''':
 '''Test case id''': <some id>
+
+!style_green('''Remember to give valid Gmail credentials. This Gmail account should have less security enabled in the Google account settings.''')
 
 !|script                                                                                                                   |
 |Set test name          |${PAGE_NAME}                                                                                      |
 |$emailDetails=         |Get first unread gmail for username|username     |and password         |password                  |
 |$emailSubject=         |Get                                |Subject      |from key value       |$emailDetails             |
-|$facebookNotifications=|For text                           |$emailSubject|extract value between|You have|and|notifications|
+|$facebookNotifications=|For text                           |$emailSubject|get value between |You have |and |notifications |
+|$facebookNotifications=|For text |$emailSubject |get single word after text |You have |

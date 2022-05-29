@@ -4,9 +4,11 @@ import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.utility.report.ReportUtility;
 
 import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.search.FlagTerm;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -16,21 +18,115 @@ import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
 
 public class EMailUtility {
 
+    private static Folder inbox = null;
+    private static Store store = null;
+
     // Reference : https://javahowtos.com/guides/127-libraries/366-how-to-read-gmail-using-java-and-javax-mail.html
     // Tried with dependency com.sun.mail:javax.mail:1.6.2
-    public static Map getFirstUnreadGmailForUsernameAndPassword(String username, String password) {
+    public static Map getNewGmailMessageForUsernameAndPassword(String username, String password) {
         if (!conditionalStep) return new HashMap();
-        Object value = actionOnEmail("imap.gmail.com", username, password, false);
-        return (value instanceof Map) ? (Map) value : new HashMap();
+        try {
+            populateEmailConnection("imap.gmail.com", username, password);
+            //Wait for new message to arrive.
+            Message message = inbox.getMessage(inbox.getMessages().length);
+            for (int i = 0; i < SetUp.newEmailWaitTimeoutInSeconds && (inbox.getMessages().length == 0 || isMessageOld(message)); i++) {
+                waitSeconds(1);
+                message = inbox.getMessage(inbox.getMessages().length);
+            }
+            //New email did not arrive within timeout.
+            if (isMessageOld(message)) {
+                ReportUtility.reportInfo("New message did not arrive within " + SetUp.newEmailWaitTimeoutInSeconds + " seconds.");
+                return new HashMap<>();
+            }
+            if (SetUp.emailPostReadAction.trim().equalsIgnoreCase("READ"))
+                message.setFlag(Flags.Flag.SEEN, true); //Mark as read
+            if (SetUp.emailPostReadAction.trim().equalsIgnoreCase("DELETE"))
+                message.setFlag(Flags.Flag.DELETED, true); //Delete mail
+
+            Map<String, String> valueToReturn = populateEmailObject(message);
+            ReportUtility.reportPass("Email read: " + valueToReturn);
+            return valueToReturn;
+        } catch (MessagingException | IOException e) {
+            ReportUtility.reportExceptionFail(e);
+            return new HashMap();
+        } finally {
+            closeMailConnection();
+        }
+
+    }
+
+    public static boolean sendEmailToWithSubjectWithBodyForUsernameAndPassword(String to, String subject, String body, String user, String password) {
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true"); //TLS
+
+        Session session = Session.getDefaultInstance(props,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(user, password);
+                    }
+                });
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(user));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject(subject);
+            message.setText(body);
+            Transport.send(message);
+            ReportUtility.reportPass("Email sent successfully.");
+            return true;
+        } catch (MessagingException e) {
+            ReportUtility.reportExceptionFail(e);
+        }
+        return false;
+    }
+
+    private static Map<String, String> populateEmailObject(Message message) throws MessagingException, IOException {
+        Map<String, String> valueToReturn = new HashMap<>();
+        valueToReturn.put("Subject", message.getSubject());
+        valueToReturn.put("ReceivedDate", message.getReceivedDate().toString());
+        valueToReturn.put("From", message.getFrom()[0].toString());
+        valueToReturn.put("Body", getTextFromMessage(message));
+        return valueToReturn;
+    }
+
+    public static Map getFirstGmailMessageForUsernameAndPassword(String username, String password) {
+        if (!conditionalStep) return new HashMap();
+        try {
+            populateEmailConnection("imap.gmail.com", username, password);
+            Message[] messages = inbox.getMessages();
+            if (messages.length == 0) return new HashMap();
+            Message message = inbox.getMessage(inbox.getMessages().length);
+            Map<String, String> valueToReturn = populateEmailObject(message);
+            ReportUtility.reportPass("Email read: " + valueToReturn);
+            return valueToReturn;
+        } catch (MessagingException | IOException e) {
+            ReportUtility.reportExceptionFail(e);
+            return new HashMap();
+        } finally {
+            closeMailConnection();
+        }
     }
 
     public static boolean deleteAllEmailsForUsernameAndPassword(String username, String password) {
         if (!conditionalStep) return true;
-        Object returnValue = actionOnEmail("imap.gmail.com", username, password, true);
-        return (returnValue instanceof Boolean) ? Boolean.parseBoolean(returnValue.toString()) : false;
+        try {
+            populateEmailConnection("imap.gmail.com", username, password);
+            //Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+            Message[] messages = inbox.getMessages();
+            return deleteAllMessages(messages);
+        } catch (MessagingException e) {
+            ReportUtility.reportExceptionFail(e);
+        } finally {
+            closeMailConnection();
+        }
+        return false;
     }
 
-    private static Object actionOnEmail(String host, String username, String password, boolean shouldDeleteAll) {
+    private static void populateEmailConnection(String host, String username, String password) throws MessagingException {
 
         Properties properties = new Properties();
         //properties.put("mail.store.protocol", "imaps");
@@ -46,61 +142,35 @@ public class EMailUtility {
          properties.put("mail.pop3.starttls.enable", "true");
          */
 
-        Map<String, String> valueToReturn = new HashMap<>();
-        Folder inbox = null;
-        Store store = null;
+        getEmailConnection(host, username, password, properties);
+
+    }
+
+    private static void getEmailConnection(String host, String username, String password, Properties properties) throws MessagingException {
+        Session emailSession = Session.getDefaultInstance(properties);
+        store = emailSession.getStore("imaps");
+        //Store store = emailSession.getStore("pop3s");
+        store.connect(host, username, password);
+        inbox = store.getFolder("Inbox");
+        inbox.open(Folder.READ_WRITE);
+    }
+
+    private static void closeMailConnection() {
         try {
-            Session emailSession = Session.getDefaultInstance(properties);
-            store = emailSession.getStore("imaps");
-            //Store store = emailSession.getStore("pop3s");
-            store.connect(host, username, password);
-            inbox = store.getFolder("Inbox");
-            inbox.open(Folder.READ_WRITE);
-
-            //Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-            Message[] messages = inbox.getMessages();
-            if (shouldDeleteAll) {
-                for (int i = messages.length - 1; i >= 0; i--)
-                    messages[i].setFlag(Flags.Flag.DELETED, true); //Delete mail
-                ReportUtility.reportPass("Email deleted: " + messages.length);
-                return true;
-            }
-            //Wait for new message to arrive.
-            for (int i = 0; i < SetUp.newEmailWaitTimeoutInSeconds && (messages.length == 0 || messages[messages.length - 1].getFlags().contains(Flags.Flag.SEEN)); i++) {
-                waitSeconds(1);
-                messages = inbox.getMessages();
-            }
-            //New email did not arrive within timeout.
-            if (messages[messages.length - 1].getFlags().contains(Flags.Flag.SEEN)) {
-                ReportUtility.reportInfo("New message did not arrive within " + SetUp.newEmailWaitTimeoutInSeconds + " seconds.");
-                return new HashMap<>();
-            }
-            Message message = messages[messages.length - 1];
-            if (SetUp.emailPostReadAction.trim().equalsIgnoreCase("READ"))
-                message.setFlag(Flags.Flag.SEEN, true); //Mark as read
-            if (SetUp.emailPostReadAction.trim().equalsIgnoreCase("DELETE"))
-                message.setFlag(Flags.Flag.DELETED, true); //Delete mail
-
-            valueToReturn.put("Subject", message.getSubject());
-            valueToReturn.put("ReceivedDate", message.getReceivedDate().toString());
-            valueToReturn.put("From", message.getFrom()[0].toString());
-            valueToReturn.put("Body", getTextFromMessage(message));
-
-        } catch (MessagingException | IOException e) {
-            ReportUtility.reportFail("Some problem reading e-mail.");
-            ReportUtility.reportExceptionDebug(e);
-        } finally {
-            try {
-                if (inbox != null && inbox.isOpen())
-                    inbox.close(false);
-                if (store != null && store.isConnected())
-                    store.close();
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
+            if (inbox != null && inbox.isOpen())
+                inbox.close(false);
+            if (store != null && store.isConnected())
+                store.close();
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
-        ReportUtility.reportPass("Email read: " + valueToReturn);
-        return valueToReturn;
+    }
+
+    private static boolean deleteAllMessages(Message[] messages) throws MessagingException {
+        for (int i = messages.length - 1; i >= 0; i--)
+            messages[i].setFlag(Flags.Flag.DELETED, true); //Delete mail
+        ReportUtility.reportPass("Email deleted: " + messages.length);
+        return true;
     }
 
     private static String getTextFromMessage(Message message) throws MessagingException, IOException {
@@ -131,4 +201,9 @@ public class EMailUtility {
         }
         return result;
     }
+
+    private static boolean isMessageOld(Message message) throws MessagingException {
+        return message.getFlags().contains(Flags.Flag.SEEN) || !message.getReceivedDate().after(new Date(System.currentTimeMillis() - SetUp.newEmailWaitTimeoutInSeconds * 1000));
+    }
+
 }

@@ -191,17 +191,27 @@
   },
   {
     "id": 38,
-    "step": "|$countOfUnreadMessage= |For text |You have 5 unread message. |extract value between |You have |and |unread |",
+    "step": "|$countOfUnreadMessage= |For text |You have 5 unread message. |get value between |You have |and |unread |",
     "help": "Useful if you want to extract value like Auth code, PIN, OTP, amount, count etc."
   },
   {
     "id": 39,
-    "step": "|$emailDetails= |Get first unread gmail for username |userid |and password |pw |",
-    "help": "Enable low security in Gmail account."
+    "step": "|$countOfUnreadMessage= |For text |You have 5 unread message. |get single word after text |You have |",
+    "help": "Useful if you want to extract value like Auth code, PIN, OTP, amount, count etc."
   },
   {
     "id": 40,
+    "step": "|$emailDetails= |Get new gmail message for username |userid |and password |pw |",
+    "help": "Enable low security in Gmail account. This will wait until time defined in settings for a new message."
+  },
+  {
+    "id": 41,
     "step": "|$emailSubject= |Get |Subject |from key value |$emailDetails |",
     "help": "Getting a specific value from key-value pairs like HashMap."
+  },
+  {
+    "id": 42,
+    "step": "|Send email to |someone@domain.com |with subject |subject |with body |body |for username |userid |and password |password|",
+    "help": "Works with Gmail only for now."
   }
 ]

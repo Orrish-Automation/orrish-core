@@ -46,6 +46,7 @@ public class SetUp {
     public static String browserVersion;
     //Web only - Playwright
     public static boolean isPlaywrightHeadless;
+    public static int playwrightDefaultNavigationWaitTimeInSeconds = 10;
 
     //Mobile - Common to iOS and Android
     public static String appiumServerURL;
@@ -53,7 +54,7 @@ public class SetUp {
     public static String platformName;
     public static String platformVersion;
     public static String deviceName;
-    public static int defaultWaitTime = 10;
+    public static int defaultWaitTime = 3;
 
     //Mobile - iOS specific
     public static String app;
@@ -220,6 +221,11 @@ public class SetUp {
 
     public boolean playwrightHeadless(boolean isHeadless) {
         isPlaywrightHeadless = isHeadless;
+        return true;
+    }
+
+    public boolean playwrightDefaultNavigationWaitTimeInSeconds(int navigationWaitTime) {
+        playwrightDefaultNavigationWaitTimeInSeconds = navigationWaitTime;
         return true;
     }
 

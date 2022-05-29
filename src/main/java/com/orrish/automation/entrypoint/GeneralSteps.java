@@ -413,17 +413,35 @@ public class GeneralSteps {
         return GeneralUtility.secondsConvertedToHHmmss(seconds);
     }
 
-    public Map getFirstUnreadGmailForUsernameAndPassword(String username, String password) {
-        return EMailUtility.getFirstUnreadGmailForUsernameAndPassword(username, password);
+    public Map getNewGmailMessageForUsernameAndPassword(String username, String password) {
+        return EMailUtility.getNewGmailMessageForUsernameAndPassword(username, password);
+    }
+
+    public Map getFirstGmailMessageForUsernameAndPassword(String username, String password) {
+        return EMailUtility.getFirstGmailMessageForUsernameAndPassword(username, password);
+    }
+
+    public boolean sendEmailToWithSubjectWithBodyForUsernameAndPassword(String to, String subject, String body, String username, String password) {
+        return EMailUtility.sendEmailToWithSubjectWithBodyForUsernameAndPassword(to, subject, body, username, password);
     }
 
     public boolean deleteAllEmailsForUsernameAndPassword(String username, String password) {
         return EMailUtility.deleteAllEmailsForUsernameAndPassword(username, password);
     }
 
-    public String forTextExtractValueBetweenAnd(String originalValue, String firstValue, String secondValue) {
+    public String forTextGetValueBetweenAnd(String originalValue, String firstValue, String secondValue) {
         originalValue = originalValue.split(firstValue)[1].trim();
         return originalValue.split(secondValue)[0].trim();
+    }
+
+    public String forTextGetSingleWordAfterText(String inputText, String firstValue) {
+        inputText = inputText.split(firstValue)[1].trim();
+        inputText = inputText.split(" ")[0].trim();
+        inputText = inputText.split("\r")[0].trim();
+        inputText = inputText.split("\n")[0].trim();
+        //Remove period at the end.
+        inputText = (inputText.endsWith(".")) ? inputText.substring(0, inputText.length() - 1) : inputText;
+        return inputText;
     }
 
 }

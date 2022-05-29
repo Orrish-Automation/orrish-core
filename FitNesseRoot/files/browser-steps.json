@@ -26,13 +26,13 @@
   },
   {
     "id": 6,
-    "step": "|Close browser|",
-    "help": "Close the current browser window."
+    "step": "|Quit playwright|",
+    "help": "Quits browser closing all windows."
   },
   {
     "id": 7,
-    "step": "|Quit browser|",
-    "help": "Quits browser closing all windows."
+    "step": "|Save as pdf with name |some text|",
+    "help": "Saves the current webpage as pdf. Playwright has to run headless for this to work."
   },
   {
     "id": 8,
@@ -46,136 +46,186 @@
   },
   {
     "id": 10,
-    "step": "|Check accessibility for page|Page name|",
-    "help": "Checks the page against accessibility guidelines."
+    "step": "|Get page url|",
+    "help": ""
   },
   {
     "id": 11,
-    "step": "|Is element |#next |displayed for |next|",
-    "help": ""
+    "step": "|Check accessibility for page |Page name|",
+    "help": "Checks the page against accessibility guidelines."
   },
   {
     "id": 12,
-    "step": "|Is element |#next-button |enabled for |next|",
-    "help": ""
+    "step": "|Click |Login |",
+    "help": "This will click on any element which contains this text. Remember, there may be multiple element containing same text."
   },
   {
     "id": 13,
-    "step": "|Is element |#checkbox |selected for |next|",
+    "step": "|Click exactly |Login |",
     "help": ""
   },
   {
     "id": 14,
-    "step": "|Click |#btn-sample |for |Next button|",
-    "help": ""
+    "step": "|Click html tag |input |with text |Username|",
+    "help": "Use tag that you see in the HTML dom containing the text. You can inspect DOM to find the tag."
   },
   {
     "id": 15,
-    "step": "|Click |#btn-sample |with text |Continue|",
-    "help": ""
+    "step": "|Click |Edit |to the |right |of |Username |",
+    "help": "You can click text relative to another text. Use right/left/above/below as direction."
   },
   {
     "id": 16,
-    "step": "|Click whichever is displayed in |#success,,#error|",
-    "help": ""
+    "step": "|Click |Edit |to the |right |of |Username |and clear text |",
+    "help": "You can click text relative to another text. Use right/left/above/below as direction. It has to be input/textarea."
   },
   {
     "id": 17,
-    "step": "|Click row containing text |text|",
-    "help": ""
+    "step": "|Click |Username |and clear text|",
+    "help": "The target has to be a field where we can input text."
   },
   {
     "id": 18,
+    "step": "|Click icon |Edit|",
+    "help": "Use the text of the icon. The text can be found in the HTML aria or alt attribute."
+  },
+  {
+    "id": 19,
+    "step": "|Click icon |Edit |next to |John Doe|",
+    "help": "Use the text of the icon. The text can be found in the HTML aria or alt attribute. The icon can be either on right or left side."
+  },
+  {
+    "id": 20,
+    "step": "|Click whichever is displayed in |Success,,Error|",
+    "help": "Use it when you are expecting either of the two texts depending on the data entered."
+  },
+  {
+    "id": 21,
+    "step": "|Type |Some value|",
+    "help": "This will type the value wherever the cursor is. This should ideally be preceded by click to activate a input element."
+  },
+  {
+    "id": 22,
+    "step": "|Type |some value |in |Username|",
+    "help": "This should ideally be either existing input value or placeholder text."
+  },
+  {
+    "id": 23,
+    "step": "|Type |some value |in exactly |Username|",
+    "help": "This would look for an element with exact work and would avoid matching elements which has this text."
+  },
+  {
+    "id": 24,
+    "step": "|Type in text field number |2|",
+    "help": "The order is as determined by Playwright."
+  },
+  {
+    "id": 25,
     "step": "|Select checkbox for text |some text|",
     "help": ""
   },
   {
-    "id": 19,
+    "id": 26,
     "step": "|Unselect checkbox for text |some text|",
     "help": ""
   },
   {
-    "id": 20,
-    "step": "|Wait until element |#button |text contains |some value|",
-    "help": ""
-  },
-  {
-    "id": 21,
-    "step": "|Wait until element |#button |text does not contain |some value|",
-    "help": ""
-  },
-  {
-    "id": 22,
-    "step": "|Wait until |#progressbar,,#error |is gone for |error pop up|",
-    "help": ""
-  },
-  {
-    "id": 23,
-    "step": "|Wait until |#progressbar,,#someValue |is displayed for |success message|",
-    "help": ""
-  },
-  {
-    "id": 24,
-    "step": "|Wait until one of the elements |#success,,#error |is displayed|",
-    "help": ""
-  },
-  {
-    "id": 25,
-    "step": "|Wait until one of the elements |#success,,#error |is enabled|",
-    "help": ""
-  },
-  {
-    "id": 26,
-    "step": "|Enter|some value|in text field |#locator |for |textFieldName|",
-    "help": ""
-  },
-  {
     "id": 27,
-    "step": "|Enter in text field number |2|",
+    "step": "|Select radio for text |some text|",
     "help": ""
   },
   {
     "id": 28,
-    "step": "|Is text |some text |present in webpage|",
+    "step": "|Select |option 1 |from dropdown |Displayed option |",
     "help": ""
   },
   {
     "id": 29,
-    "step": "|Dismiss alert if present|",
+    "step": "|Wait until text |Message |is gone |",
     "help": ""
   },
   {
     "id": 30,
-    "step": "|Click |#button |and accept alert if present|",
+    "step": "|Wait until text |Message |is displayed |",
     "help": ""
   },
   {
     "id": 31,
-    "step": "|$value= |Click |#button |and get alert text|",
+    "step": "|Wait until one of the texts |successfully,,error |is displayed|",
     "help": ""
   },
   {
     "id": 32,
-    "step": "|Select |text |from dropdown |#locator|",
+    "step": "|Wait until element |#button |contains |some value|",
     "help": ""
   },
   {
     "id": 33,
-    "step": "|$value= |Get text from element| #locator|",
+    "step": "|Wait until element |#button |does not contain |some value|",
     "help": ""
   },
   {
     "id": 34,
-    "step": "|Execute javascript |some script|",
+    "step": "|Wait until element |#success |is gone|",
     "help": ""
   },
   {
     "id": 35,
-    "step": "|Execute javascript |arguments[0].style.border='2px solid red'|on element |//*[contains(text(),'Android')]|",
+    "step": "|Wait until element |#success |is displayed|",
     "help": ""
   },
   {
     "id": 36,
+    "step": "|Wait until one of the elements |#progressbar,,#someValue |is displayed|",
+    "help": ""
+  },
+  {
+    "id": 37,
+    "step": "|Wait until one of the elements |#success,,#error |is enabled|",
+    "help": ""
+  },
+  {
+    "id": 38,
+    "step": "|Is text |some text |present in webpage|",
+    "help": ""
+  },
+  {
+    "id": 39,
+    "step": "|$value= |Get text from element |#locator|",
+    "help": ""
+  },
+  {
+    "id": 40,
+    "step": "|$value= |Get complete text for |added successfully.|",
+    "help": "This is to get the complete text for partial text. This is helpful if there is some dynamic content in the text."
+  },
+  {
+    "id": 41,
+    "step": "|$value= |Get text from |td |to the |right |of |John Doe |",
+    "help": "This is to get the next column text. It can also be used to get the full text from the right of another text."
+  },
+  {
+    "id": 42,
+    "step": "|$value= |Click |Some text |and get alert text|",
+    "help": ""
+  },
+  {
+    "id": 43,
+    "step": "|Click |Some text |and accept alert if present|",
+    "help": ""
+  },
+  {
+    "id": 44,
+    "step": "|Execute javascript |some script|",
+    "help": ""
+  },
+  {
+    "id": 45,
+    "step": "|Execute javascript |arguments[0].style.border='2px solid red'|on element |//*[contains(text(),'Android')]|",
+    "help": ""
+  },
+  {
+    "id": 46,
     "step": "|For request |**/users/2 |use mock status |200 |and response |{}|",
     "help": "Ensure \"use mock\" is enabled in setup. Works only with playwright. Will use the mock response for the requests matching url pattern."
   }

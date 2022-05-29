@@ -5,18 +5,13 @@
     "help": ""
   },
   {
-    "id": 5,
-    "step": "|Maximize the window|",
+    "id": 12,
+    "step": "|Click |Some Text |",
     "help": ""
   },
   {
     "id": 8,
     "step": "|Take web screenshot with text |some text|",
-    "help": ""
-  },
-  {
-    "id": 12,
-    "step": "|Click |#btn-sample |for |Next button|",
     "help": ""
   }
 ]

@@ -15,8 +15,10 @@ This uses Playwright Appium Steps.!style_green('''To see all available steps, cl
 |Playwright Appium Steps|
 *!
 
-|script                                   |
-|Set suite name              |Sample suite|
-|Take screenshot at each step|true        |
-|Playwright headless         |true        |
-|Browser                     |chrome      |
+|script                                                         |
+|Set suite name                                    |Sample suite|
+|Take screenshot at each step                      |true        |
+|Playwright headless                               |true        |
+|Browser                                           |chrome      |
+|Playwright default navigation wait time in seconds|10          |
+|Default wait time in seconds                      |3           |

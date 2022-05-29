@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.SelectOption;
+import com.microsoft.playwright.options.WaitUntilState;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.utility.report.ReportUtility;
 import com.orrish.automation.utility.report.UIStepReporter;
@@ -16,10 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.orrish.automation.entrypoint.GeneralSteps.conditionalStep;
 import static com.orrish.automation.entrypoint.GeneralSteps.waitSeconds;
@@ -27,11 +25,7 @@ import static com.orrish.automation.entrypoint.ReportSteps.getCurrentTestName;
 import static com.orrish.automation.entrypoint.SetUp.*;
 import static com.orrish.automation.utility.GeneralUtility.getMethodStyleStepName;
 
-public class PlaywrightActions {
-
-    protected static Playwright playwright;
-    protected static Page playwrightPage;
-    protected boolean isPlaywrightStepPassed = true;
+public class PlaywrightActions extends ElementActions {
 
     private static PlaywrightActions playwrightActions;
 
@@ -54,8 +48,7 @@ public class PlaywrightActions {
         return playwrightPage;
     }
 
-    public void quitPlaywright() {
-        if (!conditionalStep) return;
+    public boolean quitPlaywright() {
         try {
             if (playwrightPage != null && !playwrightPage.isClosed()) {
                 playwrightPage.close();
@@ -67,10 +60,10 @@ public class PlaywrightActions {
         } catch (Exception ex) {
             ReportUtility.reportExceptionDebug(ex);
         }
+        return true;
     }
 
     protected boolean launchBrowserAndNavigateTo(String url) {
-        if (!conditionalStep) return true;
 
         playwright = Playwright.create();
         Browser browser;
@@ -95,37 +88,38 @@ public class PlaywrightActions {
         }
         BrowserContext context = browser.newContext(browserContext);
         playwrightPage = context.newPage();
+        playwrightPage.setDefaultNavigationTimeout(playwrightDefaultNavigationWaitTimeInSeconds * 1000);
         playwrightPage.setDefaultTimeout(defaultWaitTime * 1000);
-        playwrightPage.navigate(url);
+        playwrightPage.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.NETWORKIDLE));
         return true;
     }
 
     protected boolean navigateTo(String url) {
-        if (!conditionalStep) return true;
-        playwrightPage.navigate(url);
+        playwrightPage.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.NETWORKIDLE));
         return true;
     }
 
     protected boolean maximizeTheWindow() throws Exception {
-        if (!conditionalStep) return true;
         throw new Exception("Not implemented. Track issue at https://github.com/microsoft/playwright/issues/4046");
     }
 
     protected boolean inBrowserNavigateBack() {
-        if (!conditionalStep) return true;
         playwrightPage.goBack();
         return true;
     }
 
     protected boolean refreshWebPage() {
-        if (!conditionalStep) return true;
         playwrightPage.reload();
         return true;
     }
 
     protected boolean takeWebScreenshotWithText(String text) {
-        if (!conditionalStep) return true;
         ReportUtility.reportWithScreenshot(null, text, ReportUtility.REPORT_STATUS.INFO, text);
+        return true;
+    }
+
+    protected boolean saveAsPdfWithName(String name) {
+        playwrightPage.pdf(new Page.PdfOptions().setPath(Paths.get(name)));
         return true;
     }
 
@@ -143,114 +137,256 @@ public class PlaywrightActions {
         return arrayNode;
     }
 
-    protected boolean clickFor(String locator) {
-        if (!conditionalStep) return true;
-        playwrightPage.click(locator);
+    protected boolean clickExactly(String text) throws Exception {
+        return clickElement(text, true);
+    }
+
+    protected boolean click(String text) throws Exception {
+        return clickElement(text, false);
+    }
+
+    private boolean clickElement(String text, boolean isExact) throws Exception {
+        waitUntilTextIsDisplayed(text);
+        ElementHandle elementHandle = null;
+        try {
+            elementHandle = isExact ? getElementWithExactText(text) : getContainingText(text);
+            elementHandle.click();
+        } catch (TimeoutError ex) {
+            //Force click it per comment in https://github.com/microsoft/playwright/issues/12298#issuecomment-1051261068
+            elementHandle.click(new ElementHandle.ClickOptions().setForce(true));
+        }
         playwrightPage.waitForLoadState(LoadState.DOMCONTENTLOADED);
         return true;
     }
 
-    protected boolean clickWithText(String locator, String text) {
-        if (!conditionalStep) return true;
+    protected boolean clickAndclearText(String text) throws Exception {
+        waitUntilTextIsDisplayed(text);
+        ElementHandle elementHandle = getContainingText(text);
+        elementHandle.click();
+        elementHandle.fill("");
+        return true;
+    }
+
+    protected boolean clickHtmlTagWithText(String locator, String text) {
+        locator = Arrays.asList(new String[]{"textbox", "text box", "input box", "inputbox"}).equals(locator.trim().toLowerCase()) ? "input" : locator;
+        locator = Arrays.asList(new String[]{"link"}).equals(locator.trim().toLowerCase()) ? "a" : locator;
+        locator = Arrays.asList(new String[]{"image"}).equals(locator.trim().toLowerCase()) ? "img" : locator;
         playwrightPage.locator(locator + ":has-text(\"" + text + "\")").click();
         return true;
     }
 
-    protected boolean clickRowContainingText(String text) {
-        if (!conditionalStep) return true;
-        playwrightPage.locator("tr:has-text(\"" + text + "\")").first().click();
+    protected boolean clickIcon(String textToClick) throws Exception {
+
+        List<ElementHandle> icons = getIconsCorrespondingTo(textToClick, "svg");
+        icons = (icons.size() == 0) ? getIconsCorrespondingTo(textToClick, "img") : icons;
+        icons = (icons.size() == 0) ? getIconsCorrespondingTo(textToClick, "button") : icons;
+
+        if (icons.size() == 0) {
+            throw new Exception("Could not find icon with the given criteria.");
+        }
+        icons.get(0).click();
         return true;
     }
 
-    protected boolean clickWhicheverIsDisplayedIn(String locator) {
-        if (!conditionalStep) return true;
+    protected List<ElementHandle> getRelativeImages(String iconTextToClick, String direction, String textToFind) throws Exception {
+        //svg:right-of(:text("Home"))
+        String relativeLocatorString = ":" + getDirection(direction) + "(:text(\"" + textToFind + "\"))";
+        List<ElementHandle> icons = getIconsCorrespondingTo(iconTextToClick, "svg" + relativeLocatorString);
+        icons = (icons.size() == 0) ? getIconsCorrespondingTo(iconTextToClick, "img" + relativeLocatorString) : icons;
+        icons = (icons.size() == 0) ? getIconsCorrespondingTo(iconTextToClick, "button" + relativeLocatorString) : icons;
+        icons = (icons.size() == 0) ? getIconsCorrespondingTo(iconTextToClick, "a" + relativeLocatorString) : icons;
+        return icons;
+    }
+
+    protected boolean clickToTheOf(String textToClick, String direction, String textToFind) {
+        getRelativeTextElement(textToClick, direction, textToFind).click();
+        return true;
+    }
+
+    protected boolean clickToTheOfAndClearText(String textToClick, String direction, String textToFind) {
+        getRelativeTextElement(textToClick, direction, textToFind).fill("");
+        return true;
+    }
+
+    //TODO: Redefine this.
+    protected String getTextFromToTheOf(String textToClick, String direction, String textToFind) {
+        return getRelativeTextElement(textToClick, direction, textToFind).textContent();
+    }
+
+    protected boolean clickIconNextTo(String iconToClick, String textToFind) throws Exception {
+        List<ElementHandle> icons = getRelativeImages(iconToClick, "right", textToFind);
+        icons = icons.size() == 0 ? getRelativeImages(iconToClick, "left", textToFind) : icons;
+        if (icons.size() == 0) {
+            throw new Exception("Could not find icon with the given criteria.");
+        }
+        icons.get(0).click();
+        return true;
+    }
+
+
+    protected boolean clickWhicheverIsDisplayedIn(String locator) throws Exception {
+        //page.locator("button:has-text(\"Log in\"), button:has-text(\"Sign in\")").click();
         String[] eachParts = locator.split(",,");
         for (String eachPart : eachParts) {
-            Locator probableLocator = playwrightPage.locator(eachPart);
-            if (probableLocator.count() > 0) {
+            try {
+                eachPart = isLocatorPlainText(eachPart) ? "text=" + eachPart : eachPart;
+                Locator probableLocator = playwrightPage.locator(eachPart);
+                if (probableLocator.count() == 0)
+                    continue;
                 probableLocator.click();
                 return true;
+            } catch (Exception ex) {
             }
         }
-        return false;
+        throw new Exception("Could not find any element with the selected criteria. " + locator);
     }
 
-    protected boolean enterInTextFieldFor(String value, String locator) {
-        if (!conditionalStep) return true;
-        playwrightPage.fill(locator, value);
+    protected boolean type(String value) {
+        playwrightPage.keyboard().type(value);
         return true;
     }
 
-    protected boolean enterInTextFieldNumber(String text, int whichField) {
-        if (!conditionalStep) return true;
+    protected boolean typeInExactly(String value, String locator) {
+        waitUntilExactlyTextIsDisplayed(locator);
+        List<String> inputElements = Arrays.asList(new String[]{"input", "textarea", "contenteditable"});
+        if (inputElements.contains(locator))
+            playwrightPage.locator(locator).first().fill(value);
+        else {
+            List<ElementHandle> elementHandles = getElementsWithText(locator, true);
+            elementHandles.removeIf(e -> {
+                String tagName = e.getProperty("tagName").jsonValue().toString();
+                return !(tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input"));
+            });
+            elementHandles.get(0).fill(value);
+        }
+        return true;
+    }
+
+    protected boolean typeIn(String value, String locator) {
+        boolean locatorFound = false;
+        for (int i = 0; i < SetUp.defaultWaitTime && !locatorFound; i++) {
+            List<ElementHandle> list = playwrightPage.querySelectorAll("text=" + locator + "");
+            list.addAll(playwrightPage.querySelectorAll("xpath=//input[contains(@placeholder,'" + locator + "')]"));
+            for (ElementHandle each : list) {
+                if (each.isVisible()) {
+                    locatorFound = true;
+                    break;
+                }
+            }
+            waitSeconds(1);
+        }
+        List<String> inputElements = Arrays.asList(new String[]{"input", "textarea", "contenteditable"});
+        if (inputElements.contains(locator))
+            playwrightPage.locator(locator).first().fill(value);
+        else {
+            //List<ElementHandle> elementHandles = playwrightPage.querySelectorAll("xpath=//label[contains(.,'" + value + "')]");
+            List<ElementHandle> elementHandles = getElementsWithText(locator, false);
+            elementHandles.removeIf(e -> {
+                String tagName = e.getProperty("tagName").jsonValue().toString();
+                return !(tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input"));
+            });
+            elementHandles.get(0).fill(value);
+        }
+        return true;
+    }
+
+    protected boolean typeInTextFieldNumber(String text, int whichField) {
         playwrightPage.waitForSelector("input");
         List<ElementHandle> elementHandleList = playwrightPage.querySelectorAll("input");
         elementHandleList.get(whichField - 1).fill(text); //Convert to zero based index.
         return true;
     }
 
-    protected boolean isTextPresentInWebpage(String text) {
-        if (!conditionalStep) return true;
-        ElementHandle value = playwrightPage.querySelector("text=" + text);
-        return value.textContent().contains(text);
+    protected boolean selectRadioForText(String text) throws Exception {
+        List<ElementHandle> radioHandles = playwrightPage.querySelectorAll("[type=radio]:left-of(:text(\"" + text + "\"))");
+        radioHandles.removeIf(e -> !e.isVisible());
+        if (radioHandles.size() == 0) {
+            radioHandles = playwrightPage.querySelectorAll("xpath=//label[contains(.,'" + text + "')]");
+            radioHandles.removeIf(e -> !e.isVisible());
+        }
+        if (radioHandles.size() == 0)
+            throw new Exception("Could not find a radio button with text " + text);
+        try {
+            radioHandles.get(0).click();
+        } catch (TimeoutError ex) {
+            radioHandles.get(0).click(new ElementHandle.ClickOptions().setForce(true));
+        }
+        return true;
     }
 
-    protected String clickAndReturnAlertText(String locator) {
-        if (!conditionalStep) return "";
+    protected boolean selectFromDropdown(String value, String locatorText) {
+        Locator locator = playwrightPage.locator("text=" + locatorText);
+        locator = locator.locator("xpath=..");
+        locator.selectOption(new SelectOption().setLabel(value));
+        return true;
+    }
+
+    protected boolean isTextPresentInWebpage(String text) {
+        List<ElementHandle> allElements = playwrightPage.querySelectorAll("text=" + text);
+        allElements.removeIf(e -> !e.isVisible());
+        for (ElementHandle elementHandle : allElements) {
+            if (elementHandle.textContent().contains(text))
+                return true;
+        }
+        return false;
+    }
+
+    protected String clickAndReturnAlertText(String locatorText) throws Exception {
         final String[] message = new String[1];
         playwrightPage.onDialog(dialog -> {
             message[0] = dialog.message();
-            dialog.dismiss();
         });
-        playwrightPage.click(locator);
+        ElementHandle elementHandle = getElementWithExactText(locatorText);
+        elementHandle.click();
         return message[0];
     }
 
-    protected boolean dismissAlertIfPresent() {
-        if (!conditionalStep) return true;
-        ReportUtility.reportInfo("Playwright by default dismisses alerts. So, no action taken.");
-        return true;
-    }
-
-    protected boolean clickAndAcceptAlertIfPresent(String locator) {
-        if (!conditionalStep) return true;
+    protected boolean clickAndAcceptAlertIfPresent(String locatorText) throws Exception {
         playwrightPage.onDialog(dialog -> {
-            ReportUtility.reportInfo("Alert with text \"" + dialog.message() + "\" on clicking " + locator + " is accepted.");
+            ReportUtility.reportInfo("Alert with text \"" + dialog.message() + "\" on clicking " + locatorText + " is accepted.");
             dialog.accept();
         });
-        playwrightPage.click(locator);
+        ElementHandle elementHandle = getContainingText(locatorText);
+        elementHandle.click();
         return true;
     }
 
-    protected boolean selectFromDropdown(String value, String locator) {
-        if (!conditionalStep) return true;
-        playwrightPage.selectOption(locator, new SelectOption().setLabel(value));
-        return true;
-    }
-
-    protected boolean selectUnselectCheckboxesWithText(String value, boolean shouldBeSelected) {
-        if (!conditionalStep) return true;
-        if (shouldBeSelected)
-            playwrightPage.check("input:has-text(\"" + value + "\")");
-        else
-            playwrightPage.uncheck("input:has-text(\"" + value + "\")");
-        return true;
-    }
-
-    protected boolean waitUntilIsGoneFor(String locator) {
-        if (!conditionalStep) return true;
+    protected boolean waitUntilElementIsGone(String locatorText) {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            ElementHandle elementHandle = playwrightPage.querySelector(locator);
-            if (elementHandle == null)
+            ElementHandle elementHandle = playwrightPage.querySelector(locatorText);
+            if (elementHandle == null || !elementHandle.isVisible())
                 return true;
             waitSeconds(1);
         }
         return false;
     }
 
-    protected boolean waitUntilIsDisplayedFor(String locator) {
-        if (!conditionalStep) return true;
-        return playwrightPage.waitForSelector(locator).isVisible();
+    protected boolean waitUntilTextIsGone(String locatorText) {
+        for (int i = 0; i < SetUp.defaultWaitTime; i++) {
+            List<ElementHandle> elementHandle = playwrightPage.querySelectorAll("text=" + locatorText);
+            elementHandle.removeIf(e -> !e.isVisible());
+            if (elementHandle.size() == 0)
+                return true;
+            waitSeconds(1);
+        }
+        return false;
+    }
+
+    protected boolean waitUntilOneOfTheTextsIsDisplayed(String locator) {
+        List<String> list = Arrays.asList(locator.split(",,"));
+        for (int i = 0; i < defaultWaitTime; i++) {
+            for (String eachItem : list) {
+                try {
+                    Locator element = playwrightPage.locator("text=" + eachItem);
+                    if (element != null && element.count() > 0) {
+                        return true;
+                    }
+                } catch (Exception ex) {
+                }
+            }
+            waitSeconds(1);
+        }
+        return false;
     }
 
     protected boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
@@ -261,60 +397,20 @@ public class PlaywrightActions {
         return waitUntilOneOfTheElements(locator, "enabled");
     }
 
-    private boolean waitUntilOneOfTheElements(String locator, String value) {
-        if (!conditionalStep) return true;
-        String[] locators = locator.split(",,");
-        for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            for (String eachLocator : locators) {
-                if (playwrightPage.locator(eachLocator).count() > 0) {
-                    if (playwrightPage.isVisible(eachLocator)) {
-                        if ("visible".contains(value)) {
-                            return true;
-                        } else if ("enabled".contains(value)) {
-                            if (playwrightPage.isEnabled(eachLocator))
-                                return true;
-                        }
-                    }
-                }
-            }
-            waitSeconds(1);
-        }
-        return false;
-    }
-
-    private boolean waitUntilElementTextContains(String locator, String text) {
-        return waitUntilElementTextCheck(locator, text, true);
-    }
-
-    private boolean waitUntilElementTextDoesNotContain(String locator, String text) {
-        return waitUntilElementTextCheck(locator, text, false);
-    }
-
-    private boolean waitUntilElementTextCheck(String locator, String text, boolean shouldContain) {
-        if (!conditionalStep) return true;
-        for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            if (shouldContain && playwrightPage.textContent(locator).contains(text))
-                return true;
-            if (!shouldContain && !playwrightPage.textContent(locator).contains(text))
-                return true;
-            waitSeconds(1);
-        }
-        return false;
-    }
-
     protected String getTextFromLocator(String locator) {
-        if (!conditionalStep) return "";
         return playwrightPage.textContent(locator);
     }
 
+    protected String getCompleteTextFor(String text) {
+        return playwrightPage.textContent("text=" + text);
+    }
+
     protected boolean executeJavascript(String jsCode) {
-        if (!conditionalStep) return true;
         playwrightPage.evaluate(jsCode);
         return true;
     }
 
     protected boolean executeJavascriptOnElement(String jsCode, String locator) {
-        if (!conditionalStep) return true;
         playwrightPage.evalOnSelector(locator, jsCode);
         return true;
     }
@@ -355,53 +451,96 @@ public class PlaywrightActions {
                 case "refreshWebPage":
                     isPlaywrightStepPassed = refreshWebPage();
                     break;
+                case "quitPlaywright":
+                    isPlaywrightStepPassed = quitPlaywright();
+                    break;
                 case "takeWebScreenshotWithText":
                     return takeWebScreenshotWithText(args[1].toString());
+                case "saveAsPdfWithName":
+                    return saveAsPdfWithName(args[1].toString());
                 case "getPageTitle":
                     return playwrightPage.title();
+                case "getPageUrl":
+                    return playwrightPage.url();
                 case "forRequestUseMockStatusAndResponse":
                     return forRequestUseMockStatusAndResponse(args[1].toString(), Integer.parseInt(args[2].toString()), args[3].toString());
                 case "checkAccessibilityForPage":
-                    ArrayNode violations = checkAccessibilityForPage();
-                    if (violations.size() == 0) {
-                        ReportUtility.reportPass(args[1].toString() + " page accessibility check passed.");
-                    } else {
-                        final String[] failureMessage = {""};
-                        violations.forEach(e -> failureMessage[0] += e.toString());
-                        List<String> violationsCategory = new ArrayList<>();
-                        violations.forEach(e -> violationsCategory.add(e.get("id").textValue()));
-                        ReportUtility.reportFail("\"" + args[1].toString() + "\" page accessibility check failed with " + violations.size() + " violations: " + violationsCategory);
-                        ReportUtility.reportJsonAsInfo("Violations:", failureMessage[0]);
-                    }
+                    ArrayNode violations = getAccessibilityViolations(args);
                     return violations.size() == 0;
-                case "clickFor":
-                    isPlaywrightStepPassed = clickFor(args[1].toString());
+                case "click":
+                    isPlaywrightStepPassed = click(args[1].toString());
                     break;
-                case "clickWithText":
-                    isPlaywrightStepPassed = clickWithText(args[1].toString(), args[2].toString());
+                case "clickExactly":
+                    isPlaywrightStepPassed = clickExactly(args[1].toString());
+                    break;
+                case "clickAndClearText":
+                    isPlaywrightStepPassed = clickAndclearText(args[1].toString());
+                    break;
+                case "clickHtmlTagWithText":
+                    isPlaywrightStepPassed = clickHtmlTagWithText(args[1].toString(), args[2].toString());
+                    break;
+                case "clickIcon":
+                    isPlaywrightStepPassed = clickIcon(args[1].toString());
+                    break;
+                case "clickIconNextTo":
+                    isPlaywrightStepPassed = clickIconNextTo(args[1].toString(), args[2].toString());
+                    break;
+                case "clickToTheOf":
+                    isPlaywrightStepPassed = clickToTheOf(args[1].toString(), args[2].toString(), args[3].toString());
+                    break;
+                case "clickToTheOfAndClearText":
+                    isPlaywrightStepPassed = clickToTheOfAndClearText(args[1].toString(), args[2].toString(), args[3].toString());
                     break;
                 case "clickWhicheverIsDisplayedIn":
                     isPlaywrightStepPassed = clickWhicheverIsDisplayedIn(args[1].toString());
                     break;
-                case "clickRowContainingText":
-                    return clickRowContainingText(args[1].toString());
+                case "type":
+                    isPlaywrightStepPassed = type(args[1].toString());
+                    break;
+                case "typeIn":
+                    isPlaywrightStepPassed = typeIn(args[1].toString(), args[2].toString());
+                    break;
+                case "typeInExactly":
+                    isPlaywrightStepPassed = typeInExactly(args[1].toString(), args[2].toString());
+                    break;
+                case "typeInTextFieldNumber":
+                    isPlaywrightStepPassed = typeInTextFieldNumber(args[1].toString(), Integer.parseInt(args[2].toString()));
+                    break;
                 case "selectCheckboxForText":
                     isPlaywrightStepPassed = selectUnselectCheckboxesWithText(args[1].toString(), true);
                     break;
                 case "unselectCheckboxForText":
                     isPlaywrightStepPassed = selectUnselectCheckboxesWithText(args[1].toString(), false);
                     break;
-                case "waitUntilElementTextContains":
-                    isPlaywrightStepPassed = waitUntilElementTextContains(args[1].toString(), args[2].toString());
+                case "selectRadioForText":
+                    isPlaywrightStepPassed = selectRadioForText(args[1].toString());
                     break;
-                case "waitUntilElementTextDoesNotContain":
-                    isPlaywrightStepPassed = waitUntilElementTextDoesNotContain(args[1].toString(), args[2].toString());
+                case "selectFromDropdown":
+                    isPlaywrightStepPassed = selectFromDropdown(args[1].toString(), args[2].toString());
                     break;
-                case "waitUntilIsGoneFor":
-                    isPlaywrightStepPassed = waitUntilIsGoneFor(args[1].toString());
+                case "isTextPresentInWebpage":
+                    isPlaywrightStepPassed = isTextPresentInWebpage(args[1].toString());
                     break;
-                case "waitUntilIsDisplayedFor":
-                    isPlaywrightStepPassed = waitUntilIsDisplayedFor(args[1].toString());
+                case "waitUntilElementContains":
+                    isPlaywrightStepPassed = waitUntilElementContains(args[1].toString(), args[2].toString());
+                    break;
+                case "waitUntilTextIsDisplayed":
+                    isPlaywrightStepPassed = waitUntilTextIsDisplayed(args[1].toString());
+                    break;
+                case "waitUntilElementDoesNotContain":
+                    isPlaywrightStepPassed = waitUntilElementDoesNotContain(args[1].toString(), args[2].toString());
+                    break;
+                case "waitUntilElementIsGone":
+                    isPlaywrightStepPassed = waitUntilElementIsGone(args[1].toString());
+                    break;
+                case "waitUntilTextIsGone":
+                    isPlaywrightStepPassed = waitUntilTextIsGone(args[1].toString());
+                    break;
+                case "waitUntilElementIsDisplayed":
+                    isPlaywrightStepPassed = waitUntilElementIsDisplayed(args[1].toString());
+                    break;
+                case "waitUntilOneOfTheTextsIsDisplayed":
+                    isPlaywrightStepPassed = waitUntilOneOfTheTextsIsDisplayed(args[1].toString());
                     break;
                 case "waitUntilOneOfTheElementsIsDisplayed":
                     isPlaywrightStepPassed = waitUntilOneOfTheElementsIsDisplayed(args[1].toString());
@@ -409,28 +548,17 @@ public class PlaywrightActions {
                 case "waitUntilOneOfTheElementsIsEnabled":
                     isPlaywrightStepPassed = waitUntilOneOfTheElementsIsEnabled(args[1].toString());
                     break;
-                case "enterInTextFieldFor":
-                    isPlaywrightStepPassed = enterInTextFieldFor(args[1].toString(), args[2].toString());
-                    break;
-                case "enterInTextFieldNumber":
-                    isPlaywrightStepPassed = enterInTextFieldNumber(args[1].toString(), Integer.parseInt(args[2].toString()));
-                    break;
-                case "isTextPresentInWebpage":
-                    isPlaywrightStepPassed = isTextPresentInWebpage(args[1].toString());
-                    break;
                 case "clickAndReturnAlertText":
                     return clickAndReturnAlertText(args[1].toString());
-                case "dismissAlertIfPresent":
-                    isPlaywrightStepPassed = dismissAlertIfPresent();
-                    break;
                 case "clickAndAcceptAlertIfPresent":
                     isPlaywrightStepPassed = clickAndAcceptAlertIfPresent(args[1].toString());
                     break;
-                case "selectFromDropdown":
-                    isPlaywrightStepPassed = selectFromDropdown(args[1].toString(), args[2].toString());
-                    break;
                 case "getTextFromElement":
                     return getTextFromLocator(args[1].toString());
+                case "getCompleteTextFor":
+                    return getCompleteTextFor(args[1].toString());
+                case "getTextFromToTheOf":
+                    return getTextFromToTheOf(args[1].toString(), args[2].toString(), args[3].toString());
                 case "executeJavascript":
                     isPlaywrightStepPassed = executeJavascript(args[1].toString());
                     break;
@@ -442,7 +570,7 @@ public class PlaywrightActions {
             }
         } catch (Exception ex) {
             isPlaywrightStepPassed = false;
-            UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, ex);
+            UIStepReporter UIStepReporter = new UIStepReporter(++stepCounter, args, ex);
             UIStepReporter.reportStepResultWithScreenshotAndException(ReportUtility.REPORT_STATUS.FAIL, null);
             return false;
         }
@@ -450,13 +578,29 @@ public class PlaywrightActions {
             ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {
             ReportUtility.REPORT_STATUS status = isPlaywrightStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
-            UIStepReporter UIStepReporter = new UIStepReporter(++SetUp.stepCounter, args, null);
+            UIStepReporter UIStepReporter = new UIStepReporter(++stepCounter, args, null);
             UIStepReporter.reportStepResultWithScreenshotAndException(status, null);
         }
         return isPlaywrightStepPassed;
     }
 
-    private boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatus, String mockResponse) {
+    private ArrayNode getAccessibilityViolations(Object[] args) throws IOException {
+        ArrayNode violations = checkAccessibilityForPage();
+        if (violations.size() == 0) {
+            ReportUtility.reportPass(args[1].toString() + " page accessibility check passed.");
+        } else {
+            final String[] failureMessage = {""};
+            violations.forEach(e -> failureMessage[0] += e.toString());
+            List<String> violationsCategory = new ArrayList<>();
+            violations.forEach(e -> violationsCategory.add(e.get("id").textValue()));
+            ReportUtility.reportFail("\"" + args[1].toString() + "\" page accessibility check failed with " + violations.size() + " violations: " + violationsCategory);
+            ReportUtility.reportJsonAsInfo("Violations:", failureMessage[0]);
+        }
+        return violations;
+    }
+
+    private boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatus, String
+            mockResponse) {
         playwrightPage.route(requestPattern, route -> {
             Map<String, String> headers = new HashMap<>(route.request().headers());
             headers.put("Access-Control-Allow-Origin", "*");
@@ -479,5 +623,7 @@ public class PlaywrightActions {
             playwrightPage.video().delete();
         }
     }
+
+    //TODO: Write methods to get data from table cell.
 
 }
