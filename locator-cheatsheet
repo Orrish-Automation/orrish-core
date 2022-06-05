@@ -1,0 +1,19 @@
+Playwright locators:
+
+text=someText
+text=someText  >> visible=true
+text='someText'
+css=[placeholder='Search GitHub']  or [placeholder='Search GitHub']
+xpath=//svg[contains(@aria-label,'dark mode')]
+xpath=//input[contains(@placeholder,'Username')];
+xpath=//label[contains(.,'some text')]
+xpath=//*[contains(.,'username')]
+:has-text("About"):right-of(:text("Home"))
+a:right-of(:text("Home"))
+
+
+
+xpath parent
+xpath=..
+
+

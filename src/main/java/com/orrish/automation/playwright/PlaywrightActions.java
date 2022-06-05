@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.SelectOption;
-import com.microsoft.playwright.options.WaitUntilState;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.utility.report.ReportUtility;
 import com.orrish.automation.utility.report.UIStepReporter;
@@ -90,12 +89,12 @@ public class PlaywrightActions extends ElementActions {
         playwrightPage = context.newPage();
         playwrightPage.setDefaultNavigationTimeout(playwrightDefaultNavigationWaitTimeInSeconds * 1000);
         playwrightPage.setDefaultTimeout(defaultWaitTime * 1000);
-        playwrightPage.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.NETWORKIDLE));
+        playwrightPage.navigate(url);
         return true;
     }
 
     protected boolean navigateTo(String url) {
-        playwrightPage.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.NETWORKIDLE));
+        playwrightPage.navigate(url);
         return true;
     }
 
@@ -137,33 +136,30 @@ public class PlaywrightActions extends ElementActions {
         return arrayNode;
     }
 
-    protected boolean clickExactly(String text) throws Exception {
-        return clickElement(text, true);
-    }
-
-    protected boolean click(String text) throws Exception {
-        return clickElement(text, false);
+    private boolean hoverOn(String text) throws Exception {
+        getFirstElementWithExactText(text).hover();
+        return true;
     }
 
     private boolean clickElement(String text, boolean isExact) throws Exception {
         waitUntilTextIsDisplayed(text);
-        ElementHandle elementHandle = null;
+        Locator locator = null;
         try {
-            elementHandle = isExact ? getElementWithExactText(text) : getContainingText(text);
-            elementHandle.click();
+            locator = isExact ? getFirstElementWithExactText(text) : getAllElementsContainingText(text).first();
+            locator.click();
         } catch (TimeoutError ex) {
             //Force click it per comment in https://github.com/microsoft/playwright/issues/12298#issuecomment-1051261068
-            elementHandle.click(new ElementHandle.ClickOptions().setForce(true));
+            locator.click(new Locator.ClickOptions().setForce(true));
         }
         playwrightPage.waitForLoadState(LoadState.DOMCONTENTLOADED);
         return true;
     }
 
-    protected boolean clickAndclearText(String text) throws Exception {
+    protected boolean clickAndClearText(String text) {
         waitUntilTextIsDisplayed(text);
-        ElementHandle elementHandle = getContainingText(text);
-        elementHandle.click();
-        elementHandle.fill("");
+        Locator locator = getAllElementsContainingText(text).first();
+        locator.click();
+        locator.fill("");
         return true;
     }
 
@@ -177,24 +173,24 @@ public class PlaywrightActions extends ElementActions {
 
     protected boolean clickIcon(String textToClick) throws Exception {
 
-        List<ElementHandle> icons = getIconsCorrespondingTo(textToClick, "svg");
-        icons = (icons.size() == 0) ? getIconsCorrespondingTo(textToClick, "img") : icons;
-        icons = (icons.size() == 0) ? getIconsCorrespondingTo(textToClick, "button") : icons;
+        Locator icons = getIconCorrespondingTo(textToClick, "svg");
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(textToClick, "img") : icons;
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(textToClick, "button") : icons;
 
-        if (icons.size() == 0) {
+        if (icons.count() == 0) {
             throw new Exception("Could not find icon with the given criteria.");
         }
-        icons.get(0).click();
+        icons.first().click();
         return true;
     }
 
-    protected List<ElementHandle> getRelativeImages(String iconTextToClick, String direction, String textToFind) throws Exception {
+    protected Locator getRelativeImages(String iconTextToClick, String direction, String textToFind) throws Exception {
         //svg:right-of(:text("Home"))
         String relativeLocatorString = ":" + getDirection(direction) + "(:text(\"" + textToFind + "\"))";
-        List<ElementHandle> icons = getIconsCorrespondingTo(iconTextToClick, "svg" + relativeLocatorString);
-        icons = (icons.size() == 0) ? getIconsCorrespondingTo(iconTextToClick, "img" + relativeLocatorString) : icons;
-        icons = (icons.size() == 0) ? getIconsCorrespondingTo(iconTextToClick, "button" + relativeLocatorString) : icons;
-        icons = (icons.size() == 0) ? getIconsCorrespondingTo(iconTextToClick, "a" + relativeLocatorString) : icons;
+        Locator icons = getIconCorrespondingTo(iconTextToClick, "svg" + relativeLocatorString);
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "img" + relativeLocatorString) : icons;
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "button" + relativeLocatorString) : icons;
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "a" + relativeLocatorString) : icons;
         return icons;
     }
 
@@ -214,12 +210,12 @@ public class PlaywrightActions extends ElementActions {
     }
 
     protected boolean clickIconNextTo(String iconToClick, String textToFind) throws Exception {
-        List<ElementHandle> icons = getRelativeImages(iconToClick, "right", textToFind);
-        icons = icons.size() == 0 ? getRelativeImages(iconToClick, "left", textToFind) : icons;
-        if (icons.size() == 0) {
+        Locator icons = getRelativeImages(iconToClick, "right", textToFind);
+        icons = icons.count() == 0 ? getRelativeImages(iconToClick, "left", textToFind) : icons;
+        if (icons.count() == 0) {
             throw new Exception("Could not find icon with the given criteria.");
         }
-        icons.get(0).click();
+        icons.first().click();
         return true;
     }
 
@@ -252,64 +248,70 @@ public class PlaywrightActions extends ElementActions {
         if (inputElements.contains(locator))
             playwrightPage.locator(locator).first().fill(value);
         else {
-            List<ElementHandle> elementHandles = getElementsWithText(locator, true);
-            elementHandles.removeIf(e -> {
-                String tagName = e.getProperty("tagName").jsonValue().toString();
-                return !(tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input"));
-            });
-            elementHandles.get(0).fill(value);
+            Locator locators = getAllElementsContainingText(locator);
+            for (int i = 0; i < locators.count(); i++) {
+                Locator eachLocator = locators.nth(i);
+                String tagName = eachLocator.elementHandle().getProperty("tagName").jsonValue().toString();
+                if (tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input")) {
+                    eachLocator.fill(value);
+                    return true;
+                }
+            }
         }
-        return true;
+        return false;
     }
 
     protected boolean typeIn(String value, String locator) {
         boolean locatorFound = false;
+        List<String> inputElements = Arrays.asList(new String[]{"input", "textarea", "contenteditable"});
+        if (inputElements.contains(locator)) {
+            playwrightPage.locator(locator).first().fill(value);
+            return true;
+        }
         for (int i = 0; i < SetUp.defaultWaitTime && !locatorFound; i++) {
-            List<ElementHandle> list = playwrightPage.querySelectorAll("text=" + locator + "");
-            list.addAll(playwrightPage.querySelectorAll("xpath=//input[contains(@placeholder,'" + locator + "')]"));
-            for (ElementHandle each : list) {
-                if (each.isVisible()) {
-                    locatorFound = true;
-                    break;
-                }
+            playwrightPage.waitForSelector("text=" + locator + " >> visible=true");
+            Locator locators = playwrightPage.locator("text=" + locator + " >> visible=true");
+            if (locators.count() > 0) {
+                locators.first().fill(value);
+                return true;
+            }
+            locators = playwrightPage.locator("xpath=//input[contains(@placeholder,'" + locator + "')]");
+            if (locators.count() > 0) {
+                locators.first().fill(value);
+                return true;
             }
             waitSeconds(1);
         }
-        List<String> inputElements = Arrays.asList(new String[]{"input", "textarea", "contenteditable"});
-        if (inputElements.contains(locator))
-            playwrightPage.locator(locator).first().fill(value);
-        else {
-            //List<ElementHandle> elementHandles = playwrightPage.querySelectorAll("xpath=//label[contains(.,'" + value + "')]");
-            List<ElementHandle> elementHandles = getElementsWithText(locator, false);
-            elementHandles.removeIf(e -> {
-                String tagName = e.getProperty("tagName").jsonValue().toString();
-                return !(tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input"));
-            });
-            elementHandles.get(0).fill(value);
+        Locator locators = getAllElementsContainingText(locator);
+        for (int i = 0; i < locators.count(); i++) {
+            Locator eachLocator = locators.nth(i);
+            String tagName = eachLocator.elementHandle().getProperty("tagName").jsonValue().toString();
+            if (tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input")) {
+                eachLocator.fill(value);
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     protected boolean typeInTextFieldNumber(String text, int whichField) {
         playwrightPage.waitForSelector("input");
-        List<ElementHandle> elementHandleList = playwrightPage.querySelectorAll("input");
-        elementHandleList.get(whichField - 1).fill(text); //Convert to zero based index.
+        Locator locator = playwrightPage.locator("input");
+        locator.nth(whichField - 1).fill(text); //Convert to zero based index.
         return true;
     }
 
     protected boolean selectRadioForText(String text) throws Exception {
-        List<ElementHandle> radioHandles = playwrightPage.querySelectorAll("[type=radio]:left-of(:text(\"" + text + "\"))");
-        radioHandles.removeIf(e -> !e.isVisible());
-        if (radioHandles.size() == 0) {
-            radioHandles = playwrightPage.querySelectorAll("xpath=//label[contains(.,'" + text + "')]");
-            radioHandles.removeIf(e -> !e.isVisible());
+        Locator radioHandles = playwrightPage.locator("[type=radio]:left-of(:text(\"" + text + "\"))  >> visible=true");
+        if (radioHandles.count() == 0) {
+            radioHandles = playwrightPage.locator("xpath=//label[contains(.,'" + text + "')]  >> visible=true");
         }
-        if (radioHandles.size() == 0)
+        if (radioHandles.count() == 0)
             throw new Exception("Could not find a radio button with text " + text);
         try {
-            radioHandles.get(0).click();
+            radioHandles.first().click();
         } catch (TimeoutError ex) {
-            radioHandles.get(0).click(new ElementHandle.ClickOptions().setForce(true));
+            radioHandles.first().click(new Locator.ClickOptions().setForce(true));
         }
         return true;
     }
@@ -322,10 +324,9 @@ public class PlaywrightActions extends ElementActions {
     }
 
     protected boolean isTextPresentInWebpage(String text) {
-        List<ElementHandle> allElements = playwrightPage.querySelectorAll("text=" + text);
-        allElements.removeIf(e -> !e.isVisible());
-        for (ElementHandle elementHandle : allElements) {
-            if (elementHandle.textContent().contains(text))
+        Locator allElements = playwrightPage.locator("text=" + text + " >> visible=true");
+        for (int i = 0; i < allElements.count(); i++) {
+            if (allElements.nth(i).textContent().contains(text))
                 return true;
         }
         return false;
@@ -336,25 +337,25 @@ public class PlaywrightActions extends ElementActions {
         playwrightPage.onDialog(dialog -> {
             message[0] = dialog.message();
         });
-        ElementHandle elementHandle = getElementWithExactText(locatorText);
-        elementHandle.click();
+        Locator locator = getFirstElementWithExactText(locatorText);
+        locator.click();
         return message[0];
     }
 
-    protected boolean clickAndAcceptAlertIfPresent(String locatorText) throws Exception {
+    protected boolean clickAndAcceptAlertIfPresent(String locatorText) {
         playwrightPage.onDialog(dialog -> {
             ReportUtility.reportInfo("Alert with text \"" + dialog.message() + "\" on clicking " + locatorText + " is accepted.");
             dialog.accept();
         });
-        ElementHandle elementHandle = getContainingText(locatorText);
-        elementHandle.click();
+        Locator locator = getAllElementsContainingText(locatorText);
+        locator.first().click();
         return true;
     }
 
     protected boolean waitUntilElementIsGone(String locatorText) {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            ElementHandle elementHandle = playwrightPage.querySelector(locatorText);
-            if (elementHandle == null || !elementHandle.isVisible())
+            Locator locator = playwrightPage.locator(locatorText);
+            if (locator == null || !locator.isVisible())
                 return true;
             waitSeconds(1);
         }
@@ -363,9 +364,8 @@ public class PlaywrightActions extends ElementActions {
 
     protected boolean waitUntilTextIsGone(String locatorText) {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            List<ElementHandle> elementHandle = playwrightPage.querySelectorAll("text=" + locatorText);
-            elementHandle.removeIf(e -> !e.isVisible());
-            if (elementHandle.size() == 0)
+            Locator locator = playwrightPage.locator("text=" + locatorText + " >> visible=true");
+            if (locator.count() == 0)
                 return true;
             waitSeconds(1);
         }
@@ -467,14 +467,17 @@ public class PlaywrightActions extends ElementActions {
                 case "checkAccessibilityForPage":
                     ArrayNode violations = getAccessibilityViolations(args);
                     return violations.size() == 0;
+                case "hoverOn":
+                    isPlaywrightStepPassed = hoverOn(args[1].toString());
+                    break;
                 case "click":
-                    isPlaywrightStepPassed = click(args[1].toString());
+                    isPlaywrightStepPassed = clickElement(args[1].toString(), false);
                     break;
                 case "clickExactly":
-                    isPlaywrightStepPassed = clickExactly(args[1].toString());
+                    isPlaywrightStepPassed = clickElement(args[1].toString(), true);
                     break;
                 case "clickAndClearText":
-                    isPlaywrightStepPassed = clickAndclearText(args[1].toString());
+                    isPlaywrightStepPassed = clickAndClearText(args[1].toString());
                     break;
                 case "clickHtmlTagWithText":
                     isPlaywrightStepPassed = clickHtmlTagWithText(args[1].toString(), args[2].toString());

@@ -30,7 +30,7 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("refreshWebPage");
     }
 
-    public boolean quitPlaywright(){
+    public boolean quitPlaywright() {
         return playwrightActions.executeOnWebAndReturnBoolean("quitPlaywright");
     }
 
@@ -56,6 +56,10 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
 
     public boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatusCode, String mockResponse) {
         return SetUp.useMock ? playwrightActions.executeOnWebAndReturnBoolean("forRequestUseMockStatusAndResponse", requestPattern, mockHttpStatusCode, mockResponse) : true;
+    }
+
+    public boolean hoverOn(String textToHoverOn) {
+        return playwrightActions.executeOnWebAndReturnBoolean("hoverOn", textToHoverOn);
     }
 
     public boolean click(String locator) {
@@ -112,10 +116,12 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("typeInTextFieldNumber", inputText, whichTextField);
     }
 
+    //For multiple checkboxes, you can separate with double comma
     public boolean selectCheckboxForText(String text) {
         return playwrightActions.executeOnWebAndReturnBoolean("selectCheckboxForText", text);
     }
 
+    //For multiple checkboxes, you can separate with double comma
     public boolean unselectCheckboxForText(String text) {
         return playwrightActions.executeOnWebAndReturnBoolean("unselectCheckboxForText", text);
     }

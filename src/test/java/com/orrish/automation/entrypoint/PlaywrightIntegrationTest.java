@@ -5,7 +5,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertTrue;
-import static org.testng.AssertJUnit.assertFalse;
 
 public class PlaywrightIntegrationTest {
 
@@ -15,11 +14,11 @@ public class PlaywrightIntegrationTest {
     public void beforeMethod() {
         setUp = new SetUp();
         setUp.playwrightHeadless(true);
-        setUp.browser("safari");
+        setUp.browser("chrome");
         setUp.takeScreenshotAtEachStep(false);
         setUp.reportEnabled(false);
-        setUp.playwrightDefaultNavigationWaitTimeInSeconds(10);
-        setUp.defaultWaitTimeInSeconds(3);
+        setUp.playwrightDefaultNavigationWaitTimeInSeconds(20);
+        setUp.defaultWaitTimeInSeconds(10);
         setUp.useMock(true);
     }
 
@@ -49,9 +48,7 @@ public class PlaywrightIntegrationTest {
         assertTrue("https://github.com/saucelabs/the-internet".equals(playwrightAppiumSteps.getPageUrl()));
         assertTrue(playwrightAppiumSteps.clickIconNextTo("GitHub", "©"));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateBack());
-        assertTrue(playwrightAppiumSteps.inBrowserNavigateBack());
-        assertFalse(playwrightAppiumSteps.checkAccessibilityForPage(playwrightAppiumSteps.getPageTitle()));
-        assertTrue(playwrightAppiumSteps.refreshWebPage());
+        assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com"));
         assertTrue(playwrightAppiumSteps.isTextPresentInWebpage("Inputs"));
         assertTrue("Inputs".equals(playwrightAppiumSteps.getTextFromElement("//a[contains(text(), 'Inputs')]")));
         assertTrue(playwrightAppiumSteps.clickExactly("Inputs"));
@@ -63,15 +60,16 @@ public class PlaywrightIntegrationTest {
         assertTrue(playwrightAppiumSteps.clickToTheOf("About", "right-of", "Home"));
         assertTrue(playwrightAppiumSteps.getPageUrl().contains("about"));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com"));
+        assertTrue(playwrightAppiumSteps.refreshWebPage());
         assertTrue(playwrightAppiumSteps.waitUntilElementIsDisplayed("//a[contains(text(), 'Inputs')]"));
         assertTrue(playwrightAppiumSteps.waitUntilTextIsDisplayed("Inputs"));
         assertTrue(playwrightAppiumSteps.waitUntilElementContains("//a[contains(text(), 'Inputs')]", "Inputs"));
         assertTrue(playwrightAppiumSteps.waitUntilElementDoesNotContain("//a[contains(text(), 'Inputs')]", "Hello"));
         assertTrue(playwrightAppiumSteps.clickHtmlTagWithText("a", "Inputs"));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateBack());
-        assertTrue(playwrightAppiumSteps.clickWhicheverIsDisplayedIn("hello|Sortable Data Tables"));
+        assertTrue(playwrightAppiumSteps.clickWhicheverIsDisplayedIn("hello,,Sortable Data Tables"));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateBack());
-        assertTrue(playwrightAppiumSteps.waitUntilOneOfTheTextsIsDisplayed("DoesNotExist|Checkboxes"));
+        assertTrue(playwrightAppiumSteps.waitUntilOneOfTheTextsIsDisplayed("DoesNotExist,,Checkboxes"));
         assertTrue(playwrightAppiumSteps.waitUntilOneOfTheElementsIsDisplayed("//a[contains(text(), 'Checkboxes')]|//a[contains(text(), 'DoesNotExist')]"));
         assertTrue(playwrightAppiumSteps.waitUntilOneOfTheElementsIsEnabled("//a[contains(text(), 'Checkboxes')]"));
         assertTrue(playwrightAppiumSteps.clickWhicheverIsDisplayedIn("//a[contains(text(), 'Checkboxes')]|none"));
@@ -82,6 +80,7 @@ public class PlaywrightIntegrationTest {
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://www.kayak.com/explore/IAD-anywhere"));
         assertTrue(playwrightAppiumSteps.selectRadioForText("City"));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com/javascript_alerts"));
+        playwrightAppiumSteps.checkAccessibilityForPage(playwrightAppiumSteps.getPageTitle());
         assertTrue(playwrightAppiumSteps.clickAndAcceptAlertIfPresent("Click for JS Alert"));
         assertTrue("I am a JS Alert".equals(playwrightAppiumSteps.clickAndGetAlertText("Click for JS Alert")));
         playwrightAppiumSteps.saveAsPdfWithName("delete.pdf");

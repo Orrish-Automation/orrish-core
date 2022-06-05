@@ -38,8 +38,8 @@ public class AppiumSteps {
         return seleniumAppiumActions.executeOnMobileAndReturnBoolean("swipeOnceVertically");
     }
 
-    public boolean tapFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("tapFor", locator, description);
+    public boolean tap(String locator, String description) {
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("tap", locator, description);
     }
 
     public boolean tapWithText(String locator, String textToClick) {
@@ -50,20 +50,20 @@ public class AppiumSteps {
         return seleniumAppiumActions.executeOnMobileAndReturnBoolean("tapWhicheverIsDisplayedIn", locator);
     }
 
-    public boolean inMobileWaitUntilElementTextContains(String locator, String text) {
-        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilElementTextContains", locator, text);
+    public boolean inMobileWaitUntilTextIsDisplayed(String locator) {
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilTextIsDisplayed", locator);
     }
 
-    public boolean inMobileWaitUntilElementTextDoesNotContain(String locator, String text) {
-        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilElementTextDoesNotContain", locator, text);
+    public boolean inMobileWaitUntilTextIsGone(String locator) {
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilTextIsGone", locator);
     }
 
-    public boolean inMobileWaitUntilIsGoneFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilIsGoneFor", locator, description);
+    public boolean inMobileWaitUntilElementContains(String locator, String text) {
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilElementContains", locator, text);
     }
 
-    public boolean inMobileWaitUntilIsDisplayedFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilIsDisplayedFor", locator, description);
+    public boolean inMobileWaitUntilElementDoesNotContain(String locator, String text) {
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilElementDoesNotContain", locator, text);
     }
 
     //Double comma separated values, single comma may be present in xpath, hence double comma
@@ -71,8 +71,8 @@ public class AppiumSteps {
         return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileWaitUntilOneOfTheLocatorsIsEnabled", locator);
     }
 
-    public boolean inMobileEnterInTextFieldFor(String inputText, String locator, String description) {
-        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileEnterInTextFieldFor", inputText, locator, description);
+    public boolean inMobileEnterInTextFieldIn(String inputText, String locator) {
+        return seleniumAppiumActions.executeOnMobileAndReturnBoolean("inMobileEnterInTextFieldIn", inputText, locator);
     }
 
     public String inMobileGetTextFromLocator(String locator) {

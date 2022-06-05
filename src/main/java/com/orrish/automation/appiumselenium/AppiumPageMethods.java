@@ -3,17 +3,15 @@ package com.orrish.automation.appiumselenium;
 import com.google.common.collect.ImmutableMap;
 import com.orrish.automation.utility.report.ReportUtility;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.touch.TouchActions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -94,7 +92,7 @@ public class AppiumPageMethods {
         } else {
             appiumDriver = new IOSDriver(new URL(appiumServerURL), capabilities);
         }
-        appiumDriverWait = new WebDriverWait(appiumDriver, defaultWaitTime);
+        appiumDriverWait = new WebDriverWait(appiumDriver, Duration.ofSeconds(defaultWaitTime));
         return true;
     }
 
@@ -121,39 +119,36 @@ public class AppiumPageMethods {
     }
 
     public boolean pressBackKey() {
-        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+        if (appiumDriver.getCapabilities().getPlatformName().name().toLowerCase().contains("android"))
             ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
         return true;
     }
 
     public boolean pressHomeKey() {
-        if (appiumDriver.getPlatformName().toLowerCase().contains("android"))
+        if (appiumDriver.getCapabilities().getPlatformName().name().toLowerCase().contains("android"))
             ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
-        else if (appiumDriver.getPlatformName().toLowerCase().contains("ios"))
+        else if (appiumDriver.getCapabilities().getPlatformName().name().toLowerCase().contains("ios"))
             appiumDriver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
         return true;
     }
 
     public boolean swipeOnceVertically() {
         Dimension dimension = appiumDriver.manage().window().getSize();
-        int x = dimension.getWidth() / 2;
         int startY = (int) (dimension.getHeight() * 0.9);
         int endY = (int) (dimension.getHeight() * 0.1);
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.press(PointOption.point(x, startY))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
-                .moveTo(PointOption.point(x, endY))
+        TouchActions touchActions = new TouchActions(appiumDriver);
+        touchActions.scrollByAmount(0, endY - startY)
                 .release()
                 .perform();
         return true;
     }
 
 
-    public boolean waitUntilIsDisplayedFor(String locator) {
+    public boolean inMobileWaitUntilTextIsDisplayed(String locator) {
         return CommonPageMethod.waitForElementSync(appiumDriver, appiumDriverWait, locator, true);
     }
 
-    public boolean waitUntilIsGoneFor(String locator) {
+    public boolean inMobileWaitUntilTextIsGone(String locator) {
         return CommonPageMethod.waitForElementSync(appiumDriver, appiumDriverWait, locator, false);
     }
 
@@ -167,17 +162,17 @@ public class AppiumPageMethods {
         return webElement != null;
     }
 
-    public boolean waitUntilElementTextContains(String locator, String text) {
+    public boolean waitUntilElementContains(String locator, String text) {
         CommonPageMethod.waitUntilElementTextContains(appiumDriverWait, locator, text);
         return true;
     }
 
-    public boolean waitUntilElementTextDoesNotContain(String locator, String text) {
+    public boolean waitUntilElementDoesNotContain(String locator, String text) {
         CommonPageMethod.waitUntilElementTextDoesNotContain(appiumDriverWait, locator, text);
         return true;
     }
 
-    public boolean tapFor(String locator) {
+    public boolean tap(String locator) {
         CommonPageMethod.waitForAndGetElement(appiumDriver, appiumDriverWait, CommonPageMethod.getElementBy(locator)).click();
         return true;
     }
@@ -192,7 +187,7 @@ public class AppiumPageMethods {
         return true;
     }
 
-    public boolean enterInTextFieldFor(String input, String locator) {
+    public boolean enterInTextFieldIn(String input, String locator) {
         return CommonPageMethod.enterInTextField(appiumDriver, appiumDriverWait, input, locator);
     }
 

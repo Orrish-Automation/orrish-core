@@ -1,12 +1,10 @@
 package com.orrish.automation.playwright;
 
-import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.orrish.automation.entrypoint.SetUp;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,17 +17,28 @@ public class ElementActions {
     protected static Page playwrightPage;
     protected boolean isPlaywrightStepPassed = true;
 
-    protected ElementHandle getElementWithExactText(String text) throws Exception {
-        try {
-            return getElementsWithText(text, true).get(0);
-        } catch (Exception ex) {
-            waitUntilExactlyTextIsDisplayed(text);
-            try {
-                return getElementsWithText(text, true).get(0);
-            } catch (Exception ex1) {
-                throw new Exception("Could not find an element with the given criteria.");
-            }
+    List<String> tags = Arrays.asList(new String[]{"a", "input", "img", "button", "div", "span"});
+
+    protected Locator getFirstElementWithExactText(String text) throws Exception {
+        //Cannot do exact text locator directly because some elements have newline or space in the front or in the back
+        Locator locator = getAllElementsContainingText(text);
+        for (int i = 0; i < locator.count(); i++) {
+            if (locator.nth(i).textContent().trim().equals(text))
+                return locator.nth(i);
         }
+        throw new Exception("Could not find an element with text : " + text);
+    }
+
+    protected Locator getAllElementsContainingText(String text) {
+        waitUntilTextIsDisplayed(text);
+        String locator = "text=" + text;
+        Locator locators = playwrightPage.locator(locator + " >> visible=true");
+        if (locators.count() > 0)
+            return locators;
+
+        locator = "xpath=//input[contains(@placeholder,'" + text + "')]";
+        Locator placeholderSelectors = playwrightPage.locator(locator + " >> visible=true");
+        return placeholderSelectors;
     }
 
     protected boolean waitUntilElementIsDisplayed(String locatorText) {
@@ -37,127 +46,70 @@ public class ElementActions {
     }
 
     protected boolean waitUntilExactlyTextIsDisplayed(String locatorText) {
-        return isAnyElementVisible("text='" + locatorText + "'");
+        return isElementVisible("text='" + locatorText + "'");
     }
 
     protected boolean waitUntilTextIsDisplayed(String locatorText) {
-        return isAnyElementVisible("text=" + locatorText);
+        return isElementVisible("text=" + locatorText);
     }
 
-    private boolean isAnyElementVisible(String locatorText) {
-        List<ElementHandle> elementHandleList = playwrightPage.querySelectorAll(locatorText);
+    private boolean isElementVisible(String locatorText) {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
-            for (ElementHandle elementHandle : elementHandleList)
-                if (elementHandle.isVisible())
-                    return true;
+            Locator locator = playwrightPage.locator(locatorText + " >> visible=true");
+            if (locator.count() > 0)
+                return true;
             waitSeconds(1);
-            elementHandleList = playwrightPage.querySelectorAll(locatorText);
         }
         return false;
     }
 
-    protected List<ElementHandle> getElementsWithText(String text, boolean isExact) {
-        //radioHandles = playwrightPage.querySelectorAll("xpath=//label[contains(.,'" + text + "')]");
-        //Locator probableLocator = playwrightPage.locator("text=" + text);
-        //String locator = isExact ? "text='" + text + "'" : "xpath=//*[contains(.,'" + text + "')]";
+    protected Locator getIconCorrespondingTo(String iconToClick, String locatorText) {
+        Locator locators = playwrightPage.locator(locatorText + " >> visible=true");
+        for (int i = 0; i < locators.count(); i++) {
+            Locator eachLocator = locators.nth(i);
+            String attributeAria = String.valueOf(eachLocator.getAttribute("aria-label"));
+            String attributeAlt = String.valueOf(eachLocator.getAttribute("alt"));
+            String attributeTitle = String.valueOf(eachLocator.getAttribute("title"));
+            String combinedAlt = attributeAlt + attributeAria + attributeTitle;
 
-        //String locator = "xpath=//*[contains(.,'" + text + "')]";
-        String locator = "text=" + text;
-        List<ElementHandle> selectors = getElementHandles(text, isExact, locator);
-        if (selectors.size() > 0)
-            return selectors;
-
-        //String xpath = "xpath=//svg[contains(@aria-label,'" + eachList.toLowerCase() + "')]";
-        //locator = isExact ? "[placeholder='" + text + "']" : "xpath=//input[contains(@placeholder,'" + text + "')]";
-        locator = "xpath=//input[contains(@placeholder,'" + text + "')]";
-        List<ElementHandle> placeholderSelectors = getElementHandles(text, isExact, locator);
-        return placeholderSelectors;
-    }
-
-    private List<ElementHandle> getElementHandles(String text, boolean isExact, String locator) {
-        List<ElementHandle> selectors = playwrightPage.querySelectorAll(locator);
-        selectors.removeIf(e -> !e.isVisible());
-        if (selectors.size() != 0) {
-            if (!isExact)
-                return selectors;
-            selectors.removeIf(e -> !e.textContent().trim().equalsIgnoreCase(text.trim()));
-            if (selectors.size() != 0)
-                return selectors;
+            if (combinedAlt.contains(iconToClick))
+                return eachLocator;
+            Locator parent = eachLocator.locator("xpath=..");
+            String hrefProperty = String.valueOf(parent.getAttribute("href"));
+            String idProperty = String.valueOf(parent.getAttribute("id"));
+            String classProperty = String.valueOf(parent.getAttribute("class"));
+            if (hrefProperty.contains(iconToClick) || idProperty.contains(iconToClick) || classProperty.contains(iconToClick))
+                return eachLocator;
         }
-        return new ArrayList<>();
+        return locators;
     }
 
-    protected ElementHandle getContainingText(String text) throws Exception {
-        try {
-            return getElementsWithText(text, false).get(0);
-        } catch (Exception ex) {
-            waitUntilTextIsDisplayed(text);
-            try {
-                return getElementsWithText(text, false).get(0);
-            } catch (Exception ex1) {
-                throw new Exception("Could not find an element with the given criteria.");
-            }
-        }
-    }
-
-    protected List<ElementHandle> getIconsCorrespondingTo(String textToClick, String locator) {
-        List<ElementHandle> elementHandles = new ArrayList<>();
-        List<String> list = Arrays.asList(textToClick.split(" "));
-        for (String eachList : list) {
-            //String xpath = "xpath=//svg[contains(@aria-label,'" + eachList.toLowerCase() + "')]";
-            if (elementHandles.size() == 0)
-                elementHandles = playwrightPage.querySelectorAll(locator);
-            elementHandles.removeIf(e -> !e.isVisible());
-            elementHandles.removeIf(e -> {
-                String attributeAria = e.getAttribute("aria-label");
-                String attributeAlt = e.getAttribute("alt");
-                String attributeTitle = e.getAttribute("title");
-                if (attributeAlt == null && attributeAria == null && attributeTitle == null) return true;
-                String combinedAlt = attributeAlt + attributeAria + attributeTitle;
-                return !combinedAlt.toLowerCase().contains(eachList.toLowerCase());
-            });
-        }
-        return elementHandles;
-    }
-
-
-    protected Locator getRelativeTextElement(String textToClick, String direction, String textToFind) {
-        //:has-text("About"):right-of(:text("Home"))
-        String locatorString = getTypeOfTargetElement(textToClick) + ":" + getDirection(direction) + "(:text(\"" + textToFind + "\"))";
-        Locator probableLocator = playwrightPage.locator(locatorString);
+    protected Locator getRelativeTextElement(String finalTextToClick, String direction, String pivotTextToFind) {
+        String finalTargetElement = tags.contains(finalTextToClick)
+                ? finalTextToClick.replace(" ", "").trim().toLowerCase()
+                : ":has-text(\"" + finalTextToClick + "\")";
+        String locatorString = finalTargetElement + ":" + getDirection(direction) + "(:text(\"" + pivotTextToFind + "\"))";
+        Locator probableLocator = playwrightPage.locator(locatorString + " >> visible=true");
         if (probableLocator.count() > 1) {
-            probableLocator = (isTagElement(textToClick)) ? probableLocator.first() : probableLocator.last();
+            return tags.contains(finalTextToClick) ? probableLocator.first() : probableLocator.last();
         }
         //Check if the text is in placeholder
-        if (probableLocator.count() == 0 && locatorString.startsWith(":has-text")) {
+        if (locatorString.startsWith(":has-text")) {
             locatorString = locatorString.split("has-text")[1];
             locatorString = locatorString.replaceFirst(":", "###").split("###")[1];
-            locatorString = "[placeholder='" + textToClick + "']:" + locatorString;
+            locatorString = "[placeholder='" + finalTextToClick + "']:" + locatorString;
             probableLocator = playwrightPage.locator(locatorString);
         }
-        return probableLocator;
-    }
-
-    private String getTypeOfTargetElement(String textToClick) {
-        return isTagElement(textToClick)
-                ? textToClick.replace(" ", "").trim().toLowerCase()
-                : ":has-text(\"" + textToClick + "\")";
+        return probableLocator.first();
     }
 
     protected boolean isLocatorPlainText(String locator) {
-        List<String> tags = Arrays.asList(new String[]{"a", "input", "button", "img", "div"});
         boolean isTag = tags.contains(locator.trim());
         if (!isTag && locator.contains("[")) {
             isTag = tags.contains(locator.split("\\[")[0]);
         }
         boolean isXpath = locator.trim().startsWith("//");
         return !(isTag || isXpath);
-    }
-
-    private boolean isTagElement(String elementText) {
-        List<String> tags = Arrays.asList(new String[]{"link", "input", "textbox", "image", "img", "icon"});
-        String modifiedText = elementText.replace(" ", "").trim().toLowerCase();
-        return tags.contains(modifiedText);
     }
 
     protected String getDirection(String direction) {
@@ -213,25 +165,29 @@ public class ElementActions {
         return false;
     }
 
-    protected boolean selectUnselectCheckboxesWithText(String value, boolean shouldBeSelected) throws Exception {
-        List<ElementHandle> checkboxHandles = playwrightPage.querySelectorAll("[type=checkbox]:left-of(:text(\"" + value + "\")) , [type=checkbox]:right-of(:text(\" + value + \"))");
-        ElementHandle checkbox = null;
-        if (checkboxHandles.size() == 0) {
-            checkboxHandles = playwrightPage.querySelectorAll("input[type=checkbox]");
-            for (ElementHandle elementHandle : checkboxHandles) {
-                if (elementHandle.isVisible() && elementHandle.textContent().contains(value)) {
-                    checkbox = elementHandle;
-                    break;
+    protected boolean selectUnselectCheckboxesWithText(String stringToFind, boolean shouldBeSelected) throws Exception {
+        List<String> checkBoxTextsToClick = Arrays.asList(stringToFind.split(",,"));
+        for (String eachCheckboxText : checkBoxTextsToClick) {
+            Locator checkboxLocators = playwrightPage.locator("[type=checkbox]:left-of(:text(\"" + eachCheckboxText + "\")) , [type=checkbox]:right-of(:text(\" + value + \"))");
+            Locator checkbox = null;
+            if (checkboxLocators.count() == 0) {
+                checkboxLocators = playwrightPage.locator("input[type=checkbox]");
+                for (int i = 0; i < checkboxLocators.count(); i++) {
+                    Locator eachLocator = checkboxLocators.nth(i);
+                    if (eachLocator.isVisible() && eachLocator.textContent().contains(stringToFind)) {
+                        checkbox = eachLocator;
+                        break;
+                    }
                 }
+            } else {
+                checkbox = checkboxLocators.first();
             }
-        } else {
-            checkbox = checkboxHandles.get(0);
-        }
-        if (checkboxHandles.size() == 0)
-            throw new Exception("Could not find checkbox corresponding to " + value);
+            if (checkboxLocators.count() == 0)
+                throw new Exception("Could not find checkbox corresponding to : " + stringToFind);
 
-        if ((checkbox.isChecked() && !shouldBeSelected) || (!checkbox.isChecked() && shouldBeSelected))
-            checkbox.click();
+            if ((checkbox.isChecked() && !shouldBeSelected) || (!checkbox.isChecked() && shouldBeSelected))
+                checkbox.click();
+        }
         return true;
     }
 

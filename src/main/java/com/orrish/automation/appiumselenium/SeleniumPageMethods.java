@@ -10,6 +10,7 @@ import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.locators.RelativeLocator;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,7 +119,7 @@ public class SeleniumPageMethods {
         } else {
             webDriver.manage().window().maximize();
         }
-        webDriverWait = new WebDriverWait(webDriver, defaultWaitTime);
+        webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(defaultWaitTime));
         return true;
     }
 
@@ -126,6 +128,7 @@ public class SeleniumPageMethods {
         webDriver.manage().window().maximize();
         return true;
     }
+
     public boolean navigateBack() {
         webDriver.navigate().back();
         return true;
@@ -292,28 +295,61 @@ public class SeleniumPageMethods {
         return false;
     }
 
-    public boolean clickWithText(String locator, String text) {
+    public boolean clickExactly(String text) throws Exception {
+        getElementWithText(webDriver, webDriverWait, text, true).click();
+        return true;
+    }
+
+    public boolean clickToTheOf(String element, String direction, String pivotElement) throws Exception {
+        //WebElement webElement = getElementWithText(webDriver, webDriverWait, pivotElement, true);
+        //: By.xpath("//*[ contains (text(), '" + textToFind + "')]");
+
+        //By by = isExact ? By.xpath("//*[text()='" + textToFind + "']") : By.xpath("//*[ contains (text(), '" + textToFind + "')]");
+        //waitForAndGetElement(By.xpath("(//*[contains(text(),'" + value + "')])")).isDisplayed();
+
+        //By pivotElementBy = By.xpath("//*[text()='" + pivotElement + "']");
+        //By finalElementBy = By.xpath("//*[text()='" + element + "']");
+
+        By pivotElementBy = By.xpath("//*[ contains (text(), '" + pivotElement + "')]");
+        By finalElementBy = By.xpath("//*[ contains (text(), '" + element + "')]");
+
+        By emailLocator = null;
+        if (direction.contains("above"))
+            emailLocator = RelativeLocator.with(finalElementBy).above(pivotElementBy);
+        if (direction.contains("below"))
+            emailLocator = RelativeLocator.with(finalElementBy).below(pivotElementBy);
+        if (direction.contains("right"))
+            emailLocator = RelativeLocator.with(finalElementBy).toRightOf(pivotElementBy);
+        if (direction.contains("left"))
+            emailLocator = RelativeLocator.with(finalElementBy).toLeftOf(pivotElementBy);
+        webDriver.findElement(emailLocator).click();
+        return false;
+    }
+
+    public boolean clickElementWithText(String locator, String text) {
         return CommonPageMethod.clickWithText(webDriver, webDriverWait, locator, text);
     }
 
-    public boolean click(String locator) {
-        try {
-            waitForAndGetElement(getElementBy(locator)).click();
-            return true;
-        } catch (Exception ex) {
-            //If there are multiple elements with this locator, click the first possible element.
-            List<WebElement> elementList = webDriver.findElements(getElementBy(locator));
-            if (elementList.size() > 1) {
-                for (WebElement webElement : elementList) {
-                    try {
-                        webElement.click();
-                        return true;
-                    } catch (Exception ex1) {
-                    }
+    public boolean click(String text) throws Exception {
+        getElementWithText(webDriver, webDriverWait, text, false).click();
+        return true;
+    }
+
+    private WebElement getElementWithText(WebDriver webDriver, WebDriverWait webDriverWait, String textToFind, boolean isExact) throws Exception {
+        By by = isExact ? By.xpath("//*[text()='" + textToFind + "']") : By.xpath("//*[ contains (text(), '" + textToFind + "')]");
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by));
+        List<WebElement> elementList = webDriver.findElements(by);
+
+        if (elementList.size() > 0) {
+            for (WebElement webElement : elementList) {
+                try {
+                    if (webElement.isDisplayed())
+                        return webElement;
+                } catch (Exception ex1) {
                 }
             }
         }
-        return false;
+        throw new Exception("Could not find a visible text with \"" + textToFind + "\"");
     }
 
     public boolean clickWhicheverIsDisplayedIn(String locator) throws Exception {
@@ -364,16 +400,26 @@ public class SeleniumPageMethods {
         return true;
     }
 
-    public boolean selectCheckboxForText(String stringToFind) {
+    public boolean selectCheckboxForText(String stringToFind) throws Exception {
         return selectUnselectCheckboxesForText(stringToFind, true);
     }
 
-    public boolean unselectCheckboxForText(String stringToFind) {
+    public boolean unselectCheckboxForText(String stringToFind) throws Exception {
         return selectUnselectCheckboxesForText(stringToFind, false);
     }
 
-    private boolean selectUnselectCheckboxesForText(String stringToFind, boolean shouldBeSelected) {
+    private boolean selectUnselectCheckboxesForText(String stringToFind, boolean shouldBeSelected) throws Exception {
         List<String> textBoxesToClick = Arrays.asList(stringToFind.split(",,"));
+        for (String eachTextBoxText : textBoxesToClick) {
+            WebElement element = getElementWithText(webDriver, webDriverWait, eachTextBoxText, true);
+            RelativeLocator.RelativeBy leftElementBy = RelativeLocator.with(By.cssSelector("input[type=checkbox]")).toLeftOf(element);
+            RelativeLocator.RelativeBy rightElementBy = RelativeLocator.with(By.xpath("input[type=checkbox]")).toRightOf(element);
+            List<WebElement> checkboxes = webDriver.findElements(leftElementBy);
+            if (checkboxes.size() > 0)
+                checkboxes.get(0).click();
+            else
+                webDriver.findElements(rightElementBy).get(0).click();
+        }
         textBoxesToClick.forEach(e -> selectCheckboxForText(e, shouldBeSelected));
         return true;
     }

@@ -111,8 +111,8 @@ public class SeleniumAppiumActions {
                 case "swipeOnceVertically":
                     isMobileStepPassed = appiumPageMethods.swipeOnceVertically();
                     break;
-                case "tapFor":
-                    isMobileStepPassed = appiumPageMethods.tapFor(args[1].toString());
+                case "tap":
+                    isMobileStepPassed = appiumPageMethods.tap(args[1].toString());
                     break;
                 case "tapWithText":
                     isMobileStepPassed = appiumPageMethods.tapWithText(args[1].toString(), args[2].toString());
@@ -120,11 +120,11 @@ public class SeleniumAppiumActions {
                 case "tapWhicheverIsDisplayedIn":
                     isMobileStepPassed = appiumPageMethods.tapWhicheverIsDisplayedIn(args[1].toString());
                     break;
-                case "inMobileWaitUntilIsGoneFor":
-                    isMobileStepPassed = appiumPageMethods.waitUntilIsGoneFor(args[1].toString());
+                case "inMobileWaitUntilTextIsGone":
+                    isMobileStepPassed = appiumPageMethods.inMobileWaitUntilTextIsGone(args[1].toString());
                     break;
-                case "inMobileWaitUntilIsDisplayedFor":
-                    isMobileStepPassed = appiumPageMethods.waitUntilIsDisplayedFor(args[1].toString());
+                case "inMobileWaitUntilTextIsDisplayed":
+                    isMobileStepPassed = appiumPageMethods.inMobileWaitUntilTextIsDisplayed(args[1].toString());
                     break;
                 case "waitUntilOneOfTheElementsIsDisplayed":
                     isMobileStepPassed = appiumPageMethods.waitUntilOneOfTheElementsIsDisplayed(args[1].toString());
@@ -132,14 +132,14 @@ public class SeleniumAppiumActions {
                 case "waitUntilOneOfTheElementsIsEnabled":
                     isMobileStepPassed = appiumPageMethods.waitUntilOneOfTheElementsIsEnabled(args[1].toString());
                     break;
-                case "inMobileWaitUntilElementTextContains":
-                    isMobileStepPassed = appiumPageMethods.waitUntilElementTextContains(args[1].toString(), args[2].toString());
+                case "inMobileWaitUntilElementContains":
+                    isMobileStepPassed = appiumPageMethods.waitUntilElementContains(args[1].toString(), args[2].toString());
                     break;
-                case "inMobileWaitUntilElementTextDoesNotContain":
-                    isMobileStepPassed = appiumPageMethods.waitUntilElementTextDoesNotContain(args[1].toString(), args[2].toString());
+                case "inMobileWaitUntilElementDoesNotContain":
+                    isMobileStepPassed = appiumPageMethods.waitUntilElementDoesNotContain(args[1].toString(), args[2].toString());
                     break;
-                case "inMobileEnterInTextFieldFor":
-                    isMobileStepPassed = appiumPageMethods.enterInTextFieldFor(args[1].toString(), args[2].toString());
+                case "inMobileEnterInTextFieldIn":
+                    isMobileStepPassed = appiumPageMethods.enterInTextFieldIn(args[1].toString(), args[2].toString());
                     break;
                 case "inMobileGetTextFromElement":
                     return appiumPageMethods.getTextFromElement(args[1].toString());
@@ -238,11 +238,17 @@ public class SeleniumAppiumActions {
                         ReportUtility.reportJsonAsInfo("Violations:", failureMessage[0]);
                     }
                     return violations.size() == 0;
-                case "clickFor":
+                case "click":
                     isWebStepPassed = seleniumPageMethods.click(args[1].toString());
                     break;
+                case "clickExactly":
+                    isWebStepPassed = seleniumPageMethods.clickExactly(args[1].toString());
+                    break;
+                case "clickToTheOf":
+                    isWebStepPassed = seleniumPageMethods.clickToTheOf(args[1].toString(), args[2].toString(), args[3].toString());
+                    break;
                 case "clickWithText":
-                    isWebStepPassed = seleniumPageMethods.clickWithText(args[1].toString(), args[2].toString());
+                    isWebStepPassed = seleniumPageMethods.clickElementWithText(args[1].toString(), args[2].toString());
                     break;
                 case "clickWhicheverIsDisplayedIn":
                     isWebStepPassed = seleniumPageMethods.clickWhicheverIsDisplayedIn(args[1].toString());
@@ -255,10 +261,10 @@ public class SeleniumAppiumActions {
                 case "unselectCheckboxForText":
                     isWebStepPassed = seleniumPageMethods.unselectCheckboxForText(args[1].toString());
                     break;
-                case "waitUntilIsGoneFor":
+                case "waitUntilIsGone":
                     isWebStepPassed = seleniumPageMethods.waitUntilIsGone(args[1].toString());
                     break;
-                case "waitUntilIsDisplayedFor":
+                case "waitUntilIsDisplayed":
                     isWebStepPassed = seleniumPageMethods.waitUntilIsDisplayed(args[1].toString());
                     break;
                 case "waitUntilOneOfTheElementsIsDisplayed":
@@ -267,10 +273,10 @@ public class SeleniumAppiumActions {
                 case "waitUntilOneOfTheElementsIsEnabled":
                     isWebStepPassed = (seleniumPageMethods.waitUntilOneOfTheElementsIsEnabled(args[1].toString()) != null);
                     break;
-                case "waitUntilElementTextContains":
+                case "waitUntilElementContains":
                     isWebStepPassed = seleniumPageMethods.waitUntilElementTextContains(args[1].toString(), args[2].toString());
                     break;
-                case "waitUntilElementTextDoesNotContain":
+                case "waitUntilElementDoesNotContain":
                     isWebStepPassed = seleniumPageMethods.waitUntilElementTextDoesNotContain(args[1].toString(), args[2].toString());
                     break;
                 case "isElementDisplayedFor":
@@ -279,7 +285,7 @@ public class SeleniumAppiumActions {
                     return seleniumPageMethods.isElementEnabledFor(args[1].toString());
                 case "isElementSelectedFor":
                     return seleniumPageMethods.isElementSelectedFor(args[1].toString());
-                case "enterInTextFieldFor":
+                case "enterInTextFieldIn":
                     isWebStepPassed = seleniumPageMethods.enterInTextField(args[1].toString(), args[2].toString());
                     break;
                 case "enterInTextFieldNumber":

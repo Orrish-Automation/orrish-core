@@ -121,13 +121,13 @@
   },
   {
     "id": 25,
-    "step": "|Select checkbox for text |some text|",
-    "help": ""
+    "step": "|Select checkbox for text |text1,,text2|",
+    "help": "You can use double comma separated values for multiple checkboxes."
   },
   {
     "id": 26,
-    "step": "|Unselect checkbox for text |some text|",
-    "help": ""
+    "step": "|Unselect checkbox for text |text1,,text2|",
+    "help": "You can use double comma separated values for multiple checkboxes."
   },
   {
     "id": 27,
@@ -141,91 +141,96 @@
   },
   {
     "id": 29,
-    "step": "|Wait until text |Message |is gone |",
+    "step": "|Hover on |Home |",
     "help": ""
   },
   {
     "id": 30,
-    "step": "|Wait until text |Message |is displayed |",
+    "step": "|Wait until text |Message |is gone |",
     "help": ""
   },
   {
     "id": 31,
-    "step": "|Wait until one of the texts |successfully,,error |is displayed|",
+    "step": "|Wait until text |Message |is displayed |",
     "help": ""
   },
   {
     "id": 32,
-    "step": "|Wait until element |#button |contains |some value|",
+    "step": "|Wait until one of the texts |successfully,,error |is displayed|",
     "help": ""
   },
   {
     "id": 33,
-    "step": "|Wait until element |#button |does not contain |some value|",
+    "step": "|Wait until element |#button |contains |some value|",
     "help": ""
   },
   {
     "id": 34,
-    "step": "|Wait until element |#success |is gone|",
+    "step": "|Wait until element |#button |does not contain |some value|",
     "help": ""
   },
   {
     "id": 35,
-    "step": "|Wait until element |#success |is displayed|",
+    "step": "|Wait until element |#success |is gone|",
     "help": ""
   },
   {
     "id": 36,
-    "step": "|Wait until one of the elements |#progressbar,,#someValue |is displayed|",
+    "step": "|Wait until element |#success |is displayed|",
     "help": ""
   },
   {
     "id": 37,
-    "step": "|Wait until one of the elements |#success,,#error |is enabled|",
+    "step": "|Wait until one of the elements |#progressbar,,#someValue |is displayed|",
     "help": ""
   },
   {
     "id": 38,
-    "step": "|Is text |some text |present in webpage|",
+    "step": "|Wait until one of the elements |#success,,#error |is enabled|",
     "help": ""
   },
   {
     "id": 39,
-    "step": "|$value= |Get text from element |#locator|",
+    "step": "|Is text |some text |present in webpage|",
     "help": ""
   },
   {
     "id": 40,
+    "step": "|$value= |Get text from element |#locator|",
+    "help": ""
+  },
+  {
+    "id": 41,
     "step": "|$value= |Get complete text for |added successfully.|",
     "help": "This is to get the complete text for partial text. This is helpful if there is some dynamic content in the text."
   },
   {
-    "id": 41,
+    "id": 42,
     "step": "|$value= |Get text from |td |to the |right |of |John Doe |",
     "help": "This is to get the next column text. It can also be used to get the full text from the right of another text."
   },
   {
-    "id": 42,
+    "id": 43,
     "step": "|$value= |Click |Some text |and get alert text|",
     "help": ""
   },
   {
-    "id": 43,
+    "id": 44,
     "step": "|Click |Some text |and accept alert if present|",
     "help": ""
   },
   {
-    "id": 44,
+    "id": 45,
     "step": "|Execute javascript |some script|",
     "help": ""
   },
   {
-    "id": 45,
+    "id": 46,
     "step": "|Execute javascript |arguments[0].style.border='2px solid red'|on element |//*[contains(text(),'Android')]|",
     "help": ""
   },
   {
-    "id": 46,
+    "id": 47,
     "step": "|For request |**/users/2 |use mock status |200 |and response |{}|",
     "help": "Ensure \"use mock\" is enabled in setup. Works only with playwright. Will use the mock response for the requests matching url pattern."
   }

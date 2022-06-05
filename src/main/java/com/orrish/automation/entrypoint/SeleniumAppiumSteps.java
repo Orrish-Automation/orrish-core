@@ -34,19 +34,27 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("quitBrowser");
     }
 
-    public String getPageTitle(){
+    public String getPageTitle() {
         return seleniumAppiumActions.executeOnWebAndReturnString("getPageTitle");
     }
 
-    public boolean checkAccessibilityForPage(String pageName){
+    public boolean checkAccessibilityForPage(String pageName) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("checkAccessibilityForPage", pageName);
     }
 
-    public boolean clickFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickFor", locator, description);
+    public boolean clickToTheOf(String locator, String direction, String pivotElement) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickToTheOf", locator, direction, pivotElement);
+    }
+
+    public boolean click(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("click", locator);
     }
 
     //If multiple locators separated by ,, provided, the first found locator will be clicked
+    public boolean clickExactly(String textToClick) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickExactly", textToClick);
+    }
+
     public boolean clickWithText(String locator, String textToClick) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickWithText", locator, textToClick);
     }
@@ -69,15 +77,15 @@ public class SeleniumAppiumSteps extends AppiumSteps {
     }
 
     public boolean waitUntilElementTextContains(String locator, String text) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilElementTextContains", locator, text);
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilElementContains", locator, text);
     }
 
     public boolean waitUntilElementTextDoesNotContain(String locator, String text) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilElementTextDoesNotContain", locator, text);
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilElementDoesNotContain", locator, text);
     }
 
     public boolean waitUntilIsGoneFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsGoneFor", locator, description);
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsGone", locator, description);
     }
 
     public boolean waitUntilIsDisplayedFor(String locator, String description) {
@@ -106,7 +114,7 @@ public class SeleniumAppiumSteps extends AppiumSteps {
     }
 
     public boolean enterInTextFieldFor(String inputText, String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("enterInTextFieldFor", inputText, locator, description);
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("enterInTextFieldIn", inputText, locator, description);
     }
 
     public boolean enterInTextFieldNumber(String inputText, int locator) {

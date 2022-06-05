@@ -6,6 +6,7 @@
 
     <groupId>com.orrish</groupId>
     <artifactId>orrish-core</artifactId>
+    <!--Remember to update version in the other pom file too.-->
     <version>1.0.6</version>
 
     <name>${project.artifactId}</name>
@@ -32,16 +33,21 @@
             <artifactId>javax.mail</artifactId>
             <version>1.6.2</version>
         </dependency>
-        <!-- UI - Appium, Selenium (included in Appium), Playwright-->
+        <!-- UI - Appium, Selenium (included in Appium), Playwright -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>7.3.0</version>
+            <version>8.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
-            <version>1.22.0</version>
+            <version>1.19.0</version>
         </dependency>
         <!-- Database -->
         <dependency>
@@ -138,8 +144,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.21.0</version>
+                <configuration>
+                    <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
             </plugin>
             <plugin>
@@ -147,13 +161,38 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <archive>
-                        <manifest></manifest>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.orrish.automation.entrypoint.Administration</mainClass>
+                        </manifest>
                     </archive>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+                <executions>
+                    <!--first execution : for preparing JaCoCo runtime agent-->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!--second execution : for creating code coverage reports-->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

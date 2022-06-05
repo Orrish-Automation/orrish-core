@@ -37,12 +37,17 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>7.3.0</version>
+            <version>8.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
-            <version>1.22.0</version>
+            <version>1.19.0</version>
         </dependency>
         <!-- Database -->
         <dependency>
