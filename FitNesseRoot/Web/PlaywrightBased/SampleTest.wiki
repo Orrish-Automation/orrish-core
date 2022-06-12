@@ -1,7 +1,7 @@
 After you execute, click the link at the bottom of the page to see report. Ensure that the variables in SetUp is defined correctly.
 !style_green('''To see all available steps, click on the link on the footer of this page.''') Use the relevant lines.
 !style_blue(To use page object model, refer to the example in home page.)
-'''Test Objective''': Runs a web test using playwright. !style_red('''First time, the test will fail because of time out since playwright downloads chromium. Run it again to see the result.''')
+'''Test Objective''': Runs a web test using playwright. !style_red('''First time, the test will fail because of time out since playwright downloads chromium. Run it again to see the result. If tests still don't run, please consult Playwright documentation for version 1.22.0 to see if you are running on the recommended OS.''')
 '''Status''': Automated.
 '''Test case id''': <some id>
 

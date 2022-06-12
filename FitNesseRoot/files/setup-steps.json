@@ -96,91 +96,96 @@
   },
   {
     "id": 20,
-    "step": "|Playwright headless |true|",
+    "step": "|Full page screenshot |true|",
     "help": ""
   },
   {
     "id": 21,
-    "step": "|Playwright default navigation wait time in seconds |10|",
+    "step": "|Playwright headless |true|",
     "help": ""
   },
   {
     "id": 22,
-    "step": "|Appium server URL |http://ip:4723/wd/hub|",
+    "step": "|Playwright default navigation wait time in seconds |10|",
     "help": ""
   },
   {
     "id": 23,
-    "step": "|Platform name |Android|",
+    "step": "|Appium server URL |http://ip:4723/wd/hub|",
     "help": ""
   },
   {
     "id": 24,
-    "step": "|Platform version |11|",
+    "step": "|Platform name |Android|",
     "help": ""
   },
   {
     "id": 25,
-    "step": "|Device name |emulator-5554|",
+    "step": "|Platform version |11|",
     "help": ""
   },
   {
     "id": 26,
-    "step": "|Automation name |Uiautomator2|",
+    "step": "|Device name |emulator-5554|",
     "help": ""
   },
   {
     "id": 27,
-    "step": "|App |/Users/test/AndroidApp.apk|",
+    "step": "|Automation name |Uiautomator2|",
     "help": ""
   },
   {
     "id": 28,
-    "step": "|App package |com.orrish|",
+    "step": "|App |/Users/test/AndroidApp.apk|",
     "help": ""
   },
   {
     "id": 29,
-    "step": "|App activity |com.orrish.HomeActivity|",
+    "step": "|App package |com.orrish|",
     "help": ""
   },
   {
     "id": 30,
-    "step": "|udid |value|",
+    "step": "|App activity |com.orrish.HomeActivity|",
     "help": ""
   },
   {
     "id": 31,
-    "step": "|xcodeOrgId |value|",
+    "step": "|udid |value|",
     "help": ""
   },
   {
     "id": 32,
-    "step": "|xcodeSigningId |value|",
+    "step": "|xcodeOrgId |value|",
     "help": ""
   },
   {
     "id": 33,
+    "step": "|xcodeSigningId |value|",
+    "help": ""
+  },
+  {
+    "id": 34,
     "step": "|Show page info on failure |true|",
     "help": "Page dump is shown in report if enabled. Default is false."
   },
   {
-    "id": 34,
+    "id": 35,
     "step": "|Report Enabled |false|",
     "help": "If set to false, this will not generate any report. Default is true."
   },
   {
-    "id": 35,
+    "id": 36,
     "step": "|New email wait condition |From:value@value.com,Subject:You have new notifications,SubjectContains:You have|",
     "help": "This is the condition to be checked while waiting for new email. You can have one or multiple conditions separated by comma."
   },
   {
-    "id": 36,
+    "id": 37,
     "step": "|New email wait timeout in seconds |20|",
     "help": "Default is 10."
   },
   {
-    "id": 37,
+    "id": 38,
     "step": "|Email post read action |DELETE |",
     "help": "This determines what should be done to the email after reading. Options are : DELETE, READ, NONE"
   }
