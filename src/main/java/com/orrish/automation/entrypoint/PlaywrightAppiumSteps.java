@@ -30,10 +30,6 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("refreshWebPage");
     }
 
-    public boolean quitPlaywright() {
-        return playwrightActions.executeOnWebAndReturnBoolean("quitPlaywright");
-    }
-
     public boolean takeWebScreenshotWithText(String step) {
         return playwrightActions.executeOnWebAndReturnBoolean("takeWebScreenshotWithText", step);
     }
@@ -50,12 +46,28 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnString("getPageUrl");
     }
 
+    public boolean switchToNewTab() {
+        return playwrightActions.executeOnWebAndReturnBoolean("switchToNewTab");
+    }
+
+    public boolean closeCurrentTab() {
+        return playwrightActions.executeOnWebAndReturnBoolean("closeCurrentTab");
+    }
+
     public boolean checkAccessibilityForPage(String pageName) {
         return playwrightActions.executeOnWebAndReturnBoolean("checkAccessibilityForPage", pageName);
     }
 
     public boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatusCode, String mockResponse) {
         return SetUp.useMock ? playwrightActions.executeOnWebAndReturnBoolean("forRequestUseMockStatusAndResponse", requestPattern, mockHttpStatusCode, mockResponse) : true;
+    }
+
+    public boolean uploadFile(String filePath){
+        return playwrightActions.executeOnWebAndReturnBoolean("uploadFile", filePath);
+    }
+
+    public boolean scrollTo(String locatorText) {
+        return playwrightActions.executeOnWebAndReturnBoolean("scrollTo", locatorText);
     }
 
     public boolean hoverOn(String textToHoverOn) {
@@ -70,21 +82,16 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("clickExactly", locator);
     }
 
-    //TODO : Check if you can combine with click
-    public boolean clickHtmlTagWithText(String locator, String textToClick) {
-        return playwrightActions.executeOnWebAndReturnBoolean("clickHtmlTagWithText", locator, textToClick);
+    public boolean rightClick(String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("rightClick", locator);
     }
 
     public boolean clickToTheOf(String textToClick, String direction, String textToFind) {
         return playwrightActions.executeOnWebAndReturnBoolean("clickToTheOf", textToClick, direction, textToFind);
     }
 
-    public boolean clickToTheOfAndClearText(String textToClick, String direction, String textToFind) {
-        return playwrightActions.executeOnWebAndReturnBoolean("clickToTheOfAndClearText", textToClick, direction, textToFind);
-    }
-
-    public boolean clickAndClearText(String value) {
-        return playwrightActions.executeOnWebAndReturnBoolean("clickAndClearText", value);
+    public boolean clearText() {
+        return playwrightActions.executeOnWebAndReturnBoolean("clearText");
     }
 
     public boolean clickIcon(String iconText) {
@@ -98,6 +105,10 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
     //Pipe separated values, single comma may be present in xpath, hence pipe.
     public boolean clickWhicheverIsDisplayedIn(String locator) {
         return playwrightActions.executeOnWebAndReturnBoolean("clickWhicheverIsDisplayedIn", locator);
+    }
+
+    public boolean pressKey(String value) {
+        return playwrightActions.executeOnWebAndReturnBoolean("pressKey", value);
     }
 
     public boolean type(String inputText) {
@@ -134,38 +145,42 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("selectFromDropdown", inputString, locatorText);
     }
 
-    public boolean waitUntilTextIsGone(String locatorText) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilTextIsGone", locatorText);
+    public String getColumnWhere(String columnToGet, String columnToLocate) {
+        return playwrightActions.executeOnWebAndReturnString("getColumnWhere", columnToGet, columnToLocate);
     }
 
-    public boolean waitUntilTextIsDisplayed(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilTextIsDisplayed", locator);
+    public boolean clickColumnWhere(String columnToGet, String columnToLocate) {
+        return playwrightActions.executeOnWebAndReturnBoolean("clickColumnWhere", columnToGet, columnToLocate);
     }
 
-    //TODO : Pipe separated values, single comma may be present in xpath, hence cannot be used.
-    public boolean waitUntilOneOfTheTextsIsDisplayed(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheTextsIsDisplayed", locator);
+    public boolean clickInColumnWhere(String textToClick, String columnToGet, String columnToLocate) {
+        return playwrightActions.executeOnWebAndReturnBoolean("clickInColumnWhere", textToClick, columnToGet, columnToLocate);
     }
 
-    //TODO : Optimize all wait to contain both text and locator
+    public boolean typeInColumnWhere(String textToType, String columnToGet, String columnToLocate) {
+        return playwrightActions.executeOnWebAndReturnBoolean("typeInColumnWhere", textToType, columnToGet, columnToLocate);
+    }
+
+
+    public boolean waitUntilIsDisplayed(String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilIsDisplayed", locator);
+    }
+
+    public boolean waitUntilIsGone(String locatorText) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilIsGone", locatorText);
+    }
+
+    //Double comma separated values, single comma may be present in xpath, hence cannot be used.
+    public boolean waitUntilOneOfIsDisplayed(String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfIsDisplayed", locator);
+    }
+
     public boolean waitUntilElementContains(String locator, String text) {
         return playwrightActions.executeOnWebAndReturnBoolean("waitUntilElementContains", locator, text);
     }
 
     public boolean waitUntilElementDoesNotContain(String locator, String text) {
         return playwrightActions.executeOnWebAndReturnBoolean("waitUntilElementDoesNotContain", locator, text);
-    }
-
-    public boolean waitUntilElementIsGone(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilElementIsGone", locator);
-    }
-
-    public boolean waitUntilElementIsDisplayed(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilElementIsDisplayed", locator);
-    }
-
-    public boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsDisplayed", locator);
     }
 
     public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
@@ -176,16 +191,12 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("isTextPresentInWebpage", text);
     }
 
-    public String getTextFromElement(String locator) {
-        return playwrightActions.executeOnWebAndReturnString("getTextFromElement", locator);
+    public String getFullTextFor(String text) {
+        return playwrightActions.executeOnWebAndReturnString("getFullTextFor", text);
     }
 
-    public String getCompleteTextFor(String text) {
-        return playwrightActions.executeOnWebAndReturnString("getCompleteTextFor", text);
-    }
-
-    public boolean getTextFromToTheOf(String finalText, String direction, String initialText) {
-        return playwrightActions.executeOnWebAndReturnBoolean("getTextFromToTheOf", finalText, direction, initialText);
+    public String getTextFromToTheOf(String finalText, String direction, String initialText) {
+        return playwrightActions.executeOnWebAndReturnString("getTextFromToTheOf", finalText, direction, initialText);
     }
 
     public String clickAndGetAlertText(String locator) {
@@ -198,10 +209,6 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
 
     public boolean executeJavascript(String scriptToExecute) {
         return playwrightActions.executeOnWebAndReturnBoolean("executeJavascript", scriptToExecute);
-    }
-
-    public boolean executeJavascriptOnElement(String scriptToExecute, String element) {
-        return playwrightActions.executeOnWebAndReturnBoolean("executeJavascriptOnElement", scriptToExecute, element);
     }
 
 }

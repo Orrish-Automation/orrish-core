@@ -11,6 +11,7 @@ import com.aventstack.extentreports.reporter.configuration.ChartLocation;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Page;
+import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.playwright.PlaywrightActions;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.OutputType;
@@ -110,9 +111,13 @@ public class ExtentReportUtility {
             if (destinationFile.exists())
                 destinationFile.delete();
             if (driver == null) {
-                if (PlaywrightActions.getInstance().isPlaywrightRunning())
-                    PlaywrightActions.getInstance().getPlaywrightPage().screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fullFileName + ".png")));
-                else
+                if (PlaywrightActions.getInstance().isPlaywrightRunning()) {
+                    Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions()
+                            .setPath(Paths.get(fullFileName + ".png"));
+                    if (SetUp.fullPageScreenshot)
+                        screenshotOptions.setFullPage(true);
+                    PlaywrightActions.getInstance().getPlaywrightPage().screenshot(screenshotOptions);
+                } else
                     return "";
             } else {
                 byte[] srcBytes = driver.getScreenshotAs(OutputType.BYTES);

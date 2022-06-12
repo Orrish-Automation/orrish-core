@@ -68,6 +68,7 @@ public class SetUp {
     //Report
     public static boolean showPageInfoOnFailure = false;
     public static boolean reportEnabled = true;
+    public static boolean fullPageScreenshot = false;
 
     public static boolean isVideoRecordingEnabled() {
         return executionCapabilities.containsKey("enableVideo") && executionCapabilities.get("enableVideo").toLowerCase().contains("true");
@@ -80,6 +81,11 @@ public class SetUp {
 
     public boolean reportEnabled(boolean valuePassed) {
         reportEnabled = valuePassed;
+        return true;
+    }
+
+    public boolean fullPageScreenshot(boolean valuePassed) {
+        fullPageScreenshot = valuePassed;
         return true;
     }
 
