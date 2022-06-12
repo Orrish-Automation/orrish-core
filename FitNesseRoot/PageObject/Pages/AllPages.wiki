@@ -1,5 +1,2 @@
-|scenario          |Scroll to _                       |locator            |
-|Execute javascript|arguments[0].scrollIntoView(true);|on element|@locator|
-
 |scenario          |Scroll to bottom                              |
 |Execute javascript|window.scrollTo(0, document.body.scrollHeight)|

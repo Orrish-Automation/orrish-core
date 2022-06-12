@@ -15,4 +15,4 @@ Test
   "username": "Orrish"
  }-!|
 |In browser navigate to|https://jsonplaceholder.typicode.com/users/2|
-|Is text               |Orrish          |present in webpage         |
+|Check text            |Orrish        |is present in webpage        |

@@ -2,7 +2,7 @@
 '''Status''':
 '''Test case id''': <some id>
 
-!|script                                                                    |
-|Set test name                 |${PAGE_NAME}                                |
-|Launch browser and navigate to|https://jsonplaceholder.typicode.com/users/1|
-|Check accessibility for page  |Sample Page                                 |
+!|script                                          |
+|Set test name                 |${PAGE_NAME}      |
+|Launch browser and navigate to|https://google.com|
+|Check accessibility for page  |Sample Page       |
