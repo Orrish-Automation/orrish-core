@@ -211,7 +211,7 @@
   },
   {
     "id": 43,
-    "step": "|Is text |some text |present in webpage|",
+    "step": "|Check text |some text |is present in webpage|",
     "help": ""
   },
   {

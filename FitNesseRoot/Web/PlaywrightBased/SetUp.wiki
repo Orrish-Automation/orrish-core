@@ -20,5 +20,5 @@ This uses Playwright Appium Steps.!style_green('''To see all available steps, cl
 |Take screenshot at each step                      |true        |
 |Playwright headless                               |true        |
 |Browser                                           |chrome      |
-|Playwright default navigation wait time in seconds|10          |
-|Default wait time in seconds                      |3           |
+|Playwright default navigation wait time in seconds|20          |
+|Default wait time in seconds                      |10          |

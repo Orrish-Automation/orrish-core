@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class PlaywrightActions extends ElementActions {
         return true;
     }
 
-    protected boolean launchBrowserAndNavigateTo(String url) {
+    public boolean launchBrowserAndNavigateTo(String url) {
 
         playwright = Playwright.create();
         Browser browser;
@@ -94,48 +95,44 @@ public class PlaywrightActions extends ElementActions {
         return true;
     }
 
-    protected boolean navigateTo(String url) {
+    public boolean inBrowserNavigateTo(String url) {
         playwrightPage.navigate(url);
         return true;
     }
 
-    protected boolean maximizeTheWindow() throws Exception {
+    public boolean maximizeTheWindow() throws Exception {
         throw new Exception("Not implemented. Track issue at https://github.com/microsoft/playwright/issues/4046");
     }
 
-    protected boolean inBrowserNavigateBack() {
+    public boolean inBrowserNavigateBack() {
         playwrightPage.goBack();
         return true;
     }
 
-    protected boolean refreshWebPage() {
+    public boolean refreshWebPage() {
         playwrightPage.reload();
         return true;
     }
 
-    protected boolean takeWebScreenshotWithText(String text) {
+    public String getPageUrl() {
+        return playwrightPage.url();
+    }
+
+    public String getPageTitle() {
+        return playwrightPage.title();
+    }
+
+    public boolean takeWebScreenshotWithText(String text) {
         ReportUtility.reportWithScreenshot(null, text, ReportUtility.REPORT_STATUS.INFO, text);
         return true;
     }
 
-    protected boolean saveAsPdfWithName(String name) {
+    public boolean saveAsPdfWithName(String name) {
         playwrightPage.pdf(new Page.PdfOptions().setPath(Paths.get(name)));
         return true;
     }
 
-    protected boolean closeCurrentTab() {
-        List<Page> pages = playwrightPage.context().pages();
-        for (int i = 0; i < pages.size(); i++) {
-            if (pages.get(i) == playwrightPage) {
-                playwrightPage.close();
-                playwrightPage = (i == 0) ? pages.get(i + 1) : pages.get(i - 1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean switchToNewTab() throws Exception {
+    public boolean switchToNewTab() throws Exception {
         //TODO : Find a proper fix. Wait is needed so that the tab is loaded correctly. New page open and close recognizes all tabs.
         waitSeconds(5);
         playwrightPage.context().newPage();
@@ -155,7 +152,35 @@ public class PlaywrightActions extends ElementActions {
         throw new Exception("Found " + pages.size() + " pages. But the url and title for all pages are same.");
     }
 
-    protected ArrayNode checkAccessibilityForPage() throws IOException {
+    public boolean closeCurrentTab() {
+        List<Page> pages = playwrightPage.context().pages();
+        for (int i = 0; i < pages.size(); i++) {
+            if (pages.get(i) == playwrightPage) {
+                playwrightPage.close();
+                playwrightPage = (i == 0) ? pages.get(i + 1) : pages.get(i - 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkAccessibilityForPage(String pageTitle) throws IOException {
+        ArrayNode violations = getAccessibilityViolationsForCurrentPage();
+        if (violations.size() == 0) {
+            ReportUtility.reportPass(pageTitle + " page accessibility check passed.");
+        } else {
+            final String[] failureMessage = {""};
+            violations.forEach(e -> failureMessage[0] += e.toString());
+            List<String> violationsCategory = new ArrayList<>();
+            violations.forEach(e -> violationsCategory.add(e.get("id").textValue()));
+            ReportUtility.reportFail("\"" + pageTitle + "\" page accessibility check failed with " + violations.size() + " violations: " + violationsCategory);
+            //TODO: Below line will mess up the report if the webpage contains any json
+            ReportUtility.reportJsonAsInfo("Violations:", failureMessage[0]);
+        }
+        return violations.size() == 0;
+    }
+
+    public ArrayNode getAccessibilityViolationsForCurrentPage() throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         URL url = new URL("https://cdnjs.cloudflare.com/ajax/libs/axe-core/3.5.5/axe.min.js");
         try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
@@ -169,12 +194,8 @@ public class PlaywrightActions extends ElementActions {
         return arrayNode;
     }
 
-    protected String getFullTextFor(String text) {
-        String locatorText = isPlaywrightLocator(text) ? text : "text=" + text;
-        return playwrightPage.textContent(locatorText);
-    }
 
-    protected boolean executeJavascript(String jsCode) {
+    public boolean executeJavascript(String jsCode) {
         playwrightPage.evaluate(jsCode);
         return true;
     }
@@ -183,7 +204,7 @@ public class PlaywrightActions extends ElementActions {
         Object valueToReturn = executeOnWebAndReturnObject(args);
         if (valueToReturn == null)
             return "";
-        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned " + valueToReturn);
+        ReportUtility.reportInfo(getMethodStyleStepName(args) + " returned : " + valueToReturn);
         return valueToReturn.toString();
     }
 
@@ -199,147 +220,33 @@ public class PlaywrightActions extends ElementActions {
             return null;
         }
         try {
-            switch (args[0].toString()) {
-                case "launchBrowserAndNavigateTo":
-                    isPlaywrightStepPassed = launchBrowserAndNavigateTo(args[1].toString());
+            int numberOfParametersPassed = args.length - 1;
+            Method[] methods = this.getClass().getMethods();
+            boolean methodFound = false;
+            for (Method method : methods) {
+                if (method.getName().equals(args[0])) {
+                    methodFound = true;
+                    Object valueToReturn = null;
+                    if (numberOfParametersPassed == 0)
+                        valueToReturn = getMethod(method).invoke(this);
+                    else if (numberOfParametersPassed == 1)
+                        valueToReturn = getMethod(method).invoke(this, args[1]);
+                    else if (numberOfParametersPassed == 2)
+                        valueToReturn = getMethod(method).invoke(this, args[1], args[2]);
+                    else if (numberOfParametersPassed == 3)
+                        valueToReturn = getMethod(method).invoke(this, args[1], args[2], args[3]);
+
+                    String methodReturnType = method.getReturnType().getSimpleName();
+                    if (!methodReturnType.equals("boolean")) {
+                        return valueToReturn;
+                    }
+                    //Don't fail the test for accessibility because we may want to continue the test to go on even if accessibility check fails.
+                    isPlaywrightStepPassed = method.getName().equals("checkAccessibilityForPage") ? isPlaywrightStepPassed : (boolean) valueToReturn;
                     break;
-                case "inBrowserNavigateTo":
-                    isPlaywrightStepPassed = navigateTo(args[1].toString());
-                    break;
-                case "maximizeTheWindow":
-                    isPlaywrightStepPassed = maximizeTheWindow();
-                    break;
-                case "inBrowserNavigateBack":
-                    isPlaywrightStepPassed = inBrowserNavigateBack();
-                    break;
-                case "refreshWebPage":
-                    isPlaywrightStepPassed = refreshWebPage();
-                    break;
-                case "takeWebScreenshotWithText":
-                    return takeWebScreenshotWithText(args[1].toString());
-                case "saveAsPdfWithName":
-                    return saveAsPdfWithName(args[1].toString());
-                case "uploadFile":
-                    isPlaywrightStepPassed = uploadFile(args[1].toString());
-                    break;
-                case "getPageTitle":
-                    return playwrightPage.title();
-                case "getPageUrl":
-                    return playwrightPage.url();
-                case "forRequestUseMockStatusAndResponse":
-                    return forRequestUseMockStatusAndResponse(args[1].toString(), Integer.parseInt(args[2].toString()), args[3].toString());
-                case "checkAccessibilityForPage":
-                    ArrayNode violations = getAccessibilityViolations(args);
-                    return violations.size() == 0;
-                case "hoverOn":
-                    isPlaywrightStepPassed = hoverOn(args[1].toString());
-                    break;
-                case "scrollTo":
-                    isPlaywrightStepPassed = scrollTo(args[1].toString());
-                    break;
-                case "click":
-                    isPlaywrightStepPassed = click(args[1].toString(), false);
-                    break;
-                case "clickExactly":
-                    isPlaywrightStepPassed = click(args[1].toString(), true);
-                    break;
-                case "rightClick":
-                    isPlaywrightStepPassed = rightClick(args[1].toString());
-                    break;
-                case "clearText":
-                    isPlaywrightStepPassed = clearText();
-                    break;
-                case "clickIcon":
-                    isPlaywrightStepPassed = clickIcon(args[1].toString());
-                    break;
-                case "clickIconNextTo":
-                    isPlaywrightStepPassed = clickIconNextTo(args[1].toString(), args[2].toString());
-                    break;
-                case "clickToTheOf":
-                    isPlaywrightStepPassed = clickToTheOf(args[1].toString(), args[2].toString(), args[3].toString());
-                    break;
-                case "clickWhicheverIsDisplayedIn":
-                    isPlaywrightStepPassed = clickWhicheverIsDisplayedIn(args[1].toString());
-                    break;
-                case "switchToNewTab":
-                    isPlaywrightStepPassed = switchToNewTab();
-                    break;
-                case "closeCurrentTab":
-                    isPlaywrightStepPassed = closeCurrentTab();
-                    break;
-                case "pressKey":
-                    isPlaywrightStepPassed = pressKey(args[1].toString());
-                    break;
-                case "type":
-                    isPlaywrightStepPassed = type(args[1].toString());
-                    break;
-                case "typeIn":
-                    isPlaywrightStepPassed = typeIn(args[1].toString(), args[2].toString());
-                    break;
-                case "typeInExactly":
-                    isPlaywrightStepPassed = typeInExactly(args[1].toString(), args[2].toString());
-                    break;
-                case "typeInTextFieldNumber":
-                    isPlaywrightStepPassed = typeInTextFieldNumber(args[1].toString(), Integer.parseInt(args[2].toString()));
-                    break;
-                case "selectCheckboxForText":
-                    isPlaywrightStepPassed = selectUnselectcheckboxeswithtext(args[1].toString(), true);
-                    break;
-                case "unselectCheckboxForText":
-                    isPlaywrightStepPassed = selectUnselectcheckboxeswithtext(args[1].toString(), false);
-                    break;
-                case "selectRadioForText":
-                    isPlaywrightStepPassed = selectRadioForText(args[1].toString());
-                    break;
-                case "selectFromDropdown":
-                    isPlaywrightStepPassed = selectFromDropdown(args[1].toString(), args[2].toString());
-                    break;
-                case "getColumnWhere":
-                    return getColumnWhere(args[1].toString(), args[2].toString());
-                case "clickColumnWhere":
-                    isPlaywrightStepPassed = clickColumnWhere(args[1].toString(), args[2].toString());
-                    break;
-                case "clickInColumnWhere":
-                    isPlaywrightStepPassed = clickInColumnWhere(args[1].toString(), args[2].toString(), args[3].toString());
-                    break;
-                case "typeInColumnWhere":
-                    isPlaywrightStepPassed = typeInColumnWhere(args[1].toString(), args[2].toString(), args[3].toString());
-                    break;
-                case "isTextPresentInWebpage":
-                    isPlaywrightStepPassed = isTextPresentInWebpage(args[1].toString());
-                    break;
-                case "waitUntilElementContains":
-                    isPlaywrightStepPassed = waitUntilElementContains(args[1].toString(), args[2].toString());
-                    break;
-                case "waitUntilIsDisplayed":
-                    isPlaywrightStepPassed = waitUntilIsDisplayed(args[1].toString());
-                    break;
-                case "waitUntilElementDoesNotContain":
-                    isPlaywrightStepPassed = waitUntilElementDoesNotContain(args[1].toString(), args[2].toString());
-                    break;
-                case "waitUntilIsGone":
-                    isPlaywrightStepPassed = waitUntilIsGone(args[1].toString());
-                    break;
-                case "waitUntilOneOfIsDisplayed":
-                    isPlaywrightStepPassed = waitUntilOneOfIsDisplayed(args[1].toString());
-                    break;
-                case "waitUntilOneOfTheElementsIsEnabled":
-                    isPlaywrightStepPassed = waitUntilOneOfTheElementsIsEnabled(args[1].toString());
-                    break;
-                case "clickAndReturnAlertText":
-                    return clickAndReturnAlertText(args[1].toString());
-                case "clickAndAcceptAlertIfPresent":
-                    isPlaywrightStepPassed = clickAndAcceptAlertIfPresent(args[1].toString());
-                    break;
-                case "getFullTextFor":
-                    return getFullTextFor(args[1].toString());
-                case "getTextFromToTheOf":
-                    return getTextFromToTheOf(args[1].toString(), args[2].toString(), args[3].toString());
-                case "executeJavascript":
-                    isPlaywrightStepPassed = executeJavascript(args[1].toString());
-                    break;
-                default:
-                    throw new Exception(args[0].toString() + " method not implemented yet.");
+                }
+            }
+            if (!methodFound) {
+                throw new Exception(args[0] + " not implemented yet.");
             }
         } catch (Exception ex) {
             isPlaywrightStepPassed = false;
@@ -357,23 +264,26 @@ public class PlaywrightActions extends ElementActions {
         return isPlaywrightStepPassed;
     }
 
-    private ArrayNode getAccessibilityViolations(Object[] args) throws IOException {
-        ArrayNode violations = checkAccessibilityForPage();
-        if (violations.size() == 0) {
-            ReportUtility.reportPass(args[1].toString() + " page accessibility check passed.");
-        } else {
-            final String[] failureMessage = {""};
-            violations.forEach(e -> failureMessage[0] += e.toString());
-            List<String> violationsCategory = new ArrayList<>();
-            violations.forEach(e -> violationsCategory.add(e.get("id").textValue()));
-            ReportUtility.reportFail("\"" + args[1].toString() + "\" page accessibility check failed with " + violations.size() + " violations: " + violationsCategory);
-            ReportUtility.reportJsonAsInfo("Violations:", failureMessage[0]);
-        }
-        return violations;
+    private Method getMethod(Method method) throws NoSuchMethodException {
+        int count = method.getParameters().length;
+        if (count == 1)
+            return this.getClass().getMethod(method.getName(), String.class);
+        if (count == 2)
+            return this.getClass().getMethod(method.getName(), String.class, String.class);
+        if (count == 3)
+            return this.getClass().getMethod(method.getName(), String.class, String.class, String.class);
+        if (count == 4)
+            return this.getClass().getMethod(method.getName(), String.class, String.class, String.class, String.class);
+        if (count == 5)
+            return this.getClass().getMethod(method.getName(), String.class, String.class, String.class, String.class, String.class);
+        return method;
     }
 
-    private boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatus, String
-            mockResponse) {
+    public boolean forRequestUseMockStatusAndResponse(String requestPattern, String mockHttpStatus, String mockResponse) {
+        return forRequestUseMockStatusAndResponse(requestPattern, Integer.parseInt(mockHttpStatus), mockResponse);
+    }
+
+    private boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatus, String mockResponse) {
         playwrightPage.route(requestPattern, route -> {
             Map<String, String> headers = new HashMap<>(route.request().headers());
             headers.put("Access-Control-Allow-Origin", "*");

@@ -58,11 +58,11 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("checkAccessibilityForPage", pageName);
     }
 
-    public boolean forRequestUseMockStatusAndResponse(String requestPattern, int mockHttpStatusCode, String mockResponse) {
+    public boolean forRequestUseMockStatusAndResponse(String requestPattern, String mockHttpStatusCode, String mockResponse) {
         return SetUp.useMock ? playwrightActions.executeOnWebAndReturnBoolean("forRequestUseMockStatusAndResponse", requestPattern, mockHttpStatusCode, mockResponse) : true;
     }
 
-    public boolean uploadFile(String filePath){
+    public boolean uploadFile(String filePath) {
         return playwrightActions.executeOnWebAndReturnBoolean("uploadFile", filePath);
     }
 
@@ -123,7 +123,7 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("typeInExactly", inputText, locator);
     }
 
-    public boolean typeInTextFieldNumber(String inputText, int whichTextField) {
+    public boolean typeInTextFieldNumber(String inputText, String whichTextField) {
         return playwrightActions.executeOnWebAndReturnBoolean("typeInTextFieldNumber", inputText, whichTextField);
     }
 
@@ -187,8 +187,8 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsEnabled", locator);
     }
 
-    public boolean isTextPresentInWebpage(String text) {
-        return playwrightActions.executeOnWebAndReturnBoolean("isTextPresentInWebpage", text);
+    public boolean checkTextIsPresentInWebpage(String text) {
+        return playwrightActions.executeOnWebAndReturnBoolean("checkTextIsPresentInWebpage", text);
     }
 
     public String getFullTextFor(String text) {
@@ -200,7 +200,7 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
     }
 
     public String clickAndGetAlertText(String locator) {
-        return playwrightActions.executeOnWebAndReturnString("clickAndReturnAlertText", locator);
+        return playwrightActions.executeOnWebAndReturnString("clickAndGetAlertText", locator);
     }
 
     public boolean clickAndAcceptAlertIfPresent(String locator) {

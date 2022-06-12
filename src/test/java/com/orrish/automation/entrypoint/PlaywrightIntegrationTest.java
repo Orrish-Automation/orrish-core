@@ -35,6 +35,7 @@ public class PlaywrightIntegrationTest {
 
         /*
         PlaywrightAppiumSteps playwrightAppiumSteps = new PlaywrightAppiumSteps();
+        assertTrue(playwrightAppiumSteps.launchBrowserAndNavigateTo("https://jsonplaceholder.typicode.com/users/1"));
         ///*
     }
 
@@ -42,7 +43,7 @@ public class PlaywrightIntegrationTest {
         //*/
         PlaywrightAppiumSteps playwrightAppiumSteps = new PlaywrightAppiumSteps();
         assertTrue(playwrightAppiumSteps.launchBrowserAndNavigateTo("https://jsonplaceholder.typicode.com/users/1"));
-        playwrightAppiumSteps.forRequestUseMockStatusAndResponse("**/users/2", 200, "{\n" +
+        playwrightAppiumSteps.forRequestUseMockStatusAndResponse("**/users/2", "200", "{\n" +
                 "  \"id\": 1,\n" +
                 "  \"name\": \"Orrish Automation\",\n" +
                 "  \"username\": \"Orrish\",\n" +
@@ -52,7 +53,7 @@ public class PlaywrightIntegrationTest {
                 "}"
         );
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://jsonplaceholder.typicode.com/users/2"));
-        assertTrue(playwrightAppiumSteps.isTextPresentInWebpage("Orrish"));
+        assertTrue(playwrightAppiumSteps.checkTextIsPresentInWebpage("Orrish"));
 
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://playwright.dev/"));
         assertTrue(playwrightAppiumSteps.clickIcon("GitHub repository"));
@@ -60,7 +61,7 @@ public class PlaywrightIntegrationTest {
         assertTrue(playwrightAppiumSteps.getPageUrl().contains("github.com"));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateBack());
         assertTrue(playwrightAppiumSteps.closeCurrentTab());
-        assertTrue(playwrightAppiumSteps.hoverOn("Java"));
+        assertTrue(playwrightAppiumSteps.hoverOn("Node.js"));
         assertTrue(playwrightAppiumSteps.click("Python"));
         assertTrue(playwrightAppiumSteps.getPageUrl().contains("python"));
 
@@ -72,7 +73,7 @@ public class PlaywrightIntegrationTest {
         assertTrue(playwrightAppiumSteps.selectRadioForText("Male"));
 
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com"));
-        assertTrue(playwrightAppiumSteps.isTextPresentInWebpage("Inputs"));
+        assertTrue(playwrightAppiumSteps.checkTextIsPresentInWebpage("Inputs"));
         assertTrue("Inputs".equals(playwrightAppiumSteps.getFullTextFor("//a[contains(text(), 'Inputs')]")));
         assertTrue("Sortable Data Tables".equals(playwrightAppiumSteps.getFullTextFor("//a[contains(text(), 'Tables')]")));
         assertTrue(playwrightAppiumSteps.clickExactly("Inputs"));
@@ -82,8 +83,9 @@ public class PlaywrightIntegrationTest {
         assertTrue(playwrightAppiumSteps.click("input"));
         assertTrue(playwrightAppiumSteps.clearText());
         assertTrue(playwrightAppiumSteps.getFullTextFor("input").equals(""));
-        assertTrue(playwrightAppiumSteps.typeInTextFieldNumber("456", 1));
+        assertTrue(playwrightAppiumSteps.typeInTextFieldNumber("456", "1"));
         assertTrue(playwrightAppiumSteps.rightClick("input"));
+        assertTrue(playwrightAppiumSteps.pressKey("Escape"));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com/tinymce"));
         assertTrue(playwrightAppiumSteps.typeInExactly("hello", "Your content goes here."));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com/disappearing_elements"));
@@ -115,14 +117,15 @@ public class PlaywrightIntegrationTest {
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com/upload"));
         assertTrue(playwrightAppiumSteps.uploadFile("filename.txt"));
         playwrightAppiumSteps.clickExactly("Upload");
-        assertTrue(playwrightAppiumSteps.isTextPresentInWebpage("File Uploaded!"));
+        assertTrue(playwrightAppiumSteps.checkTextIsPresentInWebpage("File Uploaded!"));
+        assertTrue(playwrightAppiumSteps.checkAccessibilityForPage(playwrightAppiumSteps.getPageTitle()));
         assertTrue(playwrightAppiumSteps.inBrowserNavigateTo("https://the-internet.herokuapp.com/javascript_alerts"));
-        playwrightAppiumSteps.checkAccessibilityForPage(playwrightAppiumSteps.getPageTitle());
         assertTrue(playwrightAppiumSteps.clickAndAcceptAlertIfPresent("Click for JS Alert"));
         assertEquals(playwrightAppiumSteps.getTextFromToTheOf("You ", "below", "Result:"), "You successfully clicked an alert");
         assertTrue(playwrightAppiumSteps.executeJavascript("a=2"));
         assertTrue("I am a JS Alert".equals(playwrightAppiumSteps.clickAndGetAlertText("Click for JS Alert")));
-        playwrightAppiumSteps.saveAsPdfWithName("delete.pdf");
+        if (SetUp.isPlaywrightHeadless)
+            playwrightAppiumSteps.saveAsPdfWithName("delete.pdf");
         //*/
 
     }
