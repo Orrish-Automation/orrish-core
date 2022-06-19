@@ -13,20 +13,5 @@
     "id": 33,
     "step": "|Report Enabled |false|",
     "help": "If set to false, this will not generate any report. Default is true."
-  },
-  {
-    "id": 34,
-    "step": "|New email wait condition |From:value@value.com,Subject:You have new notifications,SubjectContains:You have|",
-    "help": "This is the condition to be checked while waiting for new email. You can have one or multiple conditions separated by comma."
-  },
-  {
-    "id": 35,
-    "step": "|New email wait timeout in seconds |20|",
-    "help": "Default is 10."
-  },
-  {
-    "id": 36,
-    "step": "|Email post read action |DELETE |",
-    "help": "This determines what should be done to the email after reading. Options are : DELETE, READ, NONE"
   }
 ]

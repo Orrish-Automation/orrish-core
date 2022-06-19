@@ -11,7 +11,7 @@
   },
   {
     "id": 8,
-    "step": "|Tap|#button1 |for |login button|",
+    "step": "|Tap |#button1|",
     "help": ""
   }
 ]

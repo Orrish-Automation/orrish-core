@@ -132,7 +132,7 @@ public class ExtentReportUtility {
                     throw ex;
             }
         } catch (Exception ex) {
-            getCurrentExtentTest().fail("Could not take screenshot.");
+            getCurrentExtentTest().info("Could not take screenshot.");
             getCurrentExtentTest().info(ex.toString());
             return fileName;
         }

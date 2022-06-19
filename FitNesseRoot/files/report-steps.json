@@ -16,7 +16,7 @@
   },
   {
     "id": 4,
-    "step": "|Update report |",
+    "step": "|Update report|",
     "help": "Flushes the extent report."
   },
   {
@@ -26,7 +26,7 @@
   },
   {
     "id": 6,
-    "step": "|Show image |http://someurl.png |with message |Some message |",
+    "step": "|Show image |http://someurl.png | with message |Some message |",
     "help": "Shows image in the report."
   }
 ]

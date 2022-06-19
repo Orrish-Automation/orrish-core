@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "step": "|Launch browser and navigate to |http://someurl|",
+    "step": "|Launch browser and navigate to |http://someurl.com|",
     "help": ""
   },
   {
     "id": 12,
-    "step": "|Click |Some Text |",
+    "step": "|Click |Some Text|",
     "help": ""
   },
   {

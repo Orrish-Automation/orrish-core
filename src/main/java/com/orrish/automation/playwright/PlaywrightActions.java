@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -182,7 +183,7 @@ public class PlaywrightActions extends ElementActions {
 
     public ArrayNode getAccessibilityViolationsForCurrentPage() throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
-        URL url = new URL("https://cdnjs.cloudflare.com/ajax/libs/axe-core/3.5.5/axe.min.js");
+        URL url = new URL("https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.4.2/axe.min.js");
         try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
             String line;
             while ((line = in.readLine()) != null)
@@ -215,6 +216,7 @@ public class PlaywrightActions extends ElementActions {
 
     protected Object executeOnWebAndReturnObject(Object... args) {
         if (!conditionalStep) return null;
+        String methodNamePassed = args[0].toString();
         if (!isPlaywrightStepPassed) {
             ReportUtility.reportInfo(getMethodStyleStepName(args) + " ignored due to last failure.");
             return null;
@@ -224,7 +226,7 @@ public class PlaywrightActions extends ElementActions {
             Method[] methods = this.getClass().getMethods();
             boolean methodFound = false;
             for (Method method : methods) {
-                if (method.getName().equals(args[0])) {
+                if (method.getName().equals(methodNamePassed)) {
                     methodFound = true;
                     Object valueToReturn = null;
                     if (numberOfParametersPassed == 0)
@@ -246,10 +248,13 @@ public class PlaywrightActions extends ElementActions {
                 }
             }
             if (!methodFound) {
-                throw new Exception(args[0] + " not implemented yet.");
+                throw new Exception(methodNamePassed + " not implemented yet.");
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             isPlaywrightStepPassed = false;
+            if (ex instanceof InvocationTargetException) {
+                ex = ex.getCause();
+            }
             UIStepReporter UIStepReporter = new UIStepReporter(++stepCounter, args, ex);
             UIStepReporter.reportStepResultWithScreenshotAndException(ReportUtility.REPORT_STATUS.FAIL, null);
             return false;

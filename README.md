@@ -67,19 +67,20 @@ Below is comparison table of unit test framework vs FitNesse
 ## :hammer_and_wrench: Setting up the framework on a central server
 
 <details>
-<summary><b>With docker:</b></summary>
+<summary><b>With docker:</b></summary> 
 
-- The easiest way to set up is via docker with below command. Access the automation server on the port you specified in below command.
-
-  `docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.3`
+  - Use below command to try this automation with docker. Access the automation server on the port you specified in the command.
+    
+    `docker run -p <your_desired_port>:80 suratdas/orrish-core:1.0.3`
+  - When your tests grow, you may have to copy back and forth tests/code between your host and container. To avoid that hassle, it is recommended to use manual setup.
 </details>
 
 <details>
 <summary><b>Manual Setup:</b></summary>
 
-If you don't have docker installed or if you want to set up manually, follow below process
   - Clone/download this repo.
-  - Run `pushJarAndStartFitnesse.sh` :green_book: If the port 80 is already in use or if you want to start manually, refer the help section.
+  - Run `pushJarAndStartFitnesse.sh` :green_book: If port 80 is already in use or if you want to start FitNesse manually, refer the help section.
+  - Playwright based tests depend on OS versions. Please consult Playwright documentation to see the requirement if Playwright based tests don't run on your machine. 
 </details>
 
 ## :writing_hand: Write test cases

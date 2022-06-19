@@ -7,13 +7,41 @@ css=[placeholder='Search GitHub']  or [placeholder='Search GitHub']
 xpath=//svg[contains(@aria-label,'dark mode')]
 xpath=//input[contains(@placeholder,'Username')];
 xpath=//label[contains(.,'some text')]
-xpath=//*[contains(.,'username')]
+xpath=//*[contains (text(), 'Get started' ) ]
+xpath=//button[text()='abc']
 :has-text("About"):right-of(:text("Home"))
 a:right-of(:text("Home"))
 
+Selenium child locator
+element.findElements(By.xpath("./child::*[text()='edit']"))
+element.findElements(By.xpath(".//*"))
+element.findElements(By.xpath(".//*[text()='edit']"))
 
+Appium locator
+//*[@text='Settings']
+//*[contains(@text,'Settings')]
 
 xpath parent
 xpath=..
 
+//android.widget.TextView
+//android.widget.EditText
+//android.widget.Button
+//android.widget.ImageView
+//android.widget.Switch
+//Check resource id, id, text, content-desc(accessibility id)
 
+Playwright vs Selenium diff
+iFrame/frames are an issue in Selenium for QA test cases.
+Selenium execution is a little slower
+
+Important automation aspects
+1. Ease of writing by QA
+2. Minimum setup time, low code/no code solution
+3. No flaky tests/false failures
+4. Nice reports/logs/video/screenshots
+5. Easy/Fast debugging of failures
+6. Cross browser/device testing
+7. Parallel Testing
+8. Integration with CI
+9. Integration with various end-to-end aspects including accessibility and visual tests

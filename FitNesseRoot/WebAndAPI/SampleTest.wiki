@@ -11,5 +11,5 @@ After you execute, click the link at the bottom of the page to see report.
 |Does                          |$name          |contain    |Leanne Graham   |
 |Launch browser and navigate to|http://github.com                           |
 |Type                          |Orrish core    |in         |Search GitHub   |
-|Click exactly                 |All GitHub                                  |
+|Click                         |All GitHub                                  |
 |Wait until                    |All GitHub     |is gone                     |

@@ -26,12 +26,8 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("takeWebScreenshotWithText", text);
     }
 
-    public boolean closeBrowser() {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("closeBrowser");
-    }
-
-    public boolean quitBrowser() {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("quitBrowser");
+    public String getPageUrl() {
+        return seleniumAppiumActions.executeOnWebAndReturnString("getPageUrl");
     }
 
     public String getPageTitle() {
@@ -42,30 +38,76 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("checkAccessibilityForPage", pageName);
     }
 
-    public boolean clickToTheOf(String locator, String direction, String pivotElement) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickToTheOf", locator, direction, pivotElement);
+    public boolean switchToNewTab() {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("switchToNewTab");
+    }
+
+    public boolean closeCurrentTab() {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("closeCurrentTab");
     }
 
     public boolean click(String locator) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("click", locator);
     }
 
-    //If multiple locators separated by ,, provided, the first found locator will be clicked
-    public boolean clickExactly(String textToClick) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickExactly", textToClick);
+    public boolean clickNumber(String locator, String number) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickNumber", locator, number);
     }
 
-    public boolean clickWithText(String locator, String textToClick) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickWithText", locator, textToClick);
+    public boolean clickWithPartialText(String textToClick) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickWithPartialText", textToClick);
     }
 
-    //Use double comma separated values as single comma may be present in xpath
+    public boolean clickIcon(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickIcon", locator);
+    }
+
+    public boolean clickIconNextTo(String locator, String pivotElement) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickIconNextTo", locator, pivotElement);
+    }
+
+    public boolean clickToTheOf(String locator, String direction, String pivotElement) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickToTheOf", locator, direction, pivotElement);
+    }
+
     public boolean clickWhicheverIsDisplayedIn(String locator) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickWhicheverIsDisplayedIn", locator);
     }
 
-    public boolean clickRowContainingText(String text) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickRowContainingText", text);
+    public boolean clickColumnWhere(String text, String where) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickColumnWhere", text, where);
+    }
+
+    public String getColumnWhere(String text, String where) {
+        return seleniumAppiumActions.executeOnWebAndReturnString("getColumnWhere", text, where);
+    }
+
+    public boolean clickInColumnWhere(String textToClick, String column, String where) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clickInColumnWhere", textToClick, column, where);
+    }
+
+    public boolean rightClick(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("rightClick", locator);
+    }
+
+    public boolean pressKey(String keyToPress) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("pressKey", keyToPress);
+    }
+
+    public boolean hoverOn(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("hoverOn", locator);
+    }
+
+    public boolean scrollTo(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("scrollTo", locator);
+    }
+
+    public boolean clearText() {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("clearText");
+    }
+
+    public boolean selectRadioForText(String text) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("selectRadioForText", text);
     }
 
     public boolean selectCheckboxForText(String text) {
@@ -76,53 +118,61 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("unselectCheckboxForText", text);
     }
 
-    public boolean waitUntilElementTextContains(String locator, String text) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilElementContains", locator, text);
+    public boolean typeIn(String inputText, String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("typeIn", inputText, locator);
     }
 
-    public boolean waitUntilElementTextDoesNotContain(String locator, String text) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilElementDoesNotContain", locator, text);
+    public boolean typeWithPartialText(String inputText, String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("typeWithPartialText", inputText, locator);
     }
 
-    public boolean waitUntilIsGoneFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsGone", locator, description);
+    public boolean typeInNumber(String inputText, String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("typeInNumber", inputText, locator);
     }
 
-    public boolean waitUntilIsDisplayedFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsDisplayedFor", locator, description);
+    public boolean waitUntilContains(String locator, String text) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilContains", locator, text);
     }
 
-    public boolean isElementDisplayedFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementDisplayedFor", locator, description);
+    public boolean waitUntilDoesNotContain(String locator, String text) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilDoesNotContain", locator, text);
     }
 
-    public boolean isElementEnabledFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementEnabledFor", locator, description);
+    public boolean waitUntilIsGone(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsGone", locator);
     }
 
-    public boolean isElementSelectedFor(String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isElementSelectedFor", locator, description);
+    public boolean waitUntilIsDisplayed(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilIsDisplayed", locator);
+    }
+
+    public boolean isDisplayed(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isDisplayed", locator);
+    }
+
+    public boolean isEnabled(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isEnabled", locator);
+    }
+
+    public boolean isSelected(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isSelected",locator);
     }
 
     //Double comma separated values, single comma may be present in xpath, hence double comma
-    public boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsDisplayed", locator);
+    public boolean waitUntilOneOfIsDisplayed(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfIsDisplayed", locator);
     }
 
-    public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsEnabled", locator);
+    public boolean waitUntilOneOfIsEnabled(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("waitUntilOneOfIsEnabled", locator);
     }
 
-    public boolean enterInTextFieldFor(String inputText, String locator, String description) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("enterInTextFieldIn", inputText, locator, description);
+    public boolean checkTextIsPresentInWebpage(String text) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("checkTextIsPresentInWebpage", text);
     }
 
-    public boolean enterInTextFieldNumber(String inputText, int locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("enterInTextFieldNumber", inputText, locator);
-    }
-
-    public boolean isTextPresentInWebpage(String text) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("isTextPresentInWebpage", text);
+    public boolean uploadFile(String filePath) {
+        return seleniumAppiumActions.executeOnWebAndReturnBoolean("uploadFile", filePath);
     }
 
     public String getAlertText() {
@@ -141,28 +191,16 @@ public class SeleniumAppiumSteps extends AppiumSteps {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("selectFromDropdown", inputString, locator);
     }
 
-    public boolean selectDropdownByText(String value) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("selectDropdownByText", value);
+    public String getFullTextFor(String locator) {
+        return seleniumAppiumActions.executeOnWebAndReturnString("getFullTextFor", locator);
     }
 
-    public String getTextFromElement(String locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnString("getTextFromElement", locator);
+    public String getTextFromToTheOf(String textToClick, String direction, String textToFind) {
+        return seleniumAppiumActions.executeOnWebAndReturnString("getTextFromToTheOf", textToClick, direction, textToFind);
     }
 
     public boolean executeJavascript(String scriptToExecute) {
         return seleniumAppiumActions.executeOnWebAndReturnBoolean("executeJavascript", scriptToExecute);
-    }
-
-    public boolean executeJavascriptOnElement(String scriptToExecute, String locator) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("executeJavascriptOnElement", scriptToExecute, locator);
-    }
-
-    public String getCurrentWindowId() {
-        return seleniumAppiumActions.executeOnWebAndReturnString("getCurrentWindowId");
-    }
-
-    public boolean switchToWindowId(String currentWindowId) {
-        return seleniumAppiumActions.executeOnWebAndReturnBoolean("switchToWindowId", currentWindowId);
     }
 
 }

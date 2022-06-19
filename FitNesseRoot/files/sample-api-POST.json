@@ -11,7 +11,7 @@
   },
   {
     "id": 9,
-    "step": "|Call POST with request |{}  |",
+    "step": "|Call POST with request |{}|",
     "help": ""
   }
 ]

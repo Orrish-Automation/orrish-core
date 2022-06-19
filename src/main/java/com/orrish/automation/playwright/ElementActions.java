@@ -44,11 +44,15 @@ public class ElementActions {
     }
 
     public boolean click(String value) {
+        return click(value, true);
+    }
+
+    public boolean clickWithPartialText(String value) {
         return click(value, false);
     }
 
-    public boolean clickExactly(String value) {
-        return click(value, true);
+    public boolean clickNumber(String text, String whichCount) {
+        return clickWhichElement(text, false, false, Integer.parseInt(whichCount));
     }
 
     public boolean selectCheckboxForText(String text) throws Exception {
@@ -60,11 +64,11 @@ public class ElementActions {
     }
 
     private boolean click(String text, boolean isExact) {
-        return clickWhichButton(text, isExact, false);
+        return clickWhichElement(text, isExact, false, 1);
     }
 
     public boolean rightClick(String text) {
-        return clickWhichButton(text, false, true);
+        return clickWhichElement(text, false, true, 1);
     }
 
     public boolean clearText() {
@@ -170,57 +174,36 @@ public class ElementActions {
         return true;
     }
 
-    public boolean typeIn(String value, String locatorString) {
-        boolean locatorFound = false;
-        List<String> inputElements = Arrays.asList(new String[]{"input", "textarea", "contenteditable"});
-        if (inputElements.contains(locatorString)) {
-            Locator locator = getElementWithinDefaultTime(locatorString);
-            locator.first().fill(value);
-            return true;
-        }
-        for (int i = 0; i < SetUp.defaultWaitTime && !locatorFound; i++) {
-            Locator locators = getElementWithinDefaultTime("text=" + locatorString);
-            locators = locators.count() == 0 ? getElementWithinDefaultTime("xpath=//input[contains(@placeholder,'" + locatorString + "')]") : locators;
-            if (locators.count() > 0) {
-                locators.first().fill(value);
-                return true;
-            }
-            waitSeconds(1);
-        }
-        Locator locators = getAllElementsContainingText(locatorString);
+    public boolean typeIn(String value, String locatorString) throws Exception {
+        Locator locators = getElementWithinDefaultTime(locatorString);
+        locators = locators.count() == 0 ? getElementWithinDefaultTime("xpath=//input[contains(@placeholder,'" + locatorString + "')]") : locators;
         for (int i = 0; i < locators.count(); i++) {
             Locator eachLocator = locators.nth(i);
             String tagName = eachLocator.elementHandle().getProperty("tagName").jsonValue().toString();
-            if (tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input")) {
-                eachLocator.fill(value);
-                return true;
+            if (!tagName.equalsIgnoreCase("input")) {
+                for (int j = 0; eachLocator.locator("input").count() == 0 && j < 10; j++)
+                    eachLocator = eachLocator.locator("xpath=..");
             }
-        }
-        return false;
-    }
-
-    public boolean typeInExactly(String value, String locatorString) throws Exception {
-        getElementWithinDefaultTime("text='" + locatorString + "'");
-        List<String> inputElements = Arrays.asList(new String[]{"input", "textarea", "contenteditable"});
-        if (inputElements.contains(locatorString)) {
-            Locator locator = getElementWithinDefaultTime(locatorString);
-            locator.first().fill(value);
-        } else {
-            Locator locators = getAllElementsContainingText(locatorString);
-            for (int i = 0; i < locators.count(); i++) {
-                Locator eachLocator = locators.nth(i);
+            tagName = eachLocator.elementHandle().getProperty("tagName").jsonValue().toString();
+            eachLocator = tagName.equalsIgnoreCase("input") ? eachLocator : eachLocator.locator("input");
+            try {
                 eachLocator.fill(value);
                 return true;
+            } catch (Exception ex) {
             }
         }
         throw new Exception("Could not find the locator : " + locatorString);
     }
 
-    public boolean typeInTextFieldNumber(String text, String whichField) {
-        return typeInTextFieldNumber(text, Integer.parseInt(whichField));
+    public boolean typeWithPartialText(String value, String locatorString) throws Exception {
+        return typeIn(value, "text=" + locatorString);
     }
 
-    private boolean typeInTextFieldNumber(String text, int whichField) {
+    public boolean typeInNumber(String text, String whichField) {
+        return typeInNumber(text, Integer.parseInt(whichField));
+    }
+
+    private boolean typeInNumber(String text, int whichField) {
         playwrightPage.waitForSelector("input");
         Locator locator = playwrightPage.locator("input");
         locator.nth(whichField - 1).fill(text); //Convert to zero based index.
@@ -236,18 +219,14 @@ public class ElementActions {
 
     public String clickAndGetAlertText(String locatorText) throws Exception {
         final String[] message = new String[1];
-        playwrightPage.onDialog(dialog -> {
-            message[0] = dialog.message();
-        });
+        playwrightPage.onDialog(dialog -> message[0] = dialog.message());
         Locator locator = getFirstElementWithExactText(locatorText);
         locator.click();
         return message[0];
     }
 
     public boolean clickAndAcceptAlertIfPresent(String locatorText) {
-        playwrightPage.onDialog(dialog -> {
-            dialog.accept();
-        });
+        playwrightPage.onDialog(dialog -> dialog.accept());
         Locator locator = getAllElementsContainingText(locatorText);
         locator.first().click();
         return true;
@@ -276,7 +255,7 @@ public class ElementActions {
         return false;
     }
 
-    public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
+    public boolean waitUntilOneOfIsEnabled(String locator) {
         return waitUntilOneOfTheElements(locator, "enabled");
     }
 
@@ -367,11 +346,11 @@ public class ElementActions {
         return isTag || isId || isClass || isContainingText || isXpath;
     }
 
-    public boolean waitUntilElementContains(String locator, String text) {
+    public boolean waitUntilContains(String locator, String text) {
         return waitUntilElementTextCheck(locator, text, true);
     }
 
-    public boolean waitUntilElementDoesNotContain(String locator, String text) {
+    public boolean waitUntilDoesNotContain(String locator, String text) {
         return waitUntilElementTextCheck(locator, text, false);
     }
 
@@ -481,26 +460,20 @@ public class ElementActions {
         return playwrightPage.locator("DoesNotExist");
     }
 
-    private boolean clickWhichButton(String text, boolean isExact, boolean isRightClick) {
+    private boolean clickWhichElement(String locatorText, boolean isExact, boolean isRightClick, int whichElement) {
+        lastLocatorInteractedWith = getEmptyLocator();
         Locator.ClickOptions clickOptions = new Locator.ClickOptions();
         if (isRightClick)
             clickOptions.setButton(MouseButton.RIGHT);
-        if (isPlaywrightLocator(text)) {
-            playwrightPage.waitForSelector(text);
-            lastLocatorInteractedWith = playwrightPage.locator(text).first();
+        if (isPlaywrightLocator(locatorText)) {
+            playwrightPage.waitForSelector(locatorText);
+            lastLocatorInteractedWith = playwrightPage.locator(locatorText).nth(whichElement - 1);
             lastLocatorInteractedWith.click(clickOptions);
         } else {
-            waitUntilIsDisplayed(text);
+            waitUntilIsDisplayed(locatorText);
             try {
-                try {
-                    lastLocatorInteractedWith = getEmptyLocator();
-                    lastLocatorInteractedWith = isExact ? getFirstElementWithExactText(text) : getAllElementsContainingText(text);
-                } catch (Exception ex) {
-                    lastLocatorInteractedWith = getElementWithinDefaultTime("[value='" + text + "']");
-                }
-                if (lastLocatorInteractedWith.count() > 1)
-                    lastLocatorInteractedWith = lastLocatorInteractedWith.first();
-
+                lastLocatorInteractedWith = isExact ? getAllElementsWithExactText(locatorText) : getAllElementsContainingText(locatorText);
+                lastLocatorInteractedWith = lastLocatorInteractedWith.nth(whichElement - 1);
                 lastLocatorInteractedWith.click(clickOptions);
             } catch (TimeoutError ex) {
                 //Force click it per comment in https://github.com/microsoft/playwright/issues/12298#issuecomment-1051261068
@@ -566,6 +539,12 @@ public class ElementActions {
         Locator placeholderSelectors = getElementWithinDefaultTime(locatorString);
 
         return placeholderSelectors;
+    }
+
+    private Locator getAllElementsWithExactText(String text) {
+        waitUntilIsDisplayed(text);
+        String locatorString = "text='" + text + "'";
+        return getElementWithinDefaultTime(locatorString);
     }
 
     private Locator getFirstElementWithExactText(String text) throws Exception {
