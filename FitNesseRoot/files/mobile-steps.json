@@ -36,57 +36,67 @@
   },
   {
     "id": 8,
-    "step": "|Tap|#button1 |for |login button|",
-    "help": ""
+    "step": "|Tap |#button1|",
+    "help": "You can use either text or locator"
   },
   {
     "id": 9,
-    "step": "|Tap with text |value|",
-    "help": ""
+    "step": "|Tap |Username| number |2|",
+    "help": "If you have similar text/locator, specify which one to tap."
   },
   {
     "id": 10,
-    "step": "|Tap whichever is displayed in |#successbutton,,#errorbutton|",
+    "step": "|Tap with partial text |some text|",
     "help": ""
   },
   {
     "id": 11,
-    "step": "|In mobile wait until element |#button1 |text contains |some data|",
-    "help": ""
+    "step": "|Tap whichever is displayed in |#successbutton,,#errorbutton|",
+    "help": "Double comma separated value."
   },
   {
     "id": 12,
-    "step": "|In mobile wait until element |#button1 |text does not contain |some data|",
+    "step": "|In mobile enter |john.doe| in text field |#txt_un |",
     "help": ""
   },
   {
     "id": 13,
-    "step": "|In mobile wait until |#button1 |is gone for |login button|",
+    "step": "|In mobile enter |John Doe| in text field number |2|",
     "help": ""
   },
   {
     "id": 14,
-    "step": "|In mobile wait until |#home |is displayed for |home button|",
+    "step": "|$value=| In mobile get full text from |#button|",
     "help": ""
   },
   {
     "id": 15,
-    "step": "|In mobile wait until one of the elements |#successButton,,#errorButton |is displayed|",
+    "step": "|In mobile wait until |#home | is displayed|",
     "help": ""
   },
   {
     "id": 16,
-    "step": "|In mobile wait until one of the elements |#successButton,,#errorButton |is enabled|",
+    "step": "|In mobile wait until |#button1 | is gone|",
     "help": ""
   },
   {
     "id": 17,
-    "step": "|In mobile enter |john.doe |in text field |#txt_un |for |username textfield|",
+    "step": "|In mobile wait until |#button1| contains |some data|",
     "help": ""
   },
   {
     "id": 18,
-    "step": "|$value= |In mobile get text from element |#button|",
+    "step": "|In mobile wait until |#button1 | does not contain |some data|",
     "help": ""
+  },
+  {
+    "id": 19,
+    "step": "|In mobile wait until one of |#successButton,,#errorButton | is displayed|",
+    "help": "Double comma separated value."
+  },
+  {
+    "id": 20,
+    "step": "|In mobile wait until one of |#successButton,,#errorButton | is enabled|",
+    "help": "Double comma separated value."
   }
 ]

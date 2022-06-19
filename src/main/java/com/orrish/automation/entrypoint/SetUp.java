@@ -51,7 +51,7 @@ public class SetUp {
     //Mobile - Common to iOS and Android
     public static String appiumServerURL;
     public static String automationName;
-    public static String platformName;
+    public static String platform;
     public static String platformVersion;
     public static String deviceName;
     public static int defaultWaitTime = 3;
@@ -241,8 +241,8 @@ public class SetUp {
         return true;
     }
 
-    public boolean platformName(String platform) {
-        platformName = platform;
+    public boolean platform(String platform) {
+        SetUp.platform = platform;
         return true;
     }
 

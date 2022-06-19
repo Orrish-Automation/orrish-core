@@ -26,3 +26,4 @@ This uses Playwright Appium Steps. If you use Selenium based grid, please use th
 |Take screenshot at each step|false       |
 |Playwright headless         |true        |
 |Browser                     |chrome      |
+|Default wait time in seconds|10          |

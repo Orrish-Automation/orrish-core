@@ -12,7 +12,7 @@ jobs:
     container: maven:3.5-jdk-8
     services:
       hub:
-        image: selenium/standalone-firefox:4.1.2-20220217
+        image: selenium/standalone-chrome:102.0
         ports:
           - 4444:4444
           - 7900:7900

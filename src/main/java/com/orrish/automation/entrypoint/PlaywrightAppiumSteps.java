@@ -78,8 +78,12 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("click", locator);
     }
 
-    public boolean clickExactly(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("clickExactly", locator);
+    public boolean clickWithPartialText(String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("clickWithPartialText", locator);
+    }
+
+    public boolean clickNumber(String text, String whichCount) {
+        return playwrightActions.executeOnWebAndReturnBoolean("clickNumber", text, whichCount);
     }
 
     public boolean rightClick(String locator) {
@@ -88,10 +92,6 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
 
     public boolean clickToTheOf(String textToClick, String direction, String textToFind) {
         return playwrightActions.executeOnWebAndReturnBoolean("clickToTheOf", textToClick, direction, textToFind);
-    }
-
-    public boolean clearText() {
-        return playwrightActions.executeOnWebAndReturnBoolean("clearText");
     }
 
     public boolean clickIcon(String iconText) {
@@ -111,6 +111,10 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("pressKey", value);
     }
 
+    public boolean clearText() {
+        return playwrightActions.executeOnWebAndReturnBoolean("clearText");
+    }
+
     public boolean type(String inputText) {
         return playwrightActions.executeOnWebAndReturnBoolean("type", inputText);
     }
@@ -119,12 +123,12 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("typeIn", inputText, locator);
     }
 
-    public boolean typeInExactly(String inputText, String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("typeInExactly", inputText, locator);
+    public boolean typeWithPartialText(String inputText, String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("typeWithPartialText", inputText, locator);
     }
 
-    public boolean typeInTextFieldNumber(String inputText, String whichTextField) {
-        return playwrightActions.executeOnWebAndReturnBoolean("typeInTextFieldNumber", inputText, whichTextField);
+    public boolean typeInNumber(String inputText, String whichTextField) {
+        return playwrightActions.executeOnWebAndReturnBoolean("typeInNumber", inputText, whichTextField);
     }
 
     //For multiple checkboxes, you can separate with double comma
@@ -175,16 +179,16 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfIsDisplayed", locator);
     }
 
-    public boolean waitUntilElementContains(String locator, String text) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilElementContains", locator, text);
+    public boolean waitUntilContains(String locator, String text) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilContains", locator, text);
     }
 
-    public boolean waitUntilElementDoesNotContain(String locator, String text) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilElementDoesNotContain", locator, text);
+    public boolean waitUntilDoesNotContain(String locator, String text) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilDoesNotContain", locator, text);
     }
 
-    public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
-        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfTheElementsIsEnabled", locator);
+    public boolean waitUntilOneOfIsEnabled(String locator) {
+        return playwrightActions.executeOnWebAndReturnBoolean("waitUntilOneOfIsEnabled", locator);
     }
 
     public boolean checkTextIsPresentInWebpage(String text) {

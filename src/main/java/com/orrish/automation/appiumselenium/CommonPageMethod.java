@@ -7,6 +7,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.locators.RelativeLocator;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -22,7 +23,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.textMatches;
 
 public class CommonPageMethod {
 
-    protected static boolean takeScreenshotWithText(String text, RemoteWebDriver driver) {
+    protected boolean takeScreenshotWithText(String text, RemoteWebDriver driver) {
         if (screenshotDelayInSeconds > 0) {
             waitSeconds(screenshotDelayInSeconds);
         }
@@ -32,27 +33,22 @@ public class CommonPageMethod {
         return true;
     }
 
-    public static boolean waitForElementSync(WebDriver webDriver, WebDriverWait webDriverWait, String locator, boolean shouldBeDisplayed) {
-        List<String> locators = Arrays.asList(locator.split(",,"));
-        locators.removeIf(e -> e.trim().length() == 0);
-        for (String eachLocator : locators) {
-            if (shouldBeDisplayed) {
-                webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(getElementBy(eachLocator.trim())));
-            } else {
-                List<WebElement> elementList = webDriver.findElements(getElementBy(eachLocator.trim()));
-                webDriverWait.until(ExpectedConditions.invisibilityOfAllElements(elementList));
-            }
+    public boolean waitForElementDisplayedOrGone(WebDriver webDriver, WebDriverWait webDriverWait, By locator, boolean shouldBeDisplayed) {
+        if (shouldBeDisplayed) {
+            webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        } else {
+            List<WebElement> elementList = webDriver.findElements(locator);
+            webDriverWait.until(ExpectedConditions.invisibilityOfAllElements(elementList));
         }
         return true;
     }
 
-    public static WebElement waitUntilOneOfTheElementsIs(WebDriver webDriver, String locator, boolean enabled) {
-        String[] locatorList = locator.split(",,");
+    protected WebElement waitUntilOneOfTheElementsIs(WebDriver webDriver, List<By> locator, boolean enabled) {
         for (int i = 0; i < 10; ++i) {
             waitSeconds(1);
-            for (String eachLocator : locatorList) {
+            for (By eachLocator : locator) {
                 try {
-                    WebElement element = webDriver.findElement(getElementBy(eachLocator));
+                    WebElement element = webDriver.findElement(eachLocator);
                     if (enabled && element.isEnabled()) {
                         return element;
                     } else if (element.isDisplayed()) {
@@ -65,46 +61,46 @@ public class CommonPageMethod {
         return null;
     }
 
-    public static boolean waitUntilElementTextContains(WebDriverWait webDriverWait, String locator, String text) {
-        webDriverWait.until(textMatches(getElementBy(locator), Pattern.compile(".*" + text + ".*")));
+    public boolean waitUntilElementTextContains(WebDriverWait webDriverWait, By locator, String text) {
+        webDriverWait.until(textMatches(locator, Pattern.compile(".*" + text + ".*")));
         return true;
     }
 
-    public static boolean waitUntilElementTextDoesNotContain(WebDriverWait webDriverWait, String locator, String text) {
-        webDriverWait.until(ExpectedConditions.not(textMatches(getElementBy(locator), Pattern.compile(".*" + text + ".*"))));
+    public boolean waitUntilElementTextDoesNotContain(WebDriverWait webDriverWait, By locator, String text) {
+        webDriverWait.until(ExpectedConditions.not(textMatches(locator, Pattern.compile(".*" + text + ".*"))));
         return true;
     }
 
-    public static WebElement waitForAndGetElement(WebDriver webDriver, WebDriverWait webDriverWait, By byElement) {
+    public WebElement waitForAndGetElement(WebDriver webDriver, WebDriverWait webDriverWait, By byElement) {
         webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(byElement));
         return webDriver.findElement(byElement);
     }
 
-    public static boolean isElementDisplayedFor(RemoteWebDriver webDriver, String locator) {
+    protected boolean isElementDisplayed(RemoteWebDriver webDriver, By locator) {
         try {
-            return webDriver.findElement(getElementBy(locator)).isDisplayed();
+            return webDriver.findElement(locator).isDisplayed();
         } catch (Exception ex) {
             return false;
         }
     }
 
-    public static boolean isElementEnabledFor(RemoteWebDriver webDriver, WebDriverWait webDriverWait, String locator) {
+    public boolean isElementEnabled(RemoteWebDriver webDriver, WebDriverWait webDriverWait, By locator) {
         try {
-            return waitForAndGetElement(webDriver, webDriverWait, getElementBy(locator)).isEnabled();
+            return waitForAndGetElement(webDriver, webDriverWait, locator).isEnabled();
         } catch (Exception ex) {
             return false;
         }
     }
 
-    public static boolean isElementSelectedFor(RemoteWebDriver webDriver, WebDriverWait webDriverWait, String locator) {
+    protected boolean isElementSelected(RemoteWebDriver webDriver, WebDriverWait webDriverWait, By locator) {
         try {
-            return waitForAndGetElement(webDriver, webDriverWait, getElementBy(locator)).isSelected();
+            return waitForAndGetElement(webDriver, webDriverWait, locator).isSelected();
         } catch (Exception ex) {
             return false;
         }
     }
 
-    public static By getElementBy(String locator) {
+    public By getElementBy(String locator) {
         locator = deduceDescriptiveElementLocatorValue(locator);
         if (locator.startsWith("/"))
             return By.xpath(locator);
@@ -114,14 +110,19 @@ public class CommonPageMethod {
             return By.className(locator.replaceFirst(".", ""));
         if (locator.startsWith("name="))
             return By.name(locator.replace("name=", ""));
-        if (locator.startsWith("text=")) {
-            String valueToFind = locator.replace("text=", "");
-            return By.xpath("//*[text() = '" + valueToFind + "' ]");
-        }
-        return By.cssSelector(locator);
+        if (locator.contains("[") && locator.contains("]"))
+            return By.cssSelector(locator);
+
+        List<String> htmlTags = Arrays.asList(new String[]{"a", "input", "img", "button", "div", "span", "p"});
+        if (htmlTags.contains(locator))
+            return By.tagName(locator);
+
+        String valueToFind = locator.replace("text=", "");
+        return By.xpath("//*[text()='" + valueToFind + "']");
+        //return By.xpath("//*[contains (text(), '" + valueToFind + "')]");
     }
 
-    public static String deduceDescriptiveElementLocatorValue(String locator) {
+    private static String deduceDescriptiveElementLocatorValue(String locator) {
         if (locator.startsWith("id="))
             return locator.replaceFirst("id=", "#");
         if (locator.startsWith("xpath="))
@@ -133,90 +134,37 @@ public class CommonPageMethod {
         return locator;
     }
 
-    public static boolean clickWithText(WebDriver webDriver, WebDriverWait webDriverWait, String locator, String text) {
-        //If locator has comma separated multiple values
-        if (locator.contains(",")) {
-            String[] locators = locator.split(",,");
-            for (String eachLocator : locators) {
-                WebElement targetElement = getElement(webDriver, eachLocator, text);
-                if (targetElement != null) {
-                    targetElement.click();
-                    return true;
-                }
-            }
-        } else {
-            webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(getElementBy(locator)));
-            getElement(webDriver, locator, text).click();
-            return true;
-        }
-        return false;
-    }
-
-    private static WebElement getElement(WebDriver webDriver, String locator, String text) {
-        List<WebElement> webElementList = webDriver.findElements(getElementBy(locator));
-        return getTargetElementWithText(webElementList, text, locator);
-    }
-
-    public static WebElement getTargetElementWithText(List<WebElement> elements, String text, String locator) {
-        for (WebElement webElement : elements) {
-            if (webElement.getText().trim().equals(text.trim())) {
-                return webElement;
-            }
-            WebElement parentElement = webElement.findElement(By.xpath(".."));
-            for (int i = 0; i < 10; i++) {
-                try {
-                    String[] textsToCompare = parentElement.getText().contains("\n") ? parentElement.getText().split("\n") : new String[]{parentElement.getText().trim()};
-                    if (Arrays.asList(textsToCompare).contains(text.trim())) {
-                        if (parentElement.findElements(getElementBy(locator)).size() > 1)
-                            break;
-                        else {
-                            return webElement;
-                        }
-                    }
-                    parentElement = parentElement.findElement(By.xpath(".."));
-                } catch (Exception ex) {
-                    break;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static WebElement findFirstElementDisplayed(WebDriver webDriver, String locator) throws Exception {
-        String[] elementLocators = locator.split(",,");
+    public WebElement findFirstElementDisplayed(WebDriver webDriver, List<By> locators) throws Exception {
         //Trying 10 times before giving up.
         for (int i = 0; i < 10; i++) {
-            for (String eachLocator : elementLocators) {
+            for (By eachBy : locators) {
                 try {
-                    return webDriver.findElement(getElementBy(eachLocator.trim()));
+                    WebElement webElement = webDriver.findElement(eachBy);
+                    if (webElement.isDisplayed())
+                        return webElement;
                 } catch (Exception ex) {
                 }
             }
         }
-        throw new Exception("Could not find any of the elements from " + locator);
+        throw new Exception("Could not find any of the elements provided.");
     }
 
-    public static boolean enterInTextField(WebDriver webDriver, WebDriverWait webDriverWait, String input, String locator) {
-        try {
-            //Sometimes, there may be more than one element with similar locator and first one may be there but not actionable
-            WebElement webElement = waitForAndGetElement(webDriver, webDriverWait, getElementBy(locator));
-            webElement.clear();
-            webElement.sendKeys(input);
-            return true;
-        } catch (Exception ex) {
-            List<WebElement> elements = webDriver.findElements(getElementBy(locator));
-            for (WebElement element : elements) {
-                try {
-                    element.sendKeys(input);
-                    return true;
-                } catch (Exception ex1) {
-                }
-            }
-        }
-        return false;
+    //Appium throws org.openqa.selenium.InvalidSelectorException: Locator Strategy 'relative' is not supported for this session
+    //Keeping it Common page for now in case it is available in future for Appium.
+    protected WebElement findElementToTheOf(RemoteWebDriver webDriver, By finalElementBy, String direction, By pivotElementBy) {
+        By locatorToFind = null;
+        if (direction.contains("above"))
+            locatorToFind = RelativeLocator.with(finalElementBy).above(pivotElementBy);
+        if (direction.contains("below"))
+            locatorToFind = RelativeLocator.with(finalElementBy).below(pivotElementBy);
+        if (direction.contains("right"))
+            locatorToFind = RelativeLocator.with(finalElementBy).toRightOf(pivotElementBy);
+        if (direction.contains("left"))
+            locatorToFind = RelativeLocator.with(finalElementBy).toLeftOf(pivotElementBy);
+        return webDriver.findElement(locatorToFind);
     }
 
-    public static void reportExecutionStatusWithScreenshotAndException(boolean isStepPassed, Object[] args, RemoteWebDriver remoteWebDriver, Throwable ex) {
+    public void reportExecutionStatusWithScreenshotAndException(boolean isStepPassed, Object[] args, RemoteWebDriver remoteWebDriver, Throwable ex) {
         if (isStepPassed && !isScreenshotAtEachStepEnabled)
             ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {

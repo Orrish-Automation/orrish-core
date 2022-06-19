@@ -7,7 +7,7 @@
     <groupId>com.orrish</groupId>
     <artifactId>orrish-core</artifactId>
     <!--Remember to update version in the other pom file too.-->
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 
     <name>${project.artifactId}</name>
     <description>Test Automation With Central Setup Alone</description>
@@ -37,12 +37,12 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>8.1.0</version>
+            <version>8.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>4.2.1</version>
+            <artifactId>selenium-support</artifactId>
+            <version>4.2.2</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.playwright</groupId>

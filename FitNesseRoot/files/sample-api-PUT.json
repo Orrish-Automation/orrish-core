@@ -11,7 +11,7 @@
   },
   {
     "id": 11,
-    "step": "|Call PUT with request |$request  |",
+    "step": "|Call PUT with request |$request|",
     "help": ""
   }
 ]

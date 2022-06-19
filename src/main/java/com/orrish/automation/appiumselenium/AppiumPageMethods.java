@@ -6,23 +6,25 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.remote.AndroidMobileCapabilityType;
-import io.appium.java_client.remote.MobileCapabilityType;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.touch.TouchActions;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.orrish.automation.appiumselenium.CommonPageMethod.getElementBy;
 import static com.orrish.automation.entrypoint.SetUp.*;
 
-public class AppiumPageMethods {
+public class AppiumPageMethods extends CommonPageMethod {
 
     protected AppiumDriver appiumDriver;
     protected WebDriverWait appiumDriverWait;
@@ -41,63 +43,41 @@ public class AppiumPageMethods {
         return appiumPageMethods;
     }
 
-    public AppiumDriver getAppiumDriver() {
-        return appiumDriver;
-    }
-
-    public WebDriverWait getWebDriverWait() {
-        return appiumDriverWait;
-    }
-
     public boolean launchAppOnDevice() throws MalformedURLException {
-
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("autoGrantPermissions", true);
-        capabilities.setCapability("allowTestPackages", true);
-        capabilities.setCapability("fullReset", true);
-        if (platformName != null) {
-            capabilities.setCapability("platformName", platformName);
-        }
-        if (deviceName != null) {
-            capabilities.setCapability("deviceName", deviceName);
-        }
-        if (platformVersion != null) {
-            capabilities.setCapability("platformVersion", platformVersion);
-        }
-        if (app != null) {
-            capabilities.setCapability("app", app);
-        }
-        if (automationName != null) {
-            capabilities.setCapability("automationName", automationName);
-        }
-        if (APP_ACTIVITY != null) {
-            capabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, APP_PACKAGE);
-            capabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, APP_ACTIVITY);
-        }
-        capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 300);
-        if (xcodeOrgId != null) {
-            capabilities.setCapability("xcodeOrgId", xcodeOrgId);
-        }
-        if (xcodeSigningId != null) {
-            capabilities.setCapability("xcodeSigningId", xcodeSigningId);
-        }
-        if (udid != null) {
-            capabilities.setCapability("udid", udid);
-        }
-        if (executionCapabilities.size() > 0) {
-            executionCapabilities.forEach((key, value) -> capabilities.setCapability(key, value));
-        }
-        if (platformName.toLowerCase().contains("android")) {
-            appiumDriver = new AndroidDriver(new URL(appiumServerURL), capabilities);
-        } else {
-            appiumDriver = new IOSDriver(new URL(appiumServerURL), capabilities);
-        }
+        appiumDriver = platform.toLowerCase().contains("android") ? launchAppOnAndroidDevice() : launchAppOniOSDevice();
         appiumDriverWait = new WebDriverWait(appiumDriver, Duration.ofSeconds(defaultWaitTime));
         return true;
     }
 
-    protected boolean takeMobileScreenshotWithText(String text) {
-        CommonPageMethod.takeScreenshotWithText(text, appiumDriver);
+    private AppiumDriver launchAppOnAndroidDevice() throws MalformedURLException {
+
+        UiAutomator2Options options = new UiAutomator2Options();
+        if (deviceName != null) options.setDeviceName(deviceName);
+        if (platformVersion != null) options.setPlatformVersion(platformVersion);
+        if (app != null) options.setApp(app);
+        if (automationName != null) options.setAutomationName(automationName);
+        if (APP_PACKAGE != null) options.setAppPackage(APP_PACKAGE);
+        if (APP_ACTIVITY != null) options.setAppActivity(APP_ACTIVITY);
+        executionCapabilities.forEach((key, value) -> options.amend(key, value));
+        options.setNewCommandTimeout(Duration.ofSeconds(300));
+        return new AndroidDriver(new URL(appiumServerURL), options);
+    }
+
+    private AppiumDriver launchAppOniOSDevice() throws MalformedURLException {
+
+        XCUITestOptions options = new XCUITestOptions();
+        if (deviceName != null) options.setDeviceName(deviceName);
+        if (platformVersion != null) options.setPlatformVersion(platformVersion);
+        if (app != null) options.setApp(app);
+        if (automationName != null) options.setAutomationName(automationName);
+        if (udid != null) options.setUdid(udid);
+        executionCapabilities.forEach((key, value) -> options.amend(key, value));
+        options.setNewCommandTimeout(Duration.ofSeconds(300));
+        return new IOSDriver(new URL(appiumServerURL), options);
+    }
+
+    public boolean takeMobileScreenshotWithText(String text) {
+        takeScreenshotWithText(text, appiumDriver);
         return true;
     }
 
@@ -119,15 +99,15 @@ public class AppiumPageMethods {
     }
 
     public boolean pressBackKey() {
-        if (appiumDriver.getCapabilities().getPlatformName().name().toLowerCase().contains("android"))
+        if (isPlatformAndroid())
             ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.BACK));
         return true;
     }
 
     public boolean pressHomeKey() {
-        if (appiumDriver.getCapabilities().getPlatformName().name().toLowerCase().contains("android"))
+        if (isPlatformAndroid())
             ((AndroidDriver) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
-        else if (appiumDriver.getCapabilities().getPlatformName().name().toLowerCase().contains("ios"))
+        else if (isPlatformiOS())
             appiumDriver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
         return true;
     }
@@ -143,60 +123,118 @@ public class AppiumPageMethods {
         return true;
     }
 
-
-    public boolean inMobileWaitUntilTextIsDisplayed(String locator) {
-        return CommonPageMethod.waitForElementSync(appiumDriver, appiumDriverWait, locator, true);
-    }
-
-    public boolean inMobileWaitUntilTextIsGone(String locator) {
-        return CommonPageMethod.waitForElementSync(appiumDriver, appiumDriverWait, locator, false);
-    }
-
-    public boolean waitUntilOneOfTheElementsIsDisplayed(String locator) {
-        WebElement element = CommonPageMethod.waitUntilOneOfTheElementsIs(appiumDriver, locator, false);
-        return element != null;
-    }
-
-    public boolean waitUntilOneOfTheElementsIsEnabled(String locator) {
-        WebElement webElement = CommonPageMethod.waitUntilOneOfTheElementsIs(appiumDriver, locator, true);
-        return webElement != null;
-    }
-
-    public boolean waitUntilElementContains(String locator, String text) {
-        CommonPageMethod.waitUntilElementTextContains(appiumDriverWait, locator, text);
-        return true;
-    }
-
-    public boolean waitUntilElementDoesNotContain(String locator, String text) {
-        CommonPageMethod.waitUntilElementTextDoesNotContain(appiumDriverWait, locator, text);
-        return true;
-    }
-
     public boolean tap(String locator) {
-        CommonPageMethod.waitForAndGetElement(appiumDriver, appiumDriverWait, CommonPageMethod.getElementBy(locator)).click();
+        getAppiumElement(locator).click();
         return true;
     }
 
-    public boolean tapWithText(String locator, String text) {
-        return CommonPageMethod.clickWithText(appiumDriver, appiumDriverWait, locator, text);
+    public boolean tapNumber(String locator, String number) {
+        List<WebElement> elementList = appiumDriver.findElements(getAppiumElementBy(locator));
+        elementList.get(Integer.parseInt(number) - 1).click();
+        return true;
+    }
+
+    public boolean tapWithPartialText(String locator) {
+        By by = By.xpath("//*[contains(@text,'" + locator + "')]");
+        appiumDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by));
+        appiumDriver.findElement(by).click();
+        return true;
     }
 
     public boolean tapWhicheverIsDisplayedIn(String locator) throws Exception {
-        WebElement webElement = CommonPageMethod.findFirstElementDisplayed(appiumDriver, locator);
+        WebElement webElement = findFirstElementDisplayed(appiumDriver, getAllByFromLocator(locator));
         webElement.click();
         return true;
     }
 
-    public boolean enterInTextFieldIn(String input, String locator) {
-        return CommonPageMethod.enterInTextField(appiumDriver, appiumDriverWait, input, locator);
+    public boolean inMobileEnterInTextFieldNumber(String input, String number) {
+        String locator = isPlatformAndroid() ? "//android.widget.EditText" : "//XCUIElementTypeTextField";
+        List<WebElement> webElementList = appiumDriver.findElements(By.xpath(locator));
+        webElementList.get(Integer.parseInt(number) - 1).sendKeys(input);
+        return true;
     }
 
-    public String getTextFromElement(String locator) {
-        return CommonPageMethod.waitForAndGetElement(appiumDriver, appiumDriverWait, getElementBy(locator)).getText();
+    public boolean inMobileEnterInTextField(String input, String locator) {
+        WebElement webElement = getAppiumElement(locator);
+        webElement.clear();
+        webElement.sendKeys(input);
+        return true;
     }
 
-    public void reportExecutionStatusWithScreenshotAndException(boolean isPassed, Object[] args, Exception ex) {
-        CommonPageMethod.reportExecutionStatusWithScreenshotAndException(isPassed, args, appiumDriver, ex);
+    public String inMobileGetFullTextFrom(String locator) {
+        By by = isAppiumLocator(locator) ? getAppiumElementBy(locator) : By.xpath("//*[contains(@text,'" + locator + "')]");
+        return appiumDriver.findElement(by).getText();
+    }
+
+    public boolean inMobileWaitUntilIsDisplayed(String locator) {
+        return waitForElementDisplayedOrGone(appiumDriver, appiumDriverWait, getAppiumElementBy(locator), true);
+    }
+
+    public boolean inMobileWaitUntilIsGone(String locator) {
+        return waitForElementDisplayedOrGone(appiumDriver, appiumDriverWait, getAppiumElementBy(locator), false);
+    }
+
+    public boolean inMobileWaitUntilOneOfIsDisplayed(String locator) {
+        WebElement element = waitUntilOneOfTheElementsIs(appiumDriver, getAllByFromLocator(locator), false);
+        return element != null;
+    }
+
+    public boolean inMobileWaitUntilOneOfIsEnabled(String locator) {
+        WebElement webElement = waitUntilOneOfTheElementsIs(appiumDriver, getAllByFromLocator(locator), true);
+        return webElement != null;
+    }
+
+    public boolean inMobileWaitUntilContains(String locator, String text) {
+        By by = isAppiumLocator(locator) ? getAppiumElementBy(locator) : By.xpath("//*[contains(@text,'" + locator + "')]");
+        waitUntilElementTextContains(appiumDriverWait, by, text);
+        return true;
+    }
+
+    public boolean inMobileWaitUntilDoesNotContain(String locator, String text) {
+        By by = isAppiumLocator(locator) ? getAppiumElementBy(locator) : By.xpath("//*[contains(@text,'" + locator + "')]");
+        waitUntilElementTextDoesNotContain(appiumDriverWait, by, text);
+        return true;
+    }
+
+    private boolean isPlatformAndroid() {
+        return appiumDriver.getCapabilities().getPlatformName().name().equalsIgnoreCase("android");
+    }
+
+    private boolean isPlatformiOS() {
+        return appiumDriver.getCapabilities().getPlatformName().name().equalsIgnoreCase("ios");
+    }
+
+    private void reportExecutionStatusWithScreenshotAndException(boolean isPassed, Object[] args, Exception ex) {
+        reportExecutionStatusWithScreenshotAndException(isPassed, args, appiumDriver, ex);
+    }
+
+    private boolean isAppiumLocator(String locatorString) {
+        if (locatorString.startsWith("text="))
+            return false;
+        boolean isId = locatorString.startsWith("#") || locatorString.startsWith("id=");
+        boolean isClass = locatorString.startsWith(".") || locatorString.startsWith("class=");
+        boolean isName = locatorString.startsWith("name=");
+        boolean isXpath = locatorString.trim().startsWith("//");
+        return isId || isClass || isName || isXpath;
+    }
+
+    private By getAppiumElementBy(String locator) {
+        return isAppiumLocator(locator) ? getElementBy(locator) : By.xpath("//*[@text='" + locator.replace("text=", "") + "']");
+    }
+
+    private List<By> getAllByFromLocator(String locator) {
+        String[] elementLocators = locator.split(",,");
+        List<By> by = new ArrayList<>();
+        for (String elementLocator : elementLocators) {
+            by.add(getAppiumElementBy(elementLocator));
+        }
+        return by;
+    }
+
+    private WebElement getAppiumElement(String locator) {
+        By by = getAppiumElementBy(locator);
+        appiumDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by));
+        return appiumDriver.findElement(by);
     }
 
 }

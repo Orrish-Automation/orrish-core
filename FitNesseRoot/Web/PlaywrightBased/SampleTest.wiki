@@ -9,5 +9,5 @@ After you execute, click the link at the bottom of the page to see report. Ensur
 |Set test name                 |Sample test                 |
 |Launch browser and navigate to|https://github.com          |
 |Type                          |Orrish core|in|Search GitHub|
-|Click exactly                 |All GitHub                  |
+|Click                         |All GitHub                  |
 |Wait until                    |All GitHub |is gone         |

@@ -1,132 +1,132 @@
 [
   {
     "id": 1,
-    "step": "|$value= |echo |some value|",
+    "step": "|$value=| echo |some value|",
     "help": "Just returns the passed text. Useful when we want to use as variable."
   },
   {
     "id": 2,
-    "step": "|Download from url  |http://someurl/sample.png |and save as |sample.png|",
+    "step": "|Download from url  |http://someurl/sample.png | and save as |sample.png|",
     "help": "It will be saved where Fitnesse is running."
   },
   {
     "id": 3,
-    "step": "|$value= |Concatenate |string1  |and  |string2|",
+    "step": "|$value=| Concatenate |string1  | and  |string2|",
     "help": ""
   },
   {
     "id": 4,
-    "step": "|Is |4567  |only digits |",
+    "step": "|Is |4567| only digits|",
     "help": ""
   },
   {
     "id": 5,
-    "step": "|Are all values in list |$dbResult |one of  |[,null]|",
+    "step": "|Are all values in list |$dbResult | one of  |[,null]|",
     "help": ""
   },
   {
     "id": 6,
-    "step": "|$value |Get sum of integer values in list |[34,23,67]  |",
+    "step": "|$value=| Get sum of integer values in list |[34,23,67]  |",
     "help": ""
   },
   {
     "id": 7,
-    "step": "|$value= |Get sum of decimal values in list |[34.56,345.56,1.01]|",
+    "step": "|$value=| Get sum of decimal values in list |[34.56,345.56,1.01]|",
     "help": ""
   },
   {
     "id": 8,
-    "step": "|$value= |Get |6 |character random alpha numeric string |",
+    "step": "|$value=| Get |6 | character random alpha numeric string |",
     "help": ""
   },
   {
     "id": 9,
-    "step": "|$value= |Get |3 |digit random numeric value|",
+    "step": "|$value=| Get |3 | digit random numeric value|",
     "help": ""
   },
   {
     "id": 10,
-    "step": "|$currentTime= |Get current time in the format |MMddyyyyHHmmss |",
+    "step": "|$currentTime=| Get current time in the format |MMddyyyyHHmmss |",
     "help": ""
   },
   {
     "id": 11,
-    "step": "|$time= |Get time in the format |MMddyyyyHHmmss |plus days from today |3|",
+    "step": "|$time=| Get time in the format |MMddyyyyHHmmss | plus days from today |3|",
     "help": ""
   },
   {
     "id": 12,
-    "step": "|$currentTime= |Get current GMT time in the format |MMddyyyy|",
+    "step": "|$currentTime=| Get current GMT time in the format |MMddyyyy|",
     "help": ""
   },
   {
     "id": 13,
-    "step": "|$pastDate= |Get GMT time in the format|MMddyyyyHHmmss |minus |2 |days from today|",
+    "step": "|$pastDate=| Get GMT time in the format|MMddyyyyHHmmss | minus |2 | days from today|",
     "help": ""
   },
   {
     "id": 14,
-    "step": "|$pastDate= |Get GMT time in the format |MMddyyyyHHmmss |plus |2 |days from today|",
+    "step": "|$pastDate=| Get GMT time in the format |MMddyyyyHHmmss | plus |2 | days from today|",
     "help": ""
   },
   {
     "id": 15,
-    "step": "|Wait |5 |seconds |",
+    "step": "|Wait |5| seconds |",
     "help": ""
   },
   {
     "id": 16,
-    "step": "|$value= |Split |abce-adsfa |with delimiter |-|",
+    "step": "|$value=| Split |abce-adsfa| with delimiter |-|",
     "help": ""
   },
   {
     "id": 17,
-    "step": "|$value= |Split |abce-adsfa  |with delimiter |- |and return last string|",
+    "step": "|$value=| Split |abce-adsfa | with delimiter |- | and return last string|",
     "help": ""
   },
   {
     "id": 18,
-    "step": "|$value= |Get index |1 |from array |[a,b]|",
+    "step": "|$value=| Get index |1| from array |[a,b]|",
     "help": ""
   },
   {
     "id": 19,
-    "step": "|Does  |value1 |contain  |value2|",
+    "step": "|Does  |value1 | contain  |value2|",
     "help": ""
   },
   {
     "id": 20,
-    "step": "|Does |$value1 |contain by ignoring case |$value2 |",
+    "step": "|Does |$value1 | contain by ignoring case |$value2 |",
     "help": ""
   },
   {
     "id": 21,
-    "step": "|Does |value1 |start with  |value2|",
+    "step": "|Does |value1 | start with  |value2|",
     "help": ""
   },
   {
     "id": 22,
-    "step": "|Does |value1 |match pattern |value2|",
+    "step": "|Does |value1 | match pattern |value2|",
     "help": ""
   },
   {
     "id": 23,
-    "step": "|Is |$valueFromResponse |Equal |$valueFromDB|",
+    "step": "|Is |$valueFromResponse | eqqual |$valueFromDB|",
     "help": ""
   },
   {
     "id": 24,
-    "step": "|Is value |name |in |username |is |Present|",
+    "step": "|Is value |name | in |username | is |Present|",
     "help": ""
   },
   {
     "id": 25,
-    "step": "|Is List |$listFromResponse |equal |$listFromDB|",
+    "step": "|Is List |$listFromResponse| equal |$listFromDB|",
     "help": ""
   },
   {
     "id": 26,
-    "step": "|Is |$value|one of |[value1,value2]|",
+    "step": "|Is |$value| one of |[value1,value2]|",
     "help": ""
   },
   {
@@ -146,22 +146,22 @@
   },
   {
     "id": 30,
-    "step": "|Create file |target/someFile.txt |with content |text|",
+    "step": "|Create file |target/someFile.txt | with content |text|",
     "help": ""
   },
   {
     "id": 30,
-    "step": "|Append file |target/someFile.txt |with content |text|",
+    "step": "|Append file |target/someFile.txt | with content |text|",
     "help": ""
   },
   {
     "id": 31,
-    "step": "|Replace text |value |with |newValue |in file | SomeFolder/someFile.txt |",
+    "step": "|Replace text |value | with |newValue | in file | SomeFolder/someFile.txt |",
     "help": ""
   },
   {
     "id": 32,
-    "step": "|Delete line with text |someValue |in file |SomeFolder/someFile.txt|",
+    "step": "|Delete line with text |someValue | in file |SomeFolder/someFile.txt|",
     "help": ""
   },
   {
@@ -176,7 +176,7 @@
   },
   {
     "id": 35,
-    "step": "|$value= |Is |string1 |equal |string2 |without validation|",
+    "step": "|$value=| Is |string1 | equal |string2 | without validation|",
     "help": "Returns boolean value which can be used to conditionally execute steps."
   },
   {
@@ -186,32 +186,32 @@
   },
   {
     "id": 37,
-    "step": "|$API_KEY= |Get |API_KEY |from system environment variables|",
+    "step": "|$API_KEY=| Get |API_KEY | from system environment variables|",
     "help": "If you want to get sensitive information from environment variable. Example: cloud provider API key etc."
   },
   {
     "id": 38,
-    "step": "|$countOfUnreadMessage= |For text |You have 5 unread message. |get value between |You have |and |unread |",
+    "step": "|$countOfUnreadMessage=| For text |You have 5 unread message. | get value between |You have | and |unread |",
     "help": "Useful if you want to extract value like Auth code, PIN, OTP, amount, count etc."
   },
   {
     "id": 39,
-    "step": "|$countOfUnreadMessage= |For text |You have 5 unread message. |get single word after text |You have |",
+    "step": "|$countOfUnreadMessage=| For text |You have 5 unread message. | get single word after text |You have |",
     "help": "Useful if you want to extract value like Auth code, PIN, OTP, amount, count etc."
   },
   {
     "id": 40,
-    "step": "|$emailDetails= |Get new gmail message for username |userid |and password |pw |",
-    "help": "Enable low security in Gmail account. This will wait until time defined in settings for a new message."
+    "step": "|$emailDetails=| Get new gmail message for username |userid | and password |pw |",
+    "help": "This will wait until time defined in settings for a new message. You may have to enable two factor authentication and then use App password instead of regular password due to Gmail Security."
   },
   {
     "id": 41,
-    "step": "|$emailSubject= |Get |Subject |from key value |$emailDetails |",
+    "step": "|$emailSubject=| Get |Subject | from key value |$emailDetails |",
     "help": "Getting a specific value from key-value pairs like HashMap."
   },
   {
     "id": 42,
-    "step": "|Send email to |someone@domain.com |with subject |subject |with body |body |for username |userid |and password |password|",
+    "step": "|Send email to |someone@domain.com | with subject |subject | with body |body | for username |userid | and password |password|",
     "help": "Works with Gmail only for now."
   }
 ]

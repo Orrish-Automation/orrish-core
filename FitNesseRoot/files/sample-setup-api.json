@@ -11,12 +11,12 @@
   },
   {
     "id": 10,
-    "step": "|Json request template  | {}|",
+    "step": "|Json request template |{}|",
     "help": "A template can be defined in Set up which then can be used in tests to modify data."
   },
   {
     "id": 11,
-    "step": "|$baseServer= |Base server |http://ip:port|",
+    "step": "|$baseServer=| Base server |http://ip:port|",
     "help": ""
   }
 ]
