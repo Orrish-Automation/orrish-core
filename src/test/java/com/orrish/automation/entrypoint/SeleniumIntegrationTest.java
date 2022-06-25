@@ -25,7 +25,7 @@ public class SeleniumIntegrationTest {
         new TearDown();
     }
 
-    @Test
+    //@Test
     public void sampleTest() {
         SeleniumAppiumSteps seleniumAppiumSteps = new SeleniumAppiumSteps();
         assertTrue(seleniumAppiumSteps.launchBrowserAndNavigateTo("https://playwright.dev/"));

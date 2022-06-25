@@ -3,6 +3,7 @@ package com.orrish.automation.playwright;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.Cookie;
 import com.orrish.automation.entrypoint.SetUp;
 import com.orrish.automation.utility.report.ReportUtility;
 import com.orrish.automation.utility.report.UIStepReporter;
@@ -85,9 +86,9 @@ public class PlaywrightActions extends ElementActions {
                 throw new IllegalStateException("Unexpected value: " + SetUp.browser.trim().toUpperCase());
         }
         Browser.NewContextOptions browserContext = new Browser.NewContextOptions().setIgnoreHTTPSErrors(true);
-        if (isVideoRecordingEnabled()) {
-            browserContext.setRecordVideoDir(Paths.get("videos/"));
-        }
+        browserContext = isVideoRecordingEnabled() ? browserContext.setRecordVideoDir(Paths.get("videos/")) : browserContext;
+        browserContext = (browserWidth > 0 && browserHeight > 0) ? browserContext.setViewportSize(browserWidth, browserHeight) : browserContext;
+        browserContext = (userAgent.length() > 0) ? browserContext.setUserAgent(userAgent) : browserContext;
         BrowserContext context = browser.newContext(browserContext);
         playwrightPage = context.newPage();
         playwrightPage.setDefaultNavigationTimeout(playwrightDefaultNavigationWaitTimeInSeconds * 1000);
@@ -121,6 +122,22 @@ public class PlaywrightActions extends ElementActions {
 
     public String getPageTitle() {
         return playwrightPage.title();
+    }
+
+    public String getCookies() {
+        List<Cookie> cookies = playwrightPage.context().cookies();
+        StringBuilder valueToReturn = new StringBuilder();
+        cookies.forEach(e -> valueToReturn.append(e.name + "=" + e.value));
+        return valueToReturn.toString();
+    }
+
+    public String getCookie(String cookieName) {
+        List<Cookie> cookies = playwrightPage.context().cookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.name.equals(cookieName))
+                return cookie.value;
+        }
+        return "";
     }
 
     public boolean takeWebScreenshotWithText(String text) {
@@ -259,7 +276,7 @@ public class PlaywrightActions extends ElementActions {
             UIStepReporter.reportStepResultWithScreenshotAndException(ReportUtility.REPORT_STATUS.FAIL, null);
             return false;
         }
-        if (isPlaywrightStepPassed && !isScreenshotAtEachStepEnabled)
+        if (isPlaywrightStepPassed && !isScreenshotAtEachStepEnabled || methodNamePassed.equals("takeWebScreenshotWithText"))
             ReportUtility.reportPass(getMethodStyleStepName(args) + " performed successfully.");
         else {
             ReportUtility.REPORT_STATUS status = isPlaywrightStepPassed ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;

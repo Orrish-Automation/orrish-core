@@ -244,8 +244,8 @@ public class VerifyUtility {
     public static VerificationResultModel compareIs(String actualValueString, String expectedCountString) {
         if (expectedCountString.contains("not null")) {
             if (String.valueOf(actualValueString).trim().equalsIgnoreCase("null"))
-                return new VerificationResultModel(false, actualValueString + " is not null.");
-            return new VerificationResultModel(true, actualValueString + " is verified to be null.");
+                return new VerificationResultModel(false, actualValueString + " is null.");
+            return new VerificationResultModel(true, actualValueString + " is verified to be not null.");
         }
         if (expectedCountString.contains("null")) {
             if (String.valueOf(actualValueString).trim().equalsIgnoreCase("null"))

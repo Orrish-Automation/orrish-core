@@ -36,6 +36,7 @@ public class SetUp {
     public static Map<String, String> executionCapabilities = new HashMap<>();
     public static int screenshotDelayInSeconds = 0;
     public static boolean useMock;
+    public static String userAgent = "";
 
     //Web only - common
     public static String browser = "CHROME";
@@ -216,12 +217,17 @@ public class SetUp {
         valuePassed = valuePassed.toUpperCase();
         try {
             if (valuePassed.contains("X")) {
-                browserWidth = Integer.parseInt(valuePassed.split("X")[0]);
-                browserHeight = Integer.parseInt(valuePassed.split("X")[1]);
+                browserWidth = Integer.parseInt(valuePassed.split("X")[0].trim());
+                browserHeight = Integer.parseInt(valuePassed.split("X")[1].trim());
             }
         } catch (Exception ex) {
             return false;
         }
+        return true;
+    }
+
+    public boolean userAgent(String s) {
+        userAgent = s;
         return true;
     }
 

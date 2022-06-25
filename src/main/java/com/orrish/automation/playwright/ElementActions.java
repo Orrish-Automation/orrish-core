@@ -32,6 +32,11 @@ public class ElementActions {
         return false;
     }
 
+    public String getPropertyOf(String property, String element) {
+        element = isPlaywrightLocator(element) ? element : "text='" + element + "'";
+        return getElementWithinDefaultTime(element).first().getAttribute(property);
+    }
+
     public boolean hoverOn(String text) throws Exception {
         getFirstElementWithExactText(text).hover();
         return true;
@@ -53,27 +58,6 @@ public class ElementActions {
 
     public boolean clickNumber(String text, String whichCount) {
         return clickWhichElement(text, false, false, Integer.parseInt(whichCount));
-    }
-
-    public boolean selectCheckboxForText(String text) throws Exception {
-        return selectUnselectcheckboxeswithText(text, true);
-    }
-
-    public boolean unselectCheckboxForText(String text) throws Exception {
-        return selectUnselectcheckboxeswithText(text, false);
-    }
-
-    private boolean click(String text, boolean isExact) {
-        return clickWhichElement(text, isExact, false, 1);
-    }
-
-    public boolean rightClick(String text) {
-        return clickWhichElement(text, false, true, 1);
-    }
-
-    public boolean clearText() {
-        lastLocatorInteractedWith.fill("");
-        return true;
     }
 
     public boolean clickIcon(String textToClick) throws Exception {
@@ -102,34 +86,34 @@ public class ElementActions {
         return true;
     }
 
-    public boolean typeInColumnWhere(String textToType, String columnToGet, String valueToFind) throws Exception {
-        Locator locator = getTargetTableCell(columnToGet, valueToFind);
-        locator.locator("input").type(textToType);
-        return true;
-    }
-
-    public String getColumnWhere(String columnToGet, String valueToFind) throws Exception {
-        return getTargetTableCell(columnToGet, valueToFind).textContent();
-    }
-
-    private Locator getRelativeImage(String iconTextToClick, String direction, String textToFind) {
-        //svg:right-of(:text("Home"))
-        String relativeLocatorString = ":" + getDirection(direction) + "(:text(\"" + textToFind + "\"))";
-        Locator icons = getIconCorrespondingTo(iconTextToClick, "svg" + relativeLocatorString);
-        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "img" + relativeLocatorString) : icons;
-        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "button" + relativeLocatorString) : icons;
-        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "a" + relativeLocatorString) : icons;
-        return icons;
-    }
-
     public boolean clickToTheOf(String textToClick, String direction, String textToFind) {
         lastLocatorInteractedWith = getRelativeTextElement(textToClick, direction, textToFind);
         lastLocatorInteractedWith.click();
         return true;
     }
 
-    public String getTextFromToTheOf(String textToClick, String direction, String textToFind) {
-        return getRelativeTextElement(textToClick, direction, textToFind).textContent();
+    public boolean keepClickingUntilContains(String buttonToClick, String textToLocate, String expectedText) throws Exception {
+        Locator icons = getEmptyLocator();
+        int count = 0;
+        //Setting 24 for two years during a calendar navigation.
+        while (++count < 24) {
+            icons = getIconCorrespondingTo(buttonToClick, "svg");
+            icons = (icons.count() == 0) ? getIconCorrespondingTo(buttonToClick, "img") : icons;
+            icons = (icons.count() == 0) ? getIconCorrespondingTo(buttonToClick, "button") : icons;
+            icons = (icons.count() == 0) ? getIconCorrespondingTo(buttonToClick, "a") : icons;
+            if (icons.count() == 0) {
+                icons = isPlaywrightLocator(buttonToClick) ? getElementWithinDefaultTime(buttonToClick) : getElementWithinDefaultTime("text='" + buttonToClick + "'");
+            }
+            if (icons.count() == 0)
+                throw new Exception("Did not get any element with : " + buttonToClick);
+            Locator locatorToCheck = isPlaywrightLocator(textToLocate) ? getElementWithinDefaultTime(textToLocate) : getElementWithinDefaultTime("text='" + textToLocate + "'");
+            if (locatorToCheck.textContent().contains(expectedText)) {
+                return true;
+            }
+            icons.first().click();
+            waitSeconds(1);
+        }
+        return false;
     }
 
     public boolean clickIconNextTo(String iconToClick, String textToFind) throws Exception {
@@ -164,17 +148,67 @@ public class ElementActions {
         throw new Exception("Could not find any element with the selected criteria. " + locator);
     }
 
+    public boolean rightClick(String text) {
+        return clickWhichElement(text, false, true, 1);
+    }
+
+    public boolean selectCheckboxForText(String text) throws Exception {
+        return selectUnselectcheckboxeswithText(text, true);
+    }
+
+    public boolean unselectCheckboxForText(String text) throws Exception {
+        return selectUnselectcheckboxeswithText(text, false);
+    }
+
+    public boolean selectFromDropdown(String value, String locatorText) {
+        Locator locator = playwrightPage.locator("text=" + locatorText);
+        locator = locator.locator("xpath=..");
+        locator.selectOption(new SelectOption().setLabel(value));
+        return true;
+    }
+
+    public boolean selectRadioForText(String text) throws Exception {
+
+        //Locator radioHandles = getElementWithinDefaultTime("[type=radio]:left-of(:text(\"" + text + "\"))");
+        //radioHandles = (radioHandles.count() == 0) ? getElementWithinDefaultTime("xpath=//label[contains(.,'" + text + "')]") : radioHandles;
+        Locator radioHandles = getTargetInputElement(text, "radio");
+        if (radioHandles.count() == 0)
+            throw new Exception("Could not find a radio button with text " + text);
+        try {
+            radioHandles.first().click();
+        } catch (TimeoutError ex) {
+            radioHandles.first().click(new Locator.ClickOptions().setForce(true));
+        }
+        return true;
+    }
+
+    public String clickAndGetAlertText(String locatorText) throws Exception {
+        final String[] message = new String[1];
+        playwrightPage.onDialog(dialog -> message[0] = dialog.message());
+        Locator locator = getFirstElementWithExactText(locatorText);
+        locator.click();
+        return message[0];
+    }
+
+    public boolean clickAndAcceptAlertIfPresent(String locatorText) {
+        playwrightPage.onDialog(dialog -> dialog.accept());
+        Locator locator = getAllElementsContainingText(locatorText);
+        locator.first().click();
+        return true;
+    }
+
+    public boolean clearText() {
+        lastLocatorInteractedWith.fill("");
+        return true;
+    }
+
     public boolean type(String value) {
         lastLocatorInteractedWith.type(value);
         return true;
     }
 
-    public boolean pressKey(String value) {
-        playwrightPage.keyboard().press(value);
-        return true;
-    }
-
     public boolean typeIn(String value, String locatorString) throws Exception {
+        locatorString = isPlaywrightLocator(locatorString) ? locatorString : "text='" + locatorString + "'";
         Locator locators = getElementWithinDefaultTime(locatorString);
         locators = locators.count() == 0 ? getElementWithinDefaultTime("xpath=//input[contains(@placeholder,'" + locatorString + "')]") : locators;
         for (int i = 0; i < locators.count(); i++) {
@@ -203,33 +237,28 @@ public class ElementActions {
         return typeInNumber(text, Integer.parseInt(whichField));
     }
 
-    private boolean typeInNumber(String text, int whichField) {
-        playwrightPage.waitForSelector("input");
-        Locator locator = playwrightPage.locator("input");
-        locator.nth(whichField - 1).fill(text); //Convert to zero based index.
+    public boolean typeInColumnWhere(String textToType, String columnToGet, String valueToFind) throws Exception {
+        Locator locator = getTargetTableCell(columnToGet, valueToFind);
+        locator.locator("input").type(textToType);
         return true;
     }
 
-    public boolean selectFromDropdown(String value, String locatorText) {
-        Locator locator = playwrightPage.locator("text=" + locatorText);
-        locator = locator.locator("xpath=..");
-        locator.selectOption(new SelectOption().setLabel(value));
+    public String getColumnWhere(String columnToGet, String valueToFind) throws Exception {
+        return getTargetTableCell(columnToGet, valueToFind).textContent();
+    }
+
+    public String getTextFromToTheOf(String textToClick, String direction, String textToFind) {
+        return getRelativeTextElement(textToClick, direction, textToFind).textContent();
+    }
+
+    public boolean pressKey(String value) {
+        playwrightPage.keyboard().press(value);
         return true;
     }
 
-    public String clickAndGetAlertText(String locatorText) throws Exception {
-        final String[] message = new String[1];
-        playwrightPage.onDialog(dialog -> message[0] = dialog.message());
-        Locator locator = getFirstElementWithExactText(locatorText);
-        locator.click();
-        return message[0];
-    }
-
-    public boolean clickAndAcceptAlertIfPresent(String locatorText) {
-        playwrightPage.onDialog(dialog -> dialog.accept());
-        Locator locator = getAllElementsContainingText(locatorText);
-        locator.first().click();
-        return true;
+    public boolean waitUntilIsDisplayed(String locatorText) {
+        locatorText = isPlaywrightLocator(locatorText) ? locatorText : "text=" + locatorText;
+        return getElementWithinDefaultTime(locatorText).count() > 0;
     }
 
     public boolean waitUntilIsGone(String locatorText) {
@@ -240,6 +269,10 @@ public class ElementActions {
             waitSeconds(1);
         }
         return false;
+    }
+
+    public boolean waitUntilOneOfIsEnabled(String locator) {
+        return waitUntilOneOfTheElements(locator, "enabled");
     }
 
     public boolean waitUntilOneOfIsDisplayed(String locatorString) {
@@ -255,13 +288,58 @@ public class ElementActions {
         return false;
     }
 
-    public boolean waitUntilOneOfIsEnabled(String locator) {
-        return waitUntilOneOfTheElements(locator, "enabled");
+    public boolean waitUntilContains(String locator, String text) {
+        return waitUntilElementTextCheck(locator, text, true);
     }
 
-    public boolean waitUntilIsDisplayed(String locatorText) {
-        locatorText = isPlaywrightLocator(locatorText) ? locatorText : "text=" + locatorText;
-        return getElementWithinDefaultTime(locatorText).count() > 0;
+    public boolean waitUntilDoesNotContain(String locator, String text) {
+        return waitUntilElementTextCheck(locator, text, false);
+    }
+
+    public String getFullTextFor(String text) {
+        String locatorText = isPlaywrightLocator(text) ? text : "text=" + text;
+        return playwrightPage.textContent(locatorText);
+    }
+
+    public boolean uploadFile(String filePath) throws Exception {
+        Locator fileButtons = getElementWithinDefaultTime("input[type='file']");
+        if (fileButtons.count() == 0)
+            throw new Exception("Could not find any button of type file.");
+        fileButtons.first().setInputFiles(Paths.get(filePath));
+        return true;
+    }
+
+    private boolean isPlaywrightLocator(String locatorString) {
+        boolean isTag = htmlTags.contains(locatorString.trim());
+        if (!isTag && locatorString.contains("[")) {
+            isTag = htmlTags.contains(locatorString.split("\\[")[0]);
+        }
+        boolean isId = locatorString.startsWith("#");
+        boolean isClass = locatorString.startsWith(".");
+        boolean isContainingText = locatorString.contains(":has-text") || locatorString.contains(":text");
+        boolean isXpath = locatorString.trim().startsWith("//") || locatorString.trim().startsWith("(//");
+        return isTag || isId || isClass || isContainingText || isXpath;
+    }
+
+    private Locator getRelativeImage(String iconTextToClick, String direction, String textToFind) {
+        //svg:right-of(:text("Home"))
+        String relativeLocatorString = ":" + getDirection(direction) + "(:text(\"" + textToFind + "\"))";
+        Locator icons = getIconCorrespondingTo(iconTextToClick, "svg" + relativeLocatorString);
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "img" + relativeLocatorString) : icons;
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "button" + relativeLocatorString) : icons;
+        icons = (icons.count() == 0) ? getIconCorrespondingTo(iconTextToClick, "a" + relativeLocatorString) : icons;
+        return icons;
+    }
+
+    private boolean click(String text, boolean isExact) {
+        return clickWhichElement(text, isExact, false, 1);
+    }
+
+    private boolean typeInNumber(String text, int whichField) {
+        waitUntilIsDisplayed("input");
+        Locator locator = getElementWithinDefaultTime("//input[@type='password'] | //input[@type='text'] | //input[@type='number'] | //input[@type='email'] | //input[@type='search'] | //input[@type='tel'] | //input[@type='url']");
+        locator.nth(whichField - 1).fill(text); //Convert to zero based index.
+        return true;
     }
 
     private boolean isElementDisplayed(String locatorText) {
@@ -273,7 +351,11 @@ public class ElementActions {
     private Locator getElementWithinDefaultTime(String locatorText) {
         for (int i = 0; i < SetUp.defaultWaitTime; i++) {
             Locator locator = playwrightPage.locator(locatorText + " >> visible=true");
-            locator = locator.count() == 0 ? getElementFromFrameIfPresent(locatorText + " >> visible=true") : locator;
+            try {
+                locator = locator.count() == 0 ? getElementFromFrameIfPresent(locatorText + " >> visible=true") : locator;
+            } catch (Exception ex) {
+                //Some website throws "message='Execution context was destroyed, most likely because of a navigation" during frame loading.
+            }
             if (locator.count() > 0)
                 return locator;
             waitSeconds(1);
@@ -334,41 +416,6 @@ public class ElementActions {
         return probableLocator.first();
     }
 
-    public boolean isPlaywrightLocator(String locatorString) {
-        boolean isTag = htmlTags.contains(locatorString.trim());
-        if (!isTag && locatorString.contains("[")) {
-            isTag = htmlTags.contains(locatorString.split("\\[")[0]);
-        }
-        boolean isId = locatorString.startsWith("#");
-        boolean isClass = locatorString.startsWith(".");
-        boolean isContainingText = locatorString.contains(":has-text") || locatorString.contains(":text");
-        boolean isXpath = locatorString.trim().startsWith("//");
-        return isTag || isId || isClass || isContainingText || isXpath;
-    }
-
-    public boolean waitUntilContains(String locator, String text) {
-        return waitUntilElementTextCheck(locator, text, true);
-    }
-
-    public boolean waitUntilDoesNotContain(String locator, String text) {
-        return waitUntilElementTextCheck(locator, text, false);
-    }
-
-    public boolean selectRadioForText(String text) throws Exception {
-
-        //Locator radioHandles = getElementWithinDefaultTime("[type=radio]:left-of(:text(\"" + text + "\"))");
-        //radioHandles = (radioHandles.count() == 0) ? getElementWithinDefaultTime("xpath=//label[contains(.,'" + text + "')]") : radioHandles;
-        Locator radioHandles = getTargetInputElement(text, "radio");
-        if (radioHandles.count() == 0)
-            throw new Exception("Could not find a radio button with text " + text);
-        try {
-            radioHandles.first().click();
-        } catch (TimeoutError ex) {
-            radioHandles.first().click(new Locator.ClickOptions().setForce(true));
-        }
-        return true;
-    }
-
     private boolean selectUnselectcheckboxeswithText(String stringToFind, boolean shouldBeSelected) throws Exception {
         List<String> textsToActOn = Arrays.asList(stringToFind.split(",,"));
         Locator finalLocatorToClick = null;
@@ -380,19 +427,6 @@ public class ElementActions {
             if ((finalLocatorToClick.isChecked() && !shouldBeSelected) || (!finalLocatorToClick.isChecked() && shouldBeSelected))
                 finalLocatorToClick.click();
         }
-        return true;
-    }
-
-    public String getFullTextFor(String text) {
-        String locatorText = isPlaywrightLocator(text) ? text : "text=" + text;
-        return playwrightPage.textContent(locatorText);
-    }
-
-    public boolean uploadFile(String filePath) throws Exception {
-        Locator fileButtons = getElementWithinDefaultTime("input[type='file']");
-        if (fileButtons.count() == 0)
-            throw new Exception("Could not find any button of type file.");
-        fileButtons.first().setInputFiles(Paths.get(filePath));
         return true;
     }
 
@@ -466,8 +500,8 @@ public class ElementActions {
         if (isRightClick)
             clickOptions.setButton(MouseButton.RIGHT);
         if (isPlaywrightLocator(locatorText)) {
-            playwrightPage.waitForSelector(locatorText);
-            lastLocatorInteractedWith = playwrightPage.locator(locatorText).nth(whichElement - 1);
+            waitUntilIsDisplayed(locatorText);
+            lastLocatorInteractedWith = getElementWithinDefaultTime(locatorText).nth(whichElement - 1);
             lastLocatorInteractedWith.click(clickOptions);
         } else {
             waitUntilIsDisplayed(locatorText);

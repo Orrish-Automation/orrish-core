@@ -36,6 +36,7 @@ public class APISteps {
     public Map<String, String> apiRequestFormParams;
     public Map<String, Object> apiRequestMultipartValues;
     public Map<String, String> apiRequestHeaders = new HashMap<>();
+    public Map<String, String> apiRequestCookies = new HashMap<>();
 
     GeneralSteps generalSteps = new GeneralSteps();
 
@@ -53,6 +54,14 @@ public class APISteps {
         apiRequestHeaders.putAll(defaultApiRequestHeaders);
         apiRequestHeaders.putAll(getMapFromString(headers, "="));
         apiRequestHeaders.entrySet().removeIf(eachValue -> eachValue.getValue().trim().equalsIgnoreCase("doNotPass"));
+        return true;
+    }
+
+    public boolean setRequestCookies(String headers) {
+        if (!conditionalStep) return true;
+        apiRequestCookies.clear();
+        apiRequestCookies.putAll(getMapFromString(headers, "="));
+        apiRequestCookies.entrySet().removeIf(eachValue -> eachValue.getValue().trim().equalsIgnoreCase("doNotPass"));
         return true;
     }
 
@@ -168,6 +177,12 @@ public class APISteps {
         return callWithRequest("GET", null);
     }
 
+    public boolean callHEADForEndpoint(String serverEndpoint) {
+        if (!conditionalStep) return true;
+        setServerEndpoint(serverEndpoint);
+        return callWithRequest("HEAD", null);
+    }
+
     public boolean callGETWithRequest(String requestBody) {
         return callWithRequest("GET", requestBody);
     }
@@ -208,6 +223,18 @@ public class APISteps {
         boolean value = getApiActions().callWithRequest(type, requestBody, true);
         ReportUtility.setReportPortalOverallTestResult(value);
         return value;
+    }
+
+    public boolean isUrlValidWithCookies(String url, String cookies) {
+        if (!conditionalStep) return true;
+        setRequestCookies(cookies);
+        callHEADForEndpoint(url);
+        boolean isSuccess = apiResponse.getStatusCode() == 200;
+        boolean isZeroLengthContent = apiResponse.getHeader("Content-Length").equals("0");
+        boolean isValidLink = isSuccess && !isZeroLengthContent;
+        ReportUtility.REPORT_STATUS status = isValidLink ? ReportUtility.REPORT_STATUS.PASS : ReportUtility.REPORT_STATUS.FAIL;
+        ReportUtility.report(status, url + " url validation is " + status);
+        return isValidLink;
     }
 
     public String getResponseBody() {
@@ -271,21 +298,26 @@ public class APISteps {
     }
 
     public String getFromResponseCookie(String cookieName) {
-        if (!conditionalStep) return "";
-        return apiResponse.getCookie(cookieName);
+        return getFromResponseCookieOrHeader(cookieName, "Cookie");
     }
 
     public String getFromResponseHeader(String headerName) {
+        return getFromResponseCookieOrHeader(headerName, "Header");
+    }
+
+    private String getFromResponseCookieOrHeader(String headerName, String cookieOrHeader) {
         if (!conditionalStep) return "";
         if (apiResponse == null) {
             ReportUtility.reportInfo("Last API response was null.");
             return "Last API response was null.";
         }
         try {
-            return apiResponse.header(headerName);
+            String valueToReturn = cookieOrHeader.toLowerCase().contains("header") ? apiResponse.header(headerName) : apiResponse.cookie(headerName);
+            ReportUtility.reportInfo(cookieOrHeader + " " + headerName + " is : " + valueToReturn);
+            return valueToReturn;
         } catch (Exception ex) {
-            ReportUtility.reportInfo("Header " + headerName + " not found.");
-            return "Header " + headerName + " not found.";
+            ReportUtility.reportInfo(cookieOrHeader + " " + headerName + " not found.");
+            return cookieOrHeader + " " + headerName + " not found.";
         }
     }
 

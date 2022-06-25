@@ -62,6 +62,22 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
         return SetUp.useMock ? playwrightActions.executeOnWebAndReturnBoolean("forRequestUseMockStatusAndResponse", requestPattern, mockHttpStatusCode, mockResponse) : true;
     }
 
+    public boolean isLinkValid(String url) {
+        return new APISteps().isUrlValidWithCookies(url, playwrightActions.getCookies());
+    }
+
+    public String getCookies() {
+        return playwrightActions.executeOnWebAndReturnString("getCookies");
+    }
+
+    public String getCookie(String cookieName) {
+        return playwrightActions.executeOnWebAndReturnString("getCookie", cookieName);
+    }
+
+    public String getPropertyOf(String property, String element) {
+        return playwrightActions.executeOnWebAndReturnString("getPropertyOf", property, element);
+    }
+
     public boolean uploadFile(String filePath) {
         return playwrightActions.executeOnWebAndReturnBoolean("uploadFile", filePath);
     }
@@ -105,6 +121,10 @@ public class PlaywrightAppiumSteps extends AppiumSteps {
     //Pipe separated values, single comma may be present in xpath, hence pipe.
     public boolean clickWhicheverIsDisplayedIn(String locator) {
         return playwrightActions.executeOnWebAndReturnBoolean("clickWhicheverIsDisplayedIn", locator);
+    }
+
+    public boolean keepClickingUntilContains(String buttonToClick, String textToLocate, String expectedText) {
+        return playwrightActions.executeOnWebAndReturnBoolean("keepClickingUntilContains", buttonToClick, textToLocate, expectedText);
     }
 
     public boolean pressKey(String value) {

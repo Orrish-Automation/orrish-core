@@ -38,7 +38,7 @@ public class SuiteTearDown {
         GeneralSteps.createFileWithContent("junitResult.xml", junitString.toString());
 
         if (junitString.toString().contains("<a "))
-            System.out.println("ERROR : One of Fitnesse test names has html link preventing from generating unit report properly. Please correct it.");
+            System.out.println("ERROR : One of FitNesse test names has html link preventing from generating unit report properly. Please correct it.");
     }
 
 }

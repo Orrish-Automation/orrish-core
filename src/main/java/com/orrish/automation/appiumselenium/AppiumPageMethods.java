@@ -12,7 +12,9 @@ import io.appium.java_client.ios.options.XCUITestOptions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.touch.TouchActions;
+import org.openqa.selenium.interactions.Pause;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.orrish.automation.entrypoint.SetUp.*;
+import static java.time.Duration.ofMillis;
+import static java.util.Collections.singletonList;
 
 public class AppiumPageMethods extends CommonPageMethod {
 
@@ -116,10 +120,17 @@ public class AppiumPageMethods extends CommonPageMethod {
         Dimension dimension = appiumDriver.manage().window().getSize();
         int startY = (int) (dimension.getHeight() * 0.9);
         int endY = (int) (dimension.getHeight() * 0.1);
-        TouchActions touchActions = new TouchActions(appiumDriver);
-        touchActions.scrollByAmount(0, endY - startY)
-                .release()
-                .perform();
+
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence sequence = new Sequence(finger, 1);
+        sequence.addAction(finger.createPointerMove(ofMillis(0),
+                PointerInput.Origin.viewport(), dimension.getWidth() / 2, startY));
+        sequence.addAction(finger.createPointerDown(PointerInput.MouseButton.MIDDLE.asArg()));
+        sequence.addAction(new Pause(finger, ofMillis(600)));
+        sequence.addAction(finger.createPointerMove(ofMillis(600),
+                PointerInput.Origin.viewport(), dimension.getWidth() / 2, endY));
+        sequence.addAction(finger.createPointerUp(PointerInput.MouseButton.MIDDLE.asArg()));
+        appiumDriver.perform(singletonList(sequence));
         return true;
     }
 

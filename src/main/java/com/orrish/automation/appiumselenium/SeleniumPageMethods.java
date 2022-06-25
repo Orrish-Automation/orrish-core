@@ -262,11 +262,11 @@ public class SeleniumPageMethods extends CommonPageMethod {
 
     public boolean pressKey(String keyToPress) {
         if (keyToPress.equalsIgnoreCase("escape"))
-            webDriver.getKeyboard().pressKey(Keys.ESCAPE);
+            webDriver.findElement(By.xpath("//*")).sendKeys(Keys.ESCAPE);
         if (keyToPress.equalsIgnoreCase("space"))
-            webDriver.getKeyboard().pressKey(Keys.SPACE);
+            webDriver.findElement(By.xpath("//*")).sendKeys(Keys.SPACE);
         if (keyToPress.equalsIgnoreCase("backspace"))
-            webDriver.getKeyboard().pressKey(Keys.BACK_SPACE);
+            webDriver.findElement(By.xpath("//*")).sendKeys(Keys.BACK_SPACE);
         return true;
     }
 

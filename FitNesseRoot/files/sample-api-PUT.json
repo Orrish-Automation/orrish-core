@@ -7,7 +7,7 @@
   {
     "id": 2,
     "step": "|Set request headers |Content-Type=application/x-www-form-urlencoded;charset=UTF-8,first_name=FirstName|",
-    "help": "Use comma separated key-value pair. Key value are delimited by colon. If you do not want to use a key, use doNotPass as the value."
+    "help": "Use comma separated key-value pair. Key value are delimited by equal sign. If you do not want to use a key, use doNotPass as the value."
   },
   {
     "id": 11,

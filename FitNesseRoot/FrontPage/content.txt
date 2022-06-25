@@ -11,7 +11,7 @@
 |[[Data Driven + Conditional Step][.SpecialCases]]               |Example of step execution based on a conditon. Uses data driven test.                       |
 |[[Mock Response][.SpecialCases]]                                |Use of mock API response in browser test using Playwright.                                  |
 |[[Accessibility Test][.SpecialCases]]                           |Verify page for accessibility in browser.                                                   |
-|[[Reading Gmail][.SpecialCases]]                                |Exaple of how to read Gmail. Useful to read OTP, PIN etc.                                   |
+|[[Reading Gmail][.SpecialCases]]                                |Example of how to read Gmail. Useful to read OTP, PIN etc.                                  |
 |[[Report Portal Integration][.ReportPortal]]                    |Example of report portal integration                                                        |
 |[[Fit Nesse Documentation][.Documentation]]                     |Tips on FitNesse                                                                            |
 |[[Update Available Steps][.Administration.UpdateAvailableSteps]]|''If you want to modify existing available steps seen under footer link, run this page.''   |

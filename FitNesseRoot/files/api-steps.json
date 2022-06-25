@@ -7,131 +7,146 @@
   {
     "id": 2,
     "step": "|Set request headers |Content-Type=application/x-www-form-urlencoded;charset=UTF-8,first_name=FirstName|",
-    "help": "Use comma separated key-value pair. Key value are delimited by colon. If you do not want to use a key, use doNotPass as the value."
+    "help": "Use comma separated key-value pair delimited by equal sign. If you do not want to use a key, use doNotPass as the value."
   },
   {
     "id": 3,
-    "step": "|Set form params |key1=value1,key2=value2|",
-    "help": "Use comma separated key-value pair. Key value are delimited by equal sign."
+    "step": "|Set request cookies |key=value,key2=value2|",
+    "help": "Use comma separated key-value pair delimited by equal sign. If you do not want to use a key, use doNotPass as the value."
   },
   {
     "id": 4,
+    "step": "|Set form params |key1=value1,key2=value2|",
+    "help": "Use comma separated key-value pair delimited by equal sign."
+  },
+  {
+    "id": 5,
     "step": "|Set multipart values |!{someKey:someValue,file:name=filename&path=/Users/user/test.txt}|",
     "help": "Pass key-value pair or file name in this format. Currently it supports only one file and multiple string based key-value."
   },
   {
-    "id": 5,
+    "id": 6,
     "step": "|$request=| Replace data in json template with|key=value |",
     "help": "You can define a template request in SetUp and then use this method to replace data. ## to replace all values, #4 will replace 4th occurrence, doNotPass will not pass this node, null will pass null."
   },
   {
-    "id": 6,
+    "id": 7,
     "step": "|$request=| Replace string|name| wit h|$value| in |{}|",
     "help": "It replaces the exact string in json template defined n setup."
   },
   {
-    "id": 7,
+    "id": 8,
     "step": "|Call GET for endpoint |${API_URL}  |",
     "help": ""
   },
   {
-    "id": 8,
+    "id": 9,
     "step": "|Call GET with request |$request  |",
     "help": ""
   },
   {
-    "id": 9,
-    "step": "|Call POST with request |{}  |",
-    "help": ""
-  },
-  {
     "id": 10,
-    "step": "|Call POST|",
+    "step": "|Call HEAD for endpoint |${API_URL}  |",
     "help": ""
   },
   {
     "id": 11,
-    "step": "|Call PUT with request |$request  |",
+    "step": "|Call POST with request |{}  |",
     "help": ""
   },
   {
     "id": 12,
-    "step": "|Call DELETE for endpoint |${BASE_SERVER}/name/1 |",
+    "step": "|Call POST|",
     "help": ""
   },
   {
     "id": 13,
-    "step": "|Call DELETE with request |$request  |",
+    "step": "|Call PUT with request |$request  |",
     "help": ""
   },
   {
     "id": 14,
-    "step": "|Call |POST |with request |$request|",
+    "step": "|Call DELETE for endpoint |${BASE_SERVER}/name/1 |",
     "help": ""
   },
   {
     "id": 15,
-    "step": "|Call |POST | with request |$request | without reporting|",
+    "step": "|Call DELETE with request |$request  |",
     "help": ""
   },
   {
     "id": 16,
-    "step": "|$value=| Get response body|",
+    "step": "|Call |POST |with request |$request|",
     "help": ""
   },
   {
     "id": 17,
-    "step": "|Is HTTP status code |200|",
+    "step": "|Call |POST | with request |$request | without reporting|",
     "help": ""
   },
   {
     "id": 18,
-    "step": "|$value= |Get from response |country.name |",
+    "step": "|$value=| Get response body|",
     "help": ""
   },
   {
     "id": 19,
-    "step": "|$value=| Get |user.name | from json string | jsonString |",
+    "step": "|Is HTTP status code |200|",
     "help": ""
   },
   {
     "id": 20,
-    "step": "|$value=| Get from response cookie |cookieName |",
+    "step": "|$value= |Get from response |country.name |",
     "help": ""
   },
   {
     "id": 21,
-    "step": "|Does last response match schema |{}|",
+    "step": "|$value=| Get |user.name | from json string | jsonString |",
     "help": ""
   },
   {
     "id": 22,
-    "step": "|Does |{}| match schema |{}|",
+    "step": "|$value=| Get from response cookie |cookieName |",
     "help": ""
   },
   {
     "id": 23,
-    "step": "|Is response json equal to |expectedResponseString|",
+    "step": "|Does last response match schema |{}|",
     "help": ""
   },
   {
     "id": 24,
+    "step": "|Does |{}| match schema |{}|",
+    "help": ""
+  },
+  {
+    "id": 25,
+    "step": "|Is response json equal to |expectedResponseString|",
+    "help": ""
+  },
+  {
+    "id": 26,
     "step": "|Verify response for |user.name=test_user, user.status=active, id=not null, middleName=null,title=doNotVerify, school=exists, university=doesNotExist, address=empty object|",
     "help": "Comma separated multiple values. You can use special text like null, not null, exists, doNotVerify, doesNotExist etc. to control the verification type."
   },
   {
-    "id": 25,
+    "id": 27,
     "step": "|$optionalNode=| Get existence of node |@nodeToVerify| in response|",
     "help": "Will not fail the step if not found."
   },
   {
-    "id": 26,
+    "id": 28,
     "step": "|$responseHeader=| Get |sessionId| from response header|",
     "help": ""
   },
   {
-    "id": 27,
+    "id": 29,
     "step": "|Verify object node |jsonPath| count |2|",
     "help": "Verifies the count of nodes with this json path."
+  },
+  {
+    "id": 30,
+    "step": "|Is url |http://someurl.com| valid with cookies |cookies|",
+    "help": "Use key value pair cookies delimited by equal sign. This will return true if success code is 200 and has content length more than 0."
   }
 ]

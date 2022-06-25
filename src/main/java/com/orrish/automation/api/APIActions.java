@@ -29,9 +29,14 @@ public class APIActions {
                 : apiSteps.apiRequestHeaders;
     }
 
+    public Map getApiRequestCookies() {
+        return apiSteps.apiRequestCookies;
+    }
+
     public boolean resetRequestHeaderAndEndpoint() {
         apiSteps.apiServerUrl = null;
         apiSteps.apiRequestHeaders.clear();
+        apiSteps.apiRequestCookies.clear();
         apiSteps.apiRequestFormParams = null;
         requestSpecification = null;
         return true;
@@ -47,16 +52,19 @@ public class APIActions {
                 if (SetUp.useRelaxedHTTPSValidation) {
                     RestAssured.useRelaxedHTTPSValidation();
                 }
-                RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder().addHeaders(headers);
+                RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder().addHeaders(headers).addCookies(getApiRequestCookies());
                 requestSpecBuilder = urlToSend.equals(baseUrl) ? requestSpecBuilder.setBaseUri(baseUrl) : requestSpecBuilder;
-                ReportUtility.reportInfo(shouldReport, "Headers included in the request : " + headers);
+                if (headers.size() > 0)
+                    ReportUtility.reportInfo(shouldReport, "Headers included in the request : " + headers);
+                if (getApiRequestCookies().size() > 0)
+                    ReportUtility.reportInfo(shouldReport, "Cookies included in the request : " + getApiRequestCookies());
                 //Json request
                 if (requestBody != null) {
                     requestSpecBuilder.setBody(requestBody);
                 }
                 String contentTypeHeader = headers.get("Content-Type");
-                if (requestBody != null) {
-                    if (contentTypeHeader != null && contentTypeHeader.contains("application/json")) {
+                if (requestBody != null && contentTypeHeader != null) {
+                    if (contentTypeHeader.contains("application/json")) {
                         ReportUtility.reportJsonAsInfo(shouldReport, "Request body : ", requestBody);
                     } else {
                         ReportUtility.reportMarkupAsInfo(shouldReport, "Request body : " + System.lineSeparator() + requestBody);
@@ -96,6 +104,8 @@ public class APIActions {
                 apiSteps.apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.get() : requestSpecification.get(urlToSend);
             else if (type.contentEquals("DELETE"))
                 apiSteps.apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.delete() : requestSpecification.delete(urlToSend);
+            else if (type.contentEquals("HEAD"))
+                apiSteps.apiResponse = baseUrl.equals(urlToSend) ? requestSpecification.head() : requestSpecification.head(urlToSend);
             resetRequestHeaderAndEndpoint();
             if (apiSteps.apiResponse == null || apiSteps.apiResponse.getBody() == null) {
                 ReportUtility.reportFail(shouldReport, "Did not get a valid apiResponse or valid apiResponse body.");
@@ -103,12 +113,12 @@ public class APIActions {
             }
             String responseString = apiSteps.apiResponse.getBody().asString();
             Header header = apiSteps.apiResponse.getHeaders().get("Content-Type");
-            String responseContentTypeHeader = (header == null) ? null : header.getName();
-            if (shouldReport) {
-                if (responseContentTypeHeader == null || responseContentTypeHeader.contains("text/xml")) {
-                    ReportUtility.reportMarkupAsInfo(shouldReport, "Response body :" + System.lineSeparator() + responseString);
-                } else {
-                    ReportUtility.reportJsonAsInfo(shouldReport, "Response body :", responseString);
+            if (shouldReport && header != null) {
+                String responseContentTypeHeader = header.getValue();
+                if (responseContentTypeHeader.contains("text/xml")) {
+                    ReportUtility.reportMarkupAsInfo(true, "Response body :" + System.lineSeparator() + responseString);
+                } else if (responseContentTypeHeader.contains("application/json")) {
+                    ReportUtility.reportJsonAsInfo(true, "Response body :", responseString);
                 }
             }
             return true;

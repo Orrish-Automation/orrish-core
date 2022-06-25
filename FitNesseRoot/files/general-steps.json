@@ -7,7 +7,7 @@
   {
     "id": 2,
     "step": "|Download from url  |http://someurl/sample.png | and save as |sample.png|",
-    "help": "It will be saved where Fitnesse is running."
+    "help": "It will be saved where FitNesse is running."
   },
   {
     "id": 3,

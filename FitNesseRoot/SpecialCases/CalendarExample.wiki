@@ -1,0 +1,14 @@
+---
+Static
+Test: no
+---
+'''Test Objective''': This example shows how to use a MUI calendar for React. Based on the framework you are using, the steps/locator may be a little different but the idea remains the same.
+'''Status''':
+'''Test case id''': <some id>
+
+!|comment                                                                            |
+|Click icon             |Choose date                                                 |
+|Click with partial text|2022                                                        |
+|Click with partial text|2015                                                        |
+|Keep clicking          |Previous month|until|div[role='presentation']|contains|April|
+|Click                  |button[aria-label='Apr 11, 2015']                           |

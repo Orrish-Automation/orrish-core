@@ -21,8 +21,9 @@ Appium locator
 //*[@text='Settings']
 //*[contains(@text,'Settings')]
 
-xpath parent
-xpath=..
+xpath parent  :  xpath=..
+xpath get 2nd input with name : (//input[@name='updatedName'])[2]
+Multiple xpath : //input[@type='password'] | //input[@type='text']
 
 //android.widget.TextView
 //android.widget.EditText
